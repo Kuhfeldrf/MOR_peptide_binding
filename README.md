@@ -211,6 +211,16 @@ results/     gitignored
 logs/        gitignored
 ```
 
+## Decisions
+
+Every tool and parameter choice, with its reasoning, the alternatives
+considered, the cost accepted, and the condition that should trigger revisiting
+it: **`docs/decisions.md`**. Reversals are recorded rather than overwritten.
+
+Open items currently recorded there: the LICENSE copyright holder, the OSU
+target architecture, and two provisional choices (AM1-BCC charges, dropping
+human casoxin B as a duplicate).
+
 ## Provenance
 
 Cluster details, module versions, and build flags: `docs/provenance.md`.
