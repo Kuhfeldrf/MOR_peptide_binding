@@ -26,3 +26,13 @@ miniforge3/
 # Editor / OS
 .DS_Store
 *.swp
+
+# Build artefacts from concurrent env/GROMACS builds
+miniforge3/
+spack-env/
+spack-install/
+mamba*
+build_env.sh
+build_env.sbatch
+build_gromacs.sh
+build_gromacs.sbatch

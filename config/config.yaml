@@ -23,6 +23,13 @@ receptor:
     - "H297"
   model_missing_loops: true
   critical_loop: "ECL2"
+  # DAMGO is experimentally resolved in 6DDF as entity 5
+  # (TYR-DAL-GLY-MEA-ETA). Extracted, not predicted. See docs/damgo_notes.md.
+  extract_ligand:
+    name: "DAMGO"
+    entity: 5
+    components: ["TYR", "DAL", "GLY", "MEA", "ETA"]
+    output: "results/00_receptor/damgo_ref.pdb"
 
 # ---------------------------------------------------- Stage 1: library
 library:
@@ -36,6 +43,8 @@ library:
 # ---------------------------------------------------- Stage 2: co-folding
 cofold:
   tool: chai-1
+  # DAMGO has no canonical FASTA form and is excluded from sequence co-folding.
+  exclude: ["DAMGO"]
   use_msa: false             # single-sequence mode: deliberate, see README
   n_seeds: 5
   retain_full_ensemble: true
@@ -77,6 +86,10 @@ mmgbsa:
 # ---------------------------------------------------- Stage 6: ABFE
 abfe:
   peptides: ["DAMGO"]        # pilot: DAMGO first
+  # Starts from the 6DDF experimental pose, NOT a predicted one. This validates
+  # the free-energy machinery only; it does not test pose prediction.
+  start_from: experimental
+  reference_structure: "results/00_receptor/damgo_ref.pdb"
   n_lambda_windows: 36
   ns_per_window: 5
   estimator: MBAR

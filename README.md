@@ -118,11 +118,18 @@ GPU node. **Not yet achieved - every stage is stubbed.**
   peptides. Stage 6 reports a convergence assessment, not a bare number.
 - **Only 6 reference peptides carry an affinity value, and it is IC50 not Ki,
   and it is currently unsourced.** This is the binding constraint on Stage 7.
-- **DAMGO has no canonical sequence representation.** It is
-  Tyr-D-Ala-Gly-N-MePhe-Gly-ol: a D-amino acid, an N-methylated residue, and a
-  C-terminal alcohol. Plain FASTA input to Chai-1 cannot express it, and ABFE
-  needs non-standard force-field parameters for it. The instructions name DAMGO
-  as the first ABFE target, so this sits on the critical path. **Unresolved.**
+- **DAMGO is extracted from experiment, not predicted.** It is
+  Tyr-D-Ala-Gly-N-MePhe-Gly-ol - a D-amino acid, an N-methylated residue and a
+  C-terminal alcohol - so plain FASTA input to Chai-1 cannot express it. It is
+  instead taken from 6DDF, where it is experimentally resolved as entity 5, and
+  is excluded from sequence-based co-folding. **The consequence is that DAMGO's
+  ABFE result validates the free-energy machinery only - decoupling, restraints,
+  MBAR, convergence - and does not test pose prediction**, because it starts
+  from the experimental complex. See `docs/damgo_notes.md`.
+- **`MEA` and `ETA` (N-methyl-Phe and the Gly-ol cap) have no standard protein
+  force-field parameters** and need GAFF2 treatment via antechamber. The charge
+  derivation scheme is not yet decided. This is the live technical risk on the
+  DAMGO path.
 - **ref2015-based tools are absent by design.** FlexPepDock and related Rosetta
   refinement are excluded because ref2015 has no membrane term; membrane MD
   performs the equivalent role in the correct physical environment.
