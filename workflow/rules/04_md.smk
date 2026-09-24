@@ -10,5 +10,7 @@ rule md_production:
         "results/04_md/stability.tsv"
     log:
         "logs/md_production.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/04_md.py"

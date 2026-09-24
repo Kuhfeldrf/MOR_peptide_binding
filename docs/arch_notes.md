@@ -79,6 +79,45 @@ If the OSU system is confirmed x86_64 (e.g. a DGX platform), OpenMM becomes the
 better choice - no source build, and `openmmtools` supplies the alchemical
 machinery directly. Re-open this decision if that is established.
 
+## Dependency conflict: numpy, Chai-1, and the conda-forge stack
+
+**Found 2026-09-24 on the first environment build. This is a porting finding,
+not a local accident, and it should be expected to recur on the OSU system.**
+
+A single environment containing both `chai_lab` and the conda-forge scientific
+stack **does not work**. `pip install chai_lab` pulls `torch 2.6.0+cu124`,
+which downgrades numpy to **1.26.4**. Every conda-forge package in the
+environment is built against numpy 2.x, so they then fail at import with:
+
+```
+AttributeError: module 'numpy' has no attribute 'long'
+```
+
+Observed breakage: `MDAnalysis` (Stages 4, 5), `pymbar` (Stage 6 MBAR),
+`packmol-memgen` (Stage 3), plus unsatisfied numpy constraints reported for
+`scipy`, `mdtraj`, `jax` and `snakemake-executor-plugin-slurm`. SLURM reported
+the build job as `COMPLETED`; the environment was nonetheless unusable. **Job
+exit status was not a reliable signal here.**
+
+`pdb2pqr` was additionally missing: `packmol-memgen` requires it but it is not
+pulled in transitively.
+
+### Resolution: two environments
+
+| Environment | File | Used by | numpy |
+|-------------|------|---------|-------|
+| `mor-pilot` | `environment.yml` | Stages 0, 1, 2b, 3-7 | >= 2 |
+| `mor-chai`  | `envs/chai.yml`    | Stage 2 only | < 2 |
+
+Snakemake per-rule `conda:` directives select between them, with a shared
+`conda-prefix` so the torch environment is built once. The split is honest
+rather than tidy: Stage 2 genuinely is an isolated GPU job with an incompatible
+dependency set, and pinning numpy < 2 globally would mean fighting conda-forge
+across the entire stack.
+
+**Consequence for reproducibility:** there are two environment files to pin,
+not one. Both must be recorded in `provenance.md`.
+
 ## Per-tool build status
 
 Populated in step 3 as the environment is built.

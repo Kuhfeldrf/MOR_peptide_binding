@@ -10,5 +10,7 @@ rule cofold_chai:
         "results/02_cofold/scores.tsv"
     log:
         "logs/cofold_chai.log"
+    conda:
+        "../../envs/chai.yml"
     script:
         "../../scripts/02_cofold.py"

@@ -10,5 +10,7 @@ rule library_ingest:
         "results/01_library/peptides.tsv"
     log:
         "logs/library_ingest.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/01_library.py"

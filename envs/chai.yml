@@ -1,0 +1,17 @@
+# Stage 2 only: Chai-1 co-folding.
+#
+# Isolated because chai_lab's torch build requires numpy<2, which conflicts
+# with every conda-forge package in the main environment. This is a real
+# dependency conflict, not a solver artefact, and it will recur on any port.
+# See docs/arch_notes.md.
+#
+# Deliberately minimal: nothing is added here that the main env can do instead.
+name: mor-chai
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy<2             # forced by chai_lab -> torch 2.6.0+cu124
+  - pip
+  - pip:
+      - chai_lab        # requires Linux, CUDA GPU with bfloat16

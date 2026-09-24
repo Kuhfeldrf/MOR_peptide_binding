@@ -10,5 +10,7 @@ rule mmgbsa_triage:
         "results/05_mmgbsa/scores.tsv"
     log:
         "logs/mmgbsa_triage.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/05_mmgbsa.py"

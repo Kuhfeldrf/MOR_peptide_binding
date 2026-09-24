@@ -10,5 +10,7 @@ rule abfe_windows:
         "results/06_abfe/dg.tsv"
     log:
         "logs/abfe_windows.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/06_abfe.py"

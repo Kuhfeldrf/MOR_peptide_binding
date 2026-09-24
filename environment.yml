@@ -1,34 +1,36 @@
-# UNPINNED DRAFT - versions are pinned in step 3 after the first successful
-# solve on ORCA. Do not treat this file as the provenance record until this
-# header is removed.
+# Main pilot environment: Stages 0, 1, 2b, 3, 4, 5, 6, 7.
 #
-# GROMACS is NOT listed here: it is built from source against CUDA so that the
-# build flags are recorded in docs/provenance.md and the OSU port is rehearsed.
-# See docs/arch_notes.md.
+# Stage 2 (Chai-1) does NOT use this environment. chai_lab's torch build pins
+# numpy<2, which is incompatible with the conda-forge stack here. See
+# envs/chai.yml and docs/arch_notes.md.
+#
+# UNPINNED DRAFT - pinned from docs/env_solved_main.txt once verified.
+#
+# GROMACS is absent deliberately: it is a spack source build, so that its
+# build flags and dependency hash are recorded. See docs/arch_notes.md.
 name: mor-pilot
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - python=3.12
+  - numpy>=2            # explicit: the whole point of the split
   - snakemake-minimal
   - snakemake-executor-plugin-slurm
-  - ambertools           # packmol-memgen (Stage 3)
-  - parmed               # Amber -> GROMACS topology conversion (Stage 3/4)
-  - acpype               # fallback converter; non-canonical residue params
-  - pdbfixer             # Stage 0 loop / missing-atom modelling
-  - propka               # Stage 0 protonation assignment
+  - ambertools          # packmol-memgen (Stage 3)
+  - pdb2pqr             # required by packmol-memgen; also Stage 0 protonation
+  - propka              # Stage 0 protonation assignment
+  - parmed              # Amber -> GROMACS topology conversion (Stage 3/4)
+  - acpype              # fallback converter; non-canonical residue params
+  - pdbfixer            # Stage 0 loop / missing-atom modelling
   - mdanalysis
   - mdtraj
-  - alchemlyb            # reads GROMACS dhdl.xvg for Stage 6
-  - pymbar               # MBAR estimator (Stage 6)
+  - alchemlyb           # reads GROMACS dhdl.xvg (Stage 6)
+  - pymbar              # MBAR estimator (Stage 6)
   - biopython
-  - numpy
   - pandas
   - scipy
   - pyarrow
   - matplotlib
   - seaborn
-  - pip
-  - pip:
-      - chai_lab         # Stage 2; requires CUDA GPU with bfloat16
+  - gemmi               # mmCIF parsing for Stage 0 / DAMGO extraction

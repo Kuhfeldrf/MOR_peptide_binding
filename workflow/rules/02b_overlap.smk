@@ -10,5 +10,7 @@ rule overlap_audit:
         "results/02b_overlap/overlap.tsv"
     log:
         "logs/overlap_audit.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/02b_overlap.py"

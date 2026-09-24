@@ -10,5 +10,7 @@ rule receptor_prep:
         "results/00_receptor/mOR_clean.pdb"
     log:
         "logs/receptor_prep.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/00_receptor.py"

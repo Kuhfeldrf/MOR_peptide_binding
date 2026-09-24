@@ -10,5 +10,7 @@ rule membrane_build:
         "results/03_membrane/system.parm7"
     log:
         "logs/membrane_build.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/03_membrane.py"

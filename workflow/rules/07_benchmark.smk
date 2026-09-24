@@ -10,5 +10,7 @@ rule benchmark:
         "results/07_benchmark/benchmark.tsv"
     log:
         "logs/benchmark.log"
+    conda:
+        "../../environment.yml"
     script:
         "../../scripts/07_benchmark.py"

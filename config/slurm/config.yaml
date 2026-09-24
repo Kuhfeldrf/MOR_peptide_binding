@@ -4,6 +4,9 @@ jobs: 16
 latency-wait: 60
 rerun-incomplete: true
 printshellcmds: true
+use-conda: true
+# Shared prefix: without this Snakemake rebuilds the torch env per invocation.
+conda-prefix: /scratch/kuhfeldr-Kuhfeld_temp/.snakemake-conda
 
 default-resources:
   slurm_account: ""
