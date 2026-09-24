@@ -44,6 +44,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D22](#d22) | i-pLDDT taken as peptide-chain pLDDT | PROVISIONAL | 2026-09-24 |
 | [D23](#d23) | Cross-seed agreement by receptor-superposed peptide RMSD | FIRM | 2026-09-24 |
 | [D24](#d24) | Stage 2 test-peptide selection | FIRM | 2026-09-24 |
+| [D25](#d25) | Structure comparisons fit numbering by sequence | FIRM | 2026-09-24 |
 
 ---
 
@@ -430,3 +431,40 @@ Spans a 32x affinity range, both pharmacologies, 5-mer against 10-mer, and
 memorised against not. Including the HIGH_OVERLAP case is deliberate: if
 Met-enkephalin predicts far better than the others, that is a memorisation
 signal, and it is better to see it at this checkpoint than in Stage 7.
+
+
+<a name="d25"></a>
+## D25 — Residue numbering is fitted by sequence, never assumed · FIRM
+
+**Recorded because it produced wrong published-looking numbers before it was
+caught.**
+
+The first version of `validate_vs_experiment.py` mapped the Chai-1 prediction
+onto 8F7Q by assuming the prediction used the 6DDF construct numbering, which
+starts at residue 65. **8F7Q is numbered +2 relative to that construct.** The
+assumed mapping gave **8.9% sequence identity** at matched positions; the
+correct offset of 67 gives **98.2%**.
+
+Every RMSD from the bad mapping was meaningless, and none of them looked
+obviously wrong:
+
+| Quantity | Wrong mapping (offset 65) | Correct (offset 67) |
+|---|---|---|
+| Receptor RMSD, global | 6.09 A | **2.80 A** |
+| Pocket RMSD | 5.42 A | **0.80 A** |
+| Peptide RMSD, pocket frame | 1.88 A | **2.32 A** |
+
+The 6 A receptor deviation prompted a plausible but entirely invented
+explanation - that the receptor was in a different activation state, with TM6
+swung out. **That interpretation was an artefact of the misalignment and is
+retracted.** The receptor agrees at 2.8 A, which is unremarkable.
+
+**Rule going forward:** any script that maps residues between two structures
+fits the offset by maximising sequence identity and **asserts that identity
+exceeds 90%**, failing loudly otherwise. Numbering is never inferred from
+provenance.
+
+**Why this matters beyond one script:** a misaligned comparison produces
+numbers in an entirely plausible range. There was no error, no exception, and
+the result invited a mechanistic story. Only an independent check - amino-acid
+identity at matched positions - exposed it.

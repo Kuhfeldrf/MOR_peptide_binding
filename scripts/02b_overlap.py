@@ -38,13 +38,25 @@ import yaml
 # ---------------------------------------------------------------------------
 PDB_OPIOID_PEPTIDES = [
     # (sequence, name, pdb, year, note)
-    ("YGGFM",   "Met-enkephalin",   "8F7Q", 2023, "endogenous opioid peptide-receptor-Gi"),
-    ("YGGFL",   "Leu-enkephalin",   "8F7R", 2023, "endogenous opioid peptide-receptor-Gi"),
-    ("YGGFMRF", "Met-enkephalin-RF","8F7S", 2023, "endogenous opioid peptide-receptor-Gi"),
-    ("YGGFLRRI","Dynorphin A(1-8)", "8F7W", 2023, "kappa/mu opioid peptide complexes"),
-    ("YPWF",    "Endomorphin-1",    "-",    None, "widely studied mu agonist; in training corpora"),
-    ("YPFF",    "Endomorphin-2",    "-",    None, "widely studied mu agonist; in training corpora"),
-    ("YAGFMX",  "DAMGO",            "6DDF", 2018, "non-canonical: D-Ala2, N-MePhe4, Gly-ol5"),
+    #
+    # VERIFIED DIRECTLY against the downloaded mmCIF:
+    ("YGGFMTSEKSQTPLVTLFKNA", "beta-endorphin", "8F7Q", 2023,
+     "VERIFIED: chain P of 8F7Q. Its N-terminal YGGFM 'message' sequence is "
+     "identical to Met-enkephalin and occupies the orthosteric pocket, so any "
+     "peptide matching YGGFM overlaps deposited structural data."),
+    ("YAGFMX", "DAMGO", "6DDF", 2018,
+     "VERIFIED: chain D of 6DDF, TYR-DAL-GLY-MEA-ETA. Non-canonical: D-Ala2, "
+     "N-MePhe4, Gly-ol5; the sequence here is a placeholder for matching only."),
+
+    # NOT INDIVIDUALLY VERIFIED against deposited files. These are well-known
+    # mu/kappa opioid peptide ligands that appear in the structural literature
+    # and in training corpora. They are retained because omitting them would
+    # under-report overlap, but no PDB id is claimed for them.
+    ("YGGFL",    "Leu-enkephalin",     "-", None, "unverified PDB entry"),
+    ("YGGFMRF",  "Met-enkephalin-RF",  "-", None, "unverified PDB entry"),
+    ("YGGFLRRI", "Dynorphin A(1-8)",   "-", None, "unverified PDB entry"),
+    ("YPWF",     "Endomorphin-1",      "-", None, "widely studied mu agonist"),
+    ("YPFF",     "Endomorphin-2",      "-", None, "widely studied mu agonist"),
 ]
 
 
