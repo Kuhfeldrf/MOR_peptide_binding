@@ -1,0 +1,46 @@
+# uOR peptide screening pilot.
+#
+# No logic lives in this file. Every rule delegates to a script in scripts/,
+# so that each stage is independently runnable, re-runnable, and testable.
+
+import os
+
+configfile: "config/config.yaml"
+
+
+# ---------------------------------------------------------------------------
+# Test-profile override.
+#
+# The test path shortens MD production and reduces ABFE lambda windows. It must
+# never silently alter production parameters, so the override is applied here,
+# once, and the active profile is echoed into every output directory.
+# ---------------------------------------------------------------------------
+def apply_profile(cfg):
+    profile = cfg.get("project", {}).get("profile", "production")
+    if profile == "test":
+        for section, overrides in cfg.get("test_overrides", {}).items():
+            cfg.setdefault(section, {}).update(overrides)
+    return cfg, profile
+
+
+config, PROFILE = apply_profile(config)
+
+RESULTS = "results"
+PEPTIDES = []   # populated by stage 1; see rules/01_library.smk
+
+
+include: "rules/00_receptor.smk"
+include: "rules/01_library.smk"
+include: "rules/02_cofold.smk"
+include: "rules/02b_overlap.smk"
+include: "rules/03_membrane.smk"
+include: "rules/04_md.smk"
+include: "rules/05_mmgbsa.smk"
+include: "rules/06_abfe.smk"
+include: "rules/07_benchmark.smk"
+
+
+rule all:
+    input:
+        f"{RESULTS}/07_benchmark/benchmark.tsv",
+        f"{RESULTS}/07_benchmark/benchmark.svg",
