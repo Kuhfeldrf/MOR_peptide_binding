@@ -36,3 +36,8 @@ build_env.sh
 build_env.sbatch
 build_gromacs.sh
 build_gromacs.sbatch
+
+# Chai-1 model weights (multi-GB, downloaded)
+.chai_weights/
+*.sbatch
+results/

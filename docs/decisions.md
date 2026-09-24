@@ -40,6 +40,10 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D18](#d18) | CGenFF academic licence | OPEN (not blocking) | — |
 | [D19](#d19) | LICENSE copyright holder | OPEN | — |
 | [D20](#d20) | OSU target architecture unconfirmed | OPEN | — |
+| [D21](#d21) | ipSAE not produced by Chai-1 | OPEN | 2026-09-24 |
+| [D22](#d22) | i-pLDDT taken as peptide-chain pLDDT | PROVISIONAL | 2026-09-24 |
+| [D23](#d23) | Cross-seed agreement by receptor-superposed peptide RMSD | FIRM | 2026-09-24 |
+| [D24](#d24) | Stage 2 test-peptide selection | FIRM | 2026-09-24 |
 
 ---
 
@@ -310,3 +314,70 @@ which is why the instructions open with a `uname -m` check that looks
 irrelevant here. **Not confirmed**, and drove [D2](#d2).
 **Blocks:** a real porting risk assessment in `docs/arch_notes.md` — the
 current table is x86_64 evidence and must not be read as aarch64 evidence.
+
+
+<a name="d21"></a>
+## D21 — ipSAE is not produced by Chai-1 · OPEN
+
+The instructions require ipTM, **i-pLDDT, ipSAE**, aggregate score and PAE per
+complex. Chai-1 provides `aggregate_score`, `ptm`, `iptm`, `per_chain_ptm`,
+`per_chain_pair_iptm` and clash flags in `scores.model_idx_*.npz`; `plddt` and
+`pae` come off the returned `StructureCandidates`. **ipSAE is not among them.**
+
+ipSAE is a separate published interface metric derived from the PAE matrix, not
+something Chai-1 emits. The column is written as `NOT_COMPUTED` rather than
+omitted or filled with a substitute, so its absence is visible in the output
+table rather than inferred from a missing column.
+
+**Options:** implement it from the PAE matrix against the published definition
+and validate that implementation; vendor the reference implementation; or
+record it as out of scope with the reason stated. **Not yet decided — needs a
+call before Stage 7**, since the instructions name it as a reported quantity.
+
+<a name="d22"></a>
+## D22 — i-pLDDT taken as mean pLDDT over the peptide chain · PROVISIONAL
+
+Chai-1 returns a per-token pLDDT. "Interface pLDDT" has no single canonical
+definition. Taken here as **the mean over the peptide chain tokens**, because
+averaging over the whole complex would be swamped by a 281-residue well-folded
+receptor and would not report on the interface at all. The smoke test makes the
+scale of that concern concrete: receptor pTM 0.868 against peptide pTM 0.137.
+
+**A stricter definition** — mean pLDDT over residues within a distance cutoff
+of the partner chain — is defensible and arguably better. Not used yet because
+it introduces a cutoff parameter needing its own justification.
+**Revisit if:** i-pLDDT is used for ranking rather than as a diagnostic.
+
+<a name="d23"></a>
+## D23 — Cross-seed agreement: receptor-superposed peptide RMSD · FIRM
+
+Seeds are compared by superposing **receptor CA atoms only**, then measuring
+the peptide displacement in that frame. Superposing on the whole complex would
+be dominated by the receptor and would report agreement even when the peptide
+lands in a different sub-site. The question is whether the peptide lands in the
+same place on the same receptor, and this measures that directly.
+
+Reported as bands, not pass/fail: `CONVERGED` under 2 A, `PARTIAL` 2-5 A,
+`DIVERGENT` over 5 A, plus centroid shift. Roughly 2 A is the scale of a
+well-converged pose and beyond 5 A generally means a different sub-site.
+
+**Why it matters:** disagreement across seeds flags an untrustworthy prediction
+independently of the confidence the model states. High ipTM with poor
+cross-seed agreement is a stronger warning than either number alone.
+
+<a name="d24"></a>
+## D24 — Stage 2 test-peptide selection · FIRM
+
+Three peptides chosen to span the axes that could confound the checkpoint,
+rather than to give a flattering result:
+
+| Peptide | Seq | Len | IC50 | Role | Overlap |
+|---------|-----|-----|------|------|---------|
+| Met-enkephalin | YGGFM | 5 | 0.2 uM | agonist | **HIGH_OVERLAP** (exact match, 8F7Q) |
+| beta-casomorphin-5 (bov) | YPFPG | 5 | 6.5 uM | agonist | MODERATE |
+| Casoxin C | YIPIQYVLSR | 10 | 5 uM | **antagonist** | NOVEL/MODERATE |
+
+Spans a 32x affinity range, both pharmacologies, 5-mer against 10-mer, and
+memorised against not. Including the HIGH_OVERLAP case is deliberate: if
+Met-enkephalin predicts far better than the others, that is a memorisation
+signal, and it is better to see it at this checkpoint than in Stage 7.
