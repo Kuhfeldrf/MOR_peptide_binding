@@ -120,8 +120,35 @@ not one. Both must be recorded in `provenance.md`.
 
 ## Per-tool build status
 
-Populated in step 3 as the environment is built.
+Recorded on x86_64. See the headline note above: this is not aarch64 evidence.
 
-| Tool | Arch | Wheel or source | Patches required | Time spent |
-|------|------|-----------------|------------------|------------|
-| _pending_ | | | | |
+| Tool | Arch | Wheel or source | Patches | Time | Notes |
+|------|------|-----------------|---------|------|-------|
+| GROMACS 2025.3 | x86_64 | **spack source build** | none | ~5 min / 16 cores | CUDA 12.9, cuda_arch 80,89. No binary cache; compiled clean first attempt. |
+| AmberTools (packmol-memgen) | x86_64 | conda-forge binary | none | - | Needs `pdb2pqr`, which is **not** pulled in transitively. |
+| chai_lab 0.6.1 | x86_64 | pip wheel | none | - | Drags `torch 2.6.0+cu124`; forces numpy<2. Isolated env. |
+| pymbar / alchemlyb / MDAnalysis | x86_64 | conda-forge binary | none | - | Broke under numpy<2; fixed by the env split. |
+
+### SIMD flag note (performance, not correctness)
+
+Spack targeted `linux-zen4` but emitted `-march=skylake-avx512`. GROMACS
+selected `AVX_512`, which Zen4 does support natively, so the build is correct
+and runs. It is, however, **not tuned for Zen4** - `znver4` would be the
+matching target, and GROMACS on Zen4 is sometimes faster with `AVX2_256` than
+`AVX_512` depending on kernel.
+
+This is left as-is for the pilot: it is a performance question, not a
+correctness one, and the pilot is not a benchmark. **It should be measured
+before any scaling decision**, since MD throughput drives the GPU-hour estimate
+in the README scaling section.
+
+### Build failure worth recording
+
+The first GROMACS job was reported `FAILED` by SLURM although the build had
+**succeeded**. The failure was in the script's own recording step: `set -u`
+tripped over `GMXRC`, which references unbound shell variables (`shell`,
+`GMXLDLIB`). Source `GMXRC` with `set +u`.
+
+Together with the numpy incident above, where a broken environment was reported
+`COMPLETED`, the lesson is the same in both directions: **on this cluster, job
+exit status alone establishes nothing.** Verify the artefact.

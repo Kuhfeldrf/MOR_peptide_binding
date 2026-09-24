@@ -64,8 +64,59 @@ source /etc/profile.d/z00_lmod.sh
 
 ## Tool versions
 
-Populated in step 3 once the environment solves.
-
 | Tool | Version | Source | Date |
 |------|---------|--------|------|
-| _pending_ | | | |
+| GROMACS | 2025.3-spack | spack source build, CUDA | 2026-09-24 |
+| CUDA (build) | 12.9.0 | spack (`cuda@12.9.0`) | 2026-09-24 |
+| gcc | 13.4.0 | spack | 2026-09-24 |
+| Miniforge / conda | 26.7.2 | installer into PILOT_ROOT | 2026-09-24 |
+| mamba | 2.9.0 | Miniforge | 2026-09-24 |
+| chai_lab | 0.6.1 | pip (`mor-chai` env) | 2026-09-24 |
+| torch | 2.6.0+cu124 | pip, via chai_lab | 2026-09-24 |
+
+Full package lists: `docs/env_solved_main.txt`, `docs/env_solved_chai.txt`.
+
+## GROMACS build
+
+Built with spack rather than a hand-rolled CMake invocation so that the full
+dependency graph and hash are recorded rather than described.
+
+```bash
+source /etc/profile.d/z00_lmod.sh
+module load spack/v1.1.1
+spack env create -d $PILOT_ROOT/spack-env
+spack -e $PILOT_ROOT/spack-env config add "config:install_tree:root:$PILOT_ROOT/spack-install"
+spack -e $PILOT_ROOT/spack-env add "gromacs@2025.3 +cuda cuda_arch=80,89 ~mpi +openmp"
+spack -e $PILOT_ROOT/spack-env install --fail-fast -j16
+```
+
+- **Spec hash:** `45hxd2evh2mxcjqopqa56cr3atcbwlrv`
+- **Prefix:** `spack-install/linux-zen4/gromacs-2025.3-45hxd2evh2mxcjqopqa56cr3atcbwlrv`
+- **cuda_arch 80,89** covers both GPU types on ORCA: A30 (sm_80) and L40S (sm_89).
+- Build time: ~5 minutes on 16 cores, from source (no binary cache available).
+
+Reported configuration:
+
+| Property | Value |
+|----------|-------|
+| GROMACS version | 2025.3-spack |
+| Precision | mixed |
+| GPU support | CUDA |
+| SIMD instructions | AVX_512 |
+| CPU FFT library | fftw-3.3.10 (sse2/avx/avx2/avx512) |
+| GPU FFT library | cuFFT |
+| C/C++ compiler | GNU 13.4.0 |
+| CUDA compiler | nvcc 12.9.41 |
+
+### GPU verification (job 182455, node orcaga01)
+
+| Property | Value |
+|----------|-------|
+| GPU | NVIDIA L40S |
+| Driver | 610.57.04 |
+| Compute capability | 8.9 (matches `cuda_arch=89`) |
+| CUDA driver / runtime | 13.30 / 12.90 |
+
+`gmx mdrun -version` on a GPU node reports CUDA support, cuFFT, and NBNxM GPU
+setup active. The driver (13.30) is newer than the runtime (12.90), which is
+the supported direction for CUDA compatibility.
