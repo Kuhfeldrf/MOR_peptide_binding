@@ -10,6 +10,24 @@ import csv, pathlib
 SRC = ("Table1_Updated_GPI_IC50.xlsx (NIH R21 Rusty Jun 2026); "
        "values transcribed verbatim 2026-09-24")
 
+# ---------------------------------------------------------------------------
+# INTER-LABORATORY CAVEAT - read before interpreting any Stage 7 correlation.
+#
+# Koch 1985 Table 1 also reports GPI IC50 values for the BOVINE casomorphins,
+# and they disagree sharply with the Brantl 1981 values used in this set:
+#
+#   peptide              Brantl 1981 (used here)   Koch 1985 Table 1
+#   beta-casomorphin-4   22 uM                     3.60 uM
+#   beta-casomorphin-5   6.5 uM                    0.53 uM
+#   beta-casomorphin-7   57 uM                     5.14 uM
+#
+# Same peptide, same assay type (guinea-pig ileum), roughly an order of
+# magnitude apart. The benchmark set therefore mixes laboratories, and the
+# spread between labs is comparable to the spread the model is being asked to
+# reproduce. Stage 7 must state this: it bounds how much any rank correlation
+# over n=10 can be claimed to mean.
+# ---------------------------------------------------------------------------
+
 # name, seq, cterm, role, species, ic50_um, assay, reference, pmid, notes
 ROWS = [
  ("alphas1_casein_exorphin_7","RYLGYLE","free","agonist","bovine","30","MVD",
@@ -49,10 +67,16 @@ ROWS = [
  ("lactoferroxin_A_bov","YLGSRY","free","antagonist","bovine","15","Radioreceptor",
   "Tani et al. 1990, Agric Biol Chem 54:1803-1810","1369293",
   "Radioreceptor assay with [3H]naloxone, not GPI."),
- ("beta_casomorphin_5_hum","YPFVE","free","agonist","human","14","GPI",
-  "Koch et al. 1985; Garg Table 3 / Yoshikawa 1986","3005882",""),
- ("beta_casomorphin_7_hum","YPFVEPI","free","agonist","human","25","GPI",
-  "Koch et al. 1985; Garg Table 3","3005882",""),
+ ("beta_casomorphin_5_hum","YPFVE","free","agonist","human","13.5","GPI",
+  "Koch, Wiedemann & Teschemacher 1985, Naunyn-Schmiedeberg's Arch Pharmacol "
+  "331:351-354, Table 1","3005882",
+  "VERIFIED against the paper PDF 2026-09-24. Source table said 14; Koch "
+  "Table 1 reports 13.50 umol/l. Mean of 12 determinations, SD <16%."),
+ ("beta_casomorphin_7_hum","YPFVEPI","free","agonist","human","29.0","GPI",
+  "Koch, Wiedemann & Teschemacher 1985, Naunyn-Schmiedeberg's Arch Pharmacol "
+  "331:351-354, Table 1","3005882",
+  "CORRECTED. VERIFIED against the paper PDF 2026-09-24. Source table said 25; "
+  "Koch Table 1 reports 29.00 umol/l. Mean of 12 determinations, SD <16%."),
  ("casoxin_B_hum","YPYY","free","antagonist","human","100","GPI",
   "Chiba et al. 1989, J Dairy Res 56:363-366","2760234",
   "Sequence identical to bovine casoxin B (YPYY). Source workbook had YPFP in its duplicate sequence column; corrected 2026-09-24."),
