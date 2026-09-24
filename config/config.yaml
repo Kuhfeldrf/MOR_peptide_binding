@@ -60,6 +60,14 @@ overlap:
 # ---------------------------------------------------- Stage 3: membrane
 membrane:
   builder: packmol-memgen
+  # CHARMM36m + CGenFF, per docs/forcefield_decision.md. packmol-memgen is
+  # unchanged as the builder; only its output format differs (--charmm).
+  output_format: charmm
+  forcefield:
+    protein: charmm36m
+    lipid: charmm36
+    ligand: cgenff
+    water: tip3p_charmm
   lipids: ["POPC", "CHL1"]
   cholesterol_fraction: 0.25
   ionic_strength_mM: 150
@@ -93,6 +101,9 @@ abfe:
   n_lambda_windows: 36
   ns_per_window: 5
   estimator: MBAR
+  # DAMGO is decoupled as a single CGenFF molecule, avoiding a mixed
+  # force-field junction mid-peptide. See docs/forcefield_decision.md.
+  ligand_forcefield: cgenff
   # Storage policy: energies + subsampled coords only. See README.
   save_full_trajectories: false
   subsample_stride: 50

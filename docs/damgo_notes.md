@@ -75,8 +75,18 @@ not be presented as end-to-end validation of the pipeline.
 - **Stage 7** - DAMGO's published affinity must still be sourced to primary
   literature under the Stage 1 rules; it is not exempt.
 
-## Still open
+## Resolved: parameterisation
 
-The **charge-derivation scheme for `MEA` and `ETA`** is not yet decided
-(RESP vs AM1-BCC, and whether to parameterise DAMGO as one GAFF2 unit or as
-standard residues plus two custom ones). Flagged rather than assumed.
+**Settled 2026-09-24 - see `docs/forcefield_decision.md`.** DAMGO is treated as
+a single **CGenFF** molecule under **CHARMM36m**, matching published DAMGO-mu-OR
+MD, which uses exactly this combination in GROMACS. This removes the
+mixed-force-field junction that a per-residue Amber treatment would have
+created mid-peptide.
+
+The RESP-versus-AM1-BCC question does not arise: CGenFF assigns charges by
+analogy rather than using either scheme.
+
+**One item remains open:** CGenFF parameter generation needs the licensed
+`cgenff` binary or the interactive ParamChem web service, and the latter would
+break the pipeline's scriptability requirement. Stage 3 stays `STUBBED` until
+that is resolved. See the FLAG section of `docs/forcefield_decision.md`.
