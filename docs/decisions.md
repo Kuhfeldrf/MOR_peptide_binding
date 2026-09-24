@@ -38,8 +38,8 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D16](#d16) | No ECL2 loop modelling | FIRM | 2026-09-24 |
 | [D17](#d17) | Chai-1 single-sequence mode, 5 seeds | PROVISIONAL | pending |
 | [D18](#d18) | CGenFF academic licence | OPEN (not blocking) | — |
-| [D19](#d19) | LICENSE copyright holder | OPEN | — |
-| [D20](#d20) | OSU target architecture unconfirmed | OPEN | — |
+| [D19](#d19) | LICENSE copyright holder | DEFERRED | 2026-09-24 |
+| [D20](#d20) | OSU target architecture | OPEN (narrowed) | 2026-09-24 |
 | [D21](#d21) | ipSAE not produced by Chai-1 | OPEN | 2026-09-24 |
 | [D22](#d22) | i-pLDDT taken as peptide-chain pLDDT | PROVISIONAL | 2026-09-24 |
 | [D23](#d23) | Cross-seed agreement by receptor-superposed peptide RMSD | FIRM | 2026-09-24 |
@@ -300,20 +300,69 @@ weeks. **Only becomes relevant** if a CHARMM cross-check is wanted, or if
 scaling makes a per-molecule web step untenable.
 
 <a name="d19"></a>
-## D19 — LICENSE copyright holder · OPEN
+## D19 — LICENSE copyright holder · DEFERRED by user
 
-`LICENSE` carries a placeholder. The user's full legal name is not known to me
-and must not be guessed. **Blocks:** any distribution of the repository.
+`LICENSE` retains its placeholder. The user chose on 2026-09-24 to leave it as
+is for now. Blocks nothing until the repository is distributed; a one-line
+change when decided.
+
+Worth re-checking before distribution: for NIH-funded work, copyright often
+sits with the institution under its IP policy rather than with the individual.
 
 <a name="d20"></a>
-## D20 — OSU target architecture · OPEN
+## D20 — OSU target architecture · OPEN (narrowed 2026-09-24)
 
-ORCA (PSU, x86_64) is a **staging environment**; the stated target is a new
-NVIDIA system at OSU. If Grace-based (GH200/GB200) its CPUs are **aarch64**,
-which is why the instructions open with a `uname -m` check that looks
-irrelevant here. **Not confirmed**, and drove [D2](#d2).
-**Blocks:** a real porting risk assessment in `docs/arch_notes.md` — the
-current table is x86_64 evidence and must not be read as aarch64 evidence.
+**The question is one fact: are the target machine CPUs ARM (Grace/Vera) or
+x86?**
+
+### What was established by public sources
+
+- The facility is the **Jen-Hsun and Lori Huang Collaborative Innovation
+  Complex** at OSU, a $200M centre funded partly by a $50M gift from NVIDIA's
+  founder and his spouse, both OSU graduates.
+- The machine is an **NVIDIA DGX SuperPOD plus OVX SuperPOD**, reported as
+  roughly **60 DGX and OVX systems**.
+- At least one report describes **Vera Rubin GPUs** and **NVL144** rack-scale
+  configuration.
+
+### Why that still does not settle it
+
+**NVIDIA official material says only "next-generation CPUs" and names no
+architecture.** The two possibilities point opposite ways:
+
+- **NVL144 / Vera Rubin** is a rack-scale coherent CPU+GPU design, and the
+  **Vera CPU is ARM** (successor to Grace). If this is the configuration, the
+  target is **aarch64**.
+- **DGX SuperPOD** has historically also shipped with **x86** host CPUs.
+
+Since reports mention both DGX/OVX systems *and* NVL144, the configuration is
+genuinely ambiguous from outside. **This should not be resolved by inference.**
+
+### What would resolve it
+
+Internal OSU sources, which the user has access to and public reporting does
+not: research computing / the Huang Complex technical documentation, or the
+**Huang Complex Supercomputing Seed Fund** programme pages, which typically
+document the system available to applicants.
+
+### Consequence, and why nothing is blocked
+
+If ARM, every Python wheel in the stack needs an availability check before
+porting, and `arch_notes.md` becomes a real porting assessment. If x86, the
+port is close to free and [D2](#d2) (GROMACS over OpenMM) could be reopened.
+
+**The lean toward Vera/ARM, if it holds, vindicates the GROMACS choice** —
+GROMACS builds from source on any architecture, whereas OpenMM's CUDA support
+depends on conda-forge aarch64 coverage that could not be verified.
+
+Until confirmed, `docs/arch_notes.md` stays explicitly labelled **x86_64
+evidence only**, and the README scaling section records the porting assessment
+as pending. That is a legitimate state for the document; implying an assessment
+of a machine whose architecture is unknown would not be.
+
+Sources: OSU Newsroom, "$50 Million Gift by NVIDIA Founder and Spouse Helps
+Launch Oregon State University Research Center"; NVIDIA blog, "AI Supercomputer
+to Power $200 Million Oregon State University Innovation Complex".
 
 
 <a name="d21"></a>
