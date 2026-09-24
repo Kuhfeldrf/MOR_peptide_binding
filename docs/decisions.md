@@ -45,6 +45,8 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D23](#d23) | Cross-seed agreement by receptor-superposed peptide RMSD | FIRM | 2026-09-24 |
 | [D24](#d24) | Stage 2 test-peptide selection | FIRM | 2026-09-24 |
 | [D25](#d25) | Structure comparisons fit numbering by sequence | FIRM | 2026-09-24 |
+| [D26](#d26) | Bilayer composition for intestinal muOR | FIRM | 2026-09-24 |
+| [D27](#d27) | Box size raised for charged-ligand ABFE | FIRM | 2026-09-24 |
 
 ---
 
@@ -468,3 +470,117 @@ provenance.
 numbers in an entirely plausible range. There was no error, no exception, and
 the result invited a mechanistic story. Only an independent check - amino-acid
 identity at matched positions - exposed it.
+
+
+<a name="d26"></a>
+## D26 — Bilayer composition for intestinal muOR · FIRM
+
+The project targets muOR in enteroendocrine cells of the intestine, so the
+bilayer must suit that environment rather than a generic membrane. Intestinal
+epithelial membranes are **strongly asymmetric between apical and basolateral
+faces**, so "intestinal" alone does not specify a composition.
+
+### Evidence
+
+**Apical (brush border) membrane** is extreme: cholesterol : phospholipid :
+glycolipid at roughly **1 : 1 : 1** by mole, i.e. about 50 mol% cholesterol,
+with high glycosphingolipid content and correspondingly low fluidity.
+
+**Basolateral membrane** is far more conventional: roughly **1 : 2.5 : 0.3**,
+giving cholesterol at **~28-29 mol%** of cholesterol-plus-phospholipid.
+
+### Which face, and which cells
+
+Published localisation places intestinal muOR **mainly on enteric neurons** of
+the myenteric and submucosal plexus, with epithelial expression reported in
+goblet cells and associated with **basolateral** function - regulation of
+chloride secretion, alongside the basolateral VIP and muscarinic receptors.
+Beta-casomorphins have to cross the epithelium (shown in Caco-2 transport
+studies) to reach these sites. Enteroendocrine cells apically **secrete**
+endogenous opioids such as beta-endorphin and Met-enkephalin, which is a
+separate matter from where the receptor sits.
+
+### The decisive argument comes from our own benchmark data
+
+**Every IC50 in the Stage 7 benchmark is from the GPI assay - guinea-pig ileum
+longitudinal muscle / myenteric plexus** (decision D11).
+
+**To be precise about what "neuronal" means here:** the myenteric plexus is
+part of the **enteric nervous system**, roughly 500 million neurons embedded in
+the wall of the intestine itself. These are **intestinal tissue, not brain
+cells**. The GPI preparation is gut throughout. The distinction being drawn is
+therefore not gut-versus-brain, but *which cell type within the gut wall* -
+enteric neurons in the muscle layer, rather than the epithelial cells lining
+the lumen.
+
+So the benchmark affinities report on muOR in an **enteric neuron** plasma
+membrane, not an enterocyte brush border.
+
+Simulating an apical brush-border composition would mismatch both the
+receptor's likely location and the data the pipeline is benchmarked against.
+**A basolateral/neuronal-like membrane is the consistent choice.**
+
+### Decision
+
+**POPC : cholesterol at 7:3 (30 mol% cholesterol).**
+
+- The build instructions specify "POPC with cholesterol". Moving to a
+  multi-component bilayer (PE, PS, sphingomyelin, glycosphingolipids) would be
+  a substitution of a specified component and is **not made silently**; it is
+  recorded as a limitation below instead.
+- 30 mol% is chosen to sit at the basolateral figure (~28-29 mol%) rather than
+  the generic 25% used in the first build, which was not derived from anything.
+- Cholesterol is not cosmetic for this receptor: muOR structures including
+  6DDF and 8F7Q have cholesterol resolved, and GPCR function is known to depend
+  on it.
+
+### Limitations, to carry into the README
+
+- **No leaflet asymmetry.** Real plasma membranes keep PS and PE inner-facing.
+  Symmetric here.
+- **No PE, PS, sphingomyelin or glycosphingolipid.** A basolateral membrane
+  contains all of these. POPC stands in for the whole phospholipid fraction.
+- **No glycocalyx**, which is a defining feature of the intestinal apical face
+  but not of the basolateral one modelled here.
+- These simplifications follow the build instructions. They mean the membrane
+  is a *reasonable basolateral/neuronal mimic*, **not** a model of the
+  enterocyte apical membrane, and results should not be read as the latter.
+
+### A gap in the justification, stated plainly
+
+The ~28-29 mol% figure is measured for the **intestinal epithelial basolateral
+membrane**. The benchmark data, however, comes from **enteric neurons** - a
+different cell type. **No enteric-neuron-specific membrane lipidomics was
+found**, and none is claimed here.
+
+30 mol% is therefore supported directly for the basolateral epithelial case and
+is *plausible but not measured* for enteric neurons, where generic neuronal
+plasma membranes fall in a similar range. It is a defensible choice for both,
+not a measured value for the tissue the affinities actually come from.
+
+**How to close this:** find enteric-neuron or peripheral-neuron plasma membrane
+lipidomics and check 30 mol% against it. Until then the figure stands on the
+epithelial measurement plus the general neuronal range, and that is what the
+README should say.
+
+<a name="d27"></a>
+## D27 — Box size raised for charged-ligand ABFE · FIRM
+
+The first build used `--dist 15 --dist_wat 17.5`, giving an 80 x 80 A box,
+210 lipids and 69,656 atoms - **below the 100,000-150,000 the instructions
+anticipate**. That was an accident of parameters rather than a decision.
+
+Raised to `--dist 18 --dist_wat 22.5`. Two reasons, both specific:
+
+1. **DAMGO carries a net charge of +1.** Absolute binding free energies for
+   charged ligands have well-known finite-size artefacts under Ewald
+   electrostatics, and the correction scales with box dimension. A larger box
+   reduces the artefact at source rather than relying on a post-hoc correction.
+   Stage 6 is the pilot's validation target, so this is the wrong place to
+   economise.
+2. **The complex spans 74 A in z against a 31 A bilayer**, so roughly 43 A of
+   receptor projects beyond the membrane into solvent. A 17.5 A water layer
+   leaves that region close to its periodic image.
+
+**Cost:** more atoms means proportionally more MD time per nanosecond. Accepted;
+the pilot's MD is short and Stage 6 accuracy matters more than Stage 4 speed.

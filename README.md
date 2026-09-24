@@ -21,15 +21,15 @@ Runtime and hardware are recorded only for stages that have actually run.
 |-------|-------------|--------|---------|----------|
 | 0 | Receptor preparation (6DDF) | `WORKING` | ~40 s | login node, CPU |
 | 1 | Peptide library ingestion | `WORKING` | < 1 s | login node, CPU |
-| 2 | Co-folding (Chai-1, 5 seeds) | `STUBBED` | - | - |
-| 2b | Training-overlap audit | `STUBBED` | - | - |
-| 3 | Membrane system build | `STUBBED` | - | - |
+| 2 | Co-folding (Chai-1, 5 seeds) | `WORKING` | ~78 s/run | 1x L40S |
+| 2b | Training-overlap audit | `WORKING` | < 1 s | CPU |
+| 3 | Membrane system build | `IN PROGRESS` | ~20-40 min | CPU, 8 cores |
 | 4 | Molecular dynamics (GROMACS) | `STUBBED` | - | - |
 | 5 | MM/GBSA triage | `STUBBED` | - | - |
 | 6 | ABFE (DAMGO first) | `STUBBED` | - | - |
 | 7 | Benchmark figure | `STUBBED` | - | - |
 
-**Stages 0 and 1 run. Stages 2-7 are stubbed.** The rule graph, inputs, and
+**Stages 0, 1, 2 and 2b run. Stage 3 is in progress. Stages 4-7 are stubbed.** The rule graph, inputs, and
 outputs are real and wired together throughout; each remaining stub exits
 non-zero with a `STUBBED` marker rather than writing an empty or fabricated
 output, so a stubbed stage cannot be mistaken for one that ran.
@@ -92,6 +92,75 @@ for only six peptides (see below). Any README revision that blurs this line
 should be treated as a regression.
 
 ---
+
+## Stage 2 findings: confidence is not discrimination
+
+Three test peptides, five seeds each. Full report in
+`docs/stage2_checkpoint.md`.
+
+**ipTM could not tell the peptides apart; cross-seed agreement could.** Across
+a 32-fold affinity range and both pharmacologies, every ipTM fell in a narrow
+0.27-0.35 band. The same peptides gave cross-seed peptide RMSDs of 1.6, 4.2 and
+7.1 A - converged, divergent and very divergent.
+
+The one peptide whose seeds converged, Met-enkephalin, is the only
+`HIGH_OVERLAP` case: its sequence is the N-terminal message sequence of
+beta-endorphin in 8F7Q. Validated against that structure, Chai-1 reproduces the
+orthosteric pocket at **0.80 A** and places the peptide within **2.32 A** of
+experiment. So it is both consistent *and* correct - for the one peptide it has
+seen. The two with no deposited muOR complex scatter by 4-11 A, which is a
+different sub-site rather than a different rotamer.
+
+**This is the pipeline's premise demonstrated rather than asserted:** a learned
+confidence score that cannot separate a memorised answer from no answer cannot
+rank candidates, and the physics stages are not optional.
+
+Caveat carried forward: ipTM is known to be diluted when one chain is large and
+mostly off-interface, and 281 residues against 5 is close to the worst case.
+**ipSAE corrects exactly this and is not yet computed** (decision D21), so the
+low absolute values show that ipTM is uninformative here, not that the poses
+are bad.
+
+## Membrane model: what it represents, and what it does not
+
+The receptor is muOR in **enteroendocrine cells of the intestine**, so the
+bilayer is chosen for that environment. Full reasoning in decisions D26/D27.
+
+**Intestinal epithelial membranes are strongly asymmetric**, so "intestinal"
+does not by itself specify a composition:
+
+| Face | cholesterol : phospholipid : glycolipid | Cholesterol |
+|------|------------------------------------------|-------------|
+| Apical (brush border) | ~1 : 1 : 1 | ~50 mol%, glycosphingolipid-rich |
+| Basolateral | ~1 : 2.5 : 0.3 | ~28-29 mol% |
+
+**The basolateral/neuronal case is the right target.** Intestinal muOR is
+reported mainly on **enteric neurons** of the myenteric and submucosal plexus,
+with epithelial expression tied to basolateral function. Decisively, **every
+IC50 in the benchmark comes from the GPI assay**, which is guinea-pig ileum
+longitudinal muscle / myenteric plexus.
+
+**"Enteric neurons" means intestinal tissue, not brain.** The enteric nervous
+system is roughly 500 million neurons embedded in the gut wall. The GPI
+preparation is gut throughout; the distinction is which cell type within it -
+neurons in the muscle layer rather than epithelium lining the lumen.
+
+**Composition used: POPC : cholesterol at 7:3 (30 mol%).**
+
+### What this membrane is not
+
+- **Not the enterocyte apical membrane.** At ~50 mol% cholesterol with heavy
+  glycosphingolipid content, that is a different physical environment.
+- **No leaflet asymmetry.** Real plasma membranes keep PS and PE inner-facing.
+- **No PE, PS, sphingomyelin or glycosphingolipid.** POPC stands in for the
+  entire phospholipid fraction. This follows the build instructions, which
+  specify "POPC with cholesterol"; a multi-component bilayer would substitute a
+  specified component and is not done silently.
+- **No glycocalyx.**
+- **The 30 mol% figure is measured for intestinal epithelial basolateral
+  membrane, not for enteric neurons.** No enteric-neuron lipidomics was found.
+  It is plausible for neuronal plasma membrane generally, but it is not a
+  measured value for the tissue the benchmark affinities come from.
 
 ## Reference data and its limits
 

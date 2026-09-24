@@ -71,7 +71,10 @@ membrane:
   # and total charge across it and fail loudly on mismatch.
   verify_conversion: true
   lipids: ["POPC", "CHL1"]
-  cholesterol_fraction: 0.25
+  lipid_ratio: "7:3"           # 30 mol% cholesterol (D26)
+  boundary_dist: 18            # A (D27)
+  water_layer: 22.5            # A, raised for charged-ligand ABFE (D27)
+  cholesterol_fraction: 0.30   # basolateral/neuronal, see D26
   ionic_strength_mM: 150
   neutralise: true
   orientation: OPM/PPM
