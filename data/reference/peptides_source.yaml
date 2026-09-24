@@ -1,0 +1,60 @@
+# Peptide set definition. The sequences themselves live in
+# data/peptides/known_opioid_peptides.csv and are taken verbatim from the prior
+# ORCA run (peptides.py, scrambles.tsv, runlist.txt). None were invented.
+
+source: data/peptides/known_opioid_peptides.csv
+
+provenance:
+  sequences: ~/preliminary_agonist_binding_data_v2/peptides.py
+  scrambles: ~/preliminary_agonist_binding_data_v2/scrambles.tsv
+  ic50: ~/peptide-md-docking/opiod/anganost.py
+  note: >-
+    Scrambled controls are reused verbatim rather than regenerated, so that
+    results are comparable across the HADDOCK3 and BioNeMo stacks. Scramble
+    composition was verified to match its parent sequence for all 20 pairs.
+
+filters:
+  # Applied by every stage. A filtered peptide is reported in the --dry-run
+  # work plan as excluded, never silently dropped.
+  min_length: 5
+  require_sequence: true
+
+# Peptides currently carrying a published IC50. Correlation in
+# validate_against_known.py is limited to these; n is reported with the result.
+ic50_available:
+  - real__met_enkephalin
+  - real__beta_casomorphin_5_bov
+  - real__beta_casomorphin_5_hum
+  - real__beta_casomorphin_7_hum
+  - real__beta_casomorphin_7_bov
+  - real__neocasomorphin_6
+
+# Published agonist / antagonist classification, carried forward from the prior
+# run's `class` column (A/T).
+#
+# This is NOT scored against. The screen uses a single receptor and makes no
+# class call; these labels exist only to annotate plots and tables. Note also
+# that the prior work carries no citation for them -- see docs/ASSUMPTIONS.md 3.
+published_classification:
+  agonist:
+    - real__alphas1_casein_exorphin_7
+    - real__alphas1_casein_exorphin_6
+    - real__beta_casomorphin_4_bov
+    - real__beta_casomorphin_5_bov
+    - real__beta_casomorphin_7_bov
+    - real__neocasomorphin_6
+    - real__alpha_lactorphin
+    - real__beta_lactorphin
+    - real__beta_casomorphin_5_hum
+    - real__beta_casomorphin_7_hum
+    - real__soymorphin_5
+    - real__soymorphin_6
+    - real__soymorphin_7
+    - real__met_enkephalin
+  antagonist:
+    - real__casoxin_A
+    - real__casoxin_B
+    - real__casoxin_C
+    - real__casoxin_D
+    - real__lactoferroxin_A_bov
+    - real__lactoferroxin_A_hum

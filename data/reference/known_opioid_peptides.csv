@@ -1,0 +1,41 @@
+peptide_id,sequence,peptide_name,parent_protein,species,activity,ic50_um,reference,scramble_of
+real__alphas1_casein_exorphin_7,RYLGYLE,alphas1-casein-exorphin-7,alphas1-casein,bovine,agonist,,prior_run:peptides.py,
+real__alphas1_casein_exorphin_6,RYLGYL,alphas1-casein-exorphin-6,alphas1-casein,bovine,agonist,,prior_run:peptides.py,
+real__beta_casomorphin_4_bov,YPFP,beta-casomorphin-4,beta-casein,bovine,agonist,,prior_run:peptides.py,
+real__beta_casomorphin_5_bov,YPFPG,beta-casomorphin-5,beta-casein,bovine,agonist,6.5,prior_analysis:anganost.py,
+real__beta_casomorphin_7_bov,YPFPGPI,beta-casomorphin-7,beta-casein,bovine,agonist,57,prior_analysis:anganost.py,
+real__neocasomorphin_6,YPVEPF,neocasomorphin-6,beta-casein,bovine,agonist,59,prior_analysis:anganost.py,
+real__casoxin_A,YPSYGLNY,casoxin A,kappa-casein,bovine,antagonist,,prior_run:peptides.py,
+real__casoxin_B,YPYY,casoxin B,kappa-casein,bovine,antagonist,,prior_run:peptides.py,
+real__casoxin_C,YIPIQYVLSR,casoxin C,kappa-casein,bovine,antagonist,,prior_run:peptides.py,
+real__casoxin_D,SRYPSY,casoxin D,alphas1-casein,bovine,antagonist,,prior_run:peptides.py,
+real__alpha_lactorphin,YGLF,alpha-lactorphin,alpha-lactalbumin,bovine,agonist,,prior_run:peptides.py,
+real__beta_lactorphin,YLLF,beta-lactorphin,beta-lactoglobulin,bovine,agonist,,prior_run:peptides.py,
+real__lactoferroxin_A_bov,YLGSRY,lactoferroxin A,lactoferrin,bovine,antagonist,,prior_run:peptides.py,
+real__beta_casomorphin_5_hum,YPFVE,beta-casomorphin-5,beta-casein,human,agonist,14,prior_analysis:anganost.py,
+real__beta_casomorphin_7_hum,YPFVEPI,beta-casomorphin-7,beta-casein,human,agonist,25,prior_analysis:anganost.py,
+real__lactoferroxin_A_hum,YLGSGY,lactoferroxin A,lactoferrin,human,antagonist,,prior_run:peptides.py,
+real__soymorphin_5,YPFVV,soymorphin-5,beta-conglycinin,soybean,agonist,,prior_run:peptides.py,
+real__soymorphin_6,YPFVVN,soymorphin-6,beta-conglycinin,soybean,agonist,,prior_run:peptides.py,
+real__soymorphin_7,YPFVVNA,soymorphin-7,beta-conglycinin,soybean,agonist,,prior_run:peptides.py,
+real__met_enkephalin,YGGFM,Met-enkephalin,proenkephalin,human,agonist,0.2,prior_analysis:anganost.py,
+scr__alphas1_casein_exorphin_7,GLYLEYR,scrambled alphas1-casein-exorphin-7,,control,scramble,,prior_run:scrambles.tsv,real__alphas1_casein_exorphin_7
+scr__alphas1_casein_exorphin_6,YLRGYL,scrambled alphas1-casein-exorphin-6,,control,scramble,,prior_run:scrambles.tsv,real__alphas1_casein_exorphin_6
+scr__beta_casomorphin_4_bov,PYPF,scrambled beta-casomorphin-4,,control,scramble,,prior_run:scrambles.tsv,real__beta_casomorphin_4_bov
+scr__beta_casomorphin_5_bov,FGPYP,scrambled beta-casomorphin-5,,control,scramble,,prior_run:scrambles.tsv,real__beta_casomorphin_5_bov
+scr__beta_casomorphin_7_bov,GYPIFPP,scrambled beta-casomorphin-7,,control,scramble,,prior_run:scrambles.tsv,real__beta_casomorphin_7_bov
+scr__neocasomorphin_6,VFEPYP,scrambled neocasomorphin-6,,control,scramble,,prior_run:scrambles.tsv,real__neocasomorphin_6
+scr__casoxin_A,PLYNYGYS,scrambled casoxin A,,control,scramble,,prior_run:scrambles.tsv,real__casoxin_A
+scr__casoxin_B,PYYY,scrambled casoxin B,,control,scramble,,prior_run:scrambles.tsv,real__casoxin_B
+scr__casoxin_C,IIRSYQVYPL,scrambled casoxin C,,control,scramble,,prior_run:scrambles.tsv,real__casoxin_C
+scr__casoxin_D,YSRPYS,scrambled casoxin D,,control,scramble,,prior_run:scrambles.tsv,real__casoxin_D
+scr__alpha_lactorphin,LFYG,scrambled alpha-lactorphin,,control,scramble,,prior_run:scrambles.tsv,real__alpha_lactorphin
+scr__beta_lactorphin,FLYL,scrambled beta-lactorphin,,control,scramble,,prior_run:scrambles.tsv,real__beta_lactorphin
+scr__lactoferroxin_A_bov,LYGSRY,scrambled lactoferroxin A,,control,scramble,,prior_run:scrambles.tsv,real__lactoferroxin_A_bov
+scr__beta_casomorphin_5_hum,PYEVF,scrambled beta-casomorphin-5,,control,scramble,,prior_run:scrambles.tsv,real__beta_casomorphin_5_hum
+scr__beta_casomorphin_7_hum,EPVIPFY,scrambled beta-casomorphin-7,,control,scramble,,prior_run:scrambles.tsv,real__beta_casomorphin_7_hum
+scr__lactoferroxin_A_hum,LSGYGY,scrambled lactoferroxin A,,control,scramble,,prior_run:scrambles.tsv,real__lactoferroxin_A_hum
+scr__soymorphin_5,FVYPV,scrambled soymorphin-5,,control,scramble,,prior_run:scrambles.tsv,real__soymorphin_5
+scr__soymorphin_6,NYPVVF,scrambled soymorphin-6,,control,scramble,,prior_run:scrambles.tsv,real__soymorphin_6
+scr__soymorphin_7,VYNFAPV,scrambled soymorphin-7,,control,scramble,,prior_run:scrambles.tsv,real__soymorphin_7
+scr__met_enkephalin,GMYGF,scrambled Met-enkephalin,,control,scramble,,prior_run:scrambles.tsv,real__met_enkephalin

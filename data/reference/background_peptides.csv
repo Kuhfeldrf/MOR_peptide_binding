@@ -1,0 +1,101 @@
+peptide_id,sequence,peptide_name,parent_protein,species,activity,ic50_um,reference,scramble_of
+real__DYKKY_eff544,DYKKY,Immunomodulatory,Beta-lactoglobulin,Bos taurus,Immunomodulatory,,mbpdb,
+real__WLAHK_1edc7c,WLAHK,ACE-inhibitory,Alpha-lactalbumin,Bos taurus,ACE-inhibitory;Cytotoxic;Osteoanabolic,,mbpdb,
+real__DLKLAD_13d951,DLKLAD,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__KAMKPW_946a3c,KAMKPW,Antimicrobial,Alpha-S2-casein,Bos taurus,Antimicrobial,,mbpdb,
+real__LKKISQ_748808,LKKISQ,Antimicrobial,Alpha-S2-casein,Ovis aries,Antimicrobial,,mbpdb,
+real__TTMPLW_4a5a27,TTMPLW,ACE-inhibitory,Alpha-S1-casein,Bos taurus,ACE-inhibitory;Antimicrobial,,mbpdb,
+real__GQFPNLC_42095e,GQFPNLC,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__QYVPFPP_1d148d,QYVPFPP,Antimicrobial,Alpha-S1-casein,Homo sapiens,Antimicrobial,,mbpdb,
+real__WLAHKAL_7f62f2,WLAHKAL,ACE-inhibitory,Alpha-lactalbumin,Bos taurus,ACE-inhibitory;DPP-IV Inhibitory,,mbpdb,
+real__CLFQSETK_0b6d51,CLFQSETK,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__DAIWNLLR_a4e822,DAIWNLLR,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__DLKLADFA_41ea50,DLKLADFA,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__FALPQYLK_3f9aea,FALPQYLK,ACE-inhibitory,Alpha-S2-casein,Bos taurus,ACE-inhibitory;Antioxidant,,mbpdb,
+real__LIVTQTMK_2b59f1,LIVTQTMK,Cytotoxic,Beta-lactoglobulin,Bos taurus,Cytotoxic,,mbpdb,
+real__RRSVQWCA_b1b273,RRSVQWCA,Antimicrobial,Lactotransferrin,Homo sapiens,Antimicrobial,,mbpdb,
+real__AMKPWIQP_c49b4d,AMKPWIQPK,ACE-inhibitory,Alpha-S2-casein,Bos taurus,ACE-inhibitory,,mbpdb,
+real__KALNEINQ_60605e,KALNEINQF,Antioxidant,Alpha-S2-casein,Bubalus bubalis,Antioxidant,,mbpdb,
+real__VPPRIDSG_4ecbbc,VPPRIDSGLY,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__FSASCVPG_50215b,FSASCVPGADK,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__FSYSGAFK_4d52f5,FSYSGAFKCLR,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__RSVNGKED_947d05,RSVNGKEDAIW,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__RTAGWNIP_658637,RTAGWNIPMGL,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__YTAGKCGL_585cfc,YTAGKCGLVPV,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__CAVSQPEA_f1e23f,CAVSQPEATKCF,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__PAAVRSPA_5d952e,PAAVRSPAQILQ,Antimicrobial,Kappa-casein,Bos taurus,Antimicrobial,,mbpdb,
+real__YPSFQPQP_97b45c,YPSFQPQPLIYP,ACE-inhibitory,Beta-casein,Homo sapiens,ACE-inhibitory,,mbpdb,
+real__AENAGDVA_c4a244,AENAGDVAFVKDV,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__DLLFKDSA_686d03,DLLFKDSAIGFSR,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__LRPVAAEV_43507b,LRPVAAEVYGTER,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__SRVPPRID_0380a6,SRVPPRIDSGLYL,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__DSPIQCIQ_3ab220,DSPIQCIQAIAENR,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__LDGGFIYE_46b0c2,LDGGFIYEAGLAPY,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__SASCVPGA_6a68ad,SASCVPGADKGQFPN,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__FGSPSGQK_abf73a,FGSPSGQKDLLFKDSA,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__FSASCVPG_b9c7c8,FSASCVPGADKGQFPN,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__GSPSGQKD_790568,GSPSGQKDLLFKDSAIG,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__SGAFKCLR_1dc15e,SGAFKCLRDGAGDVAFI,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__VVARSVNG_c90b6c,VVARSVNGKEDAIWNLL,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__LRKAQEKF_1300c0,LRKAQEKFGKNKSQSFQL,Antimicrobial,Lactotransferrin,Capra hircus,Antimicrobial,,mbpdb,
+real__CFQWQRNM_90ecd4,CFQWQRNMRKVRGPPVSCI,Antimicrobial,Lactotransferrin,Homo sapiens,Antimicrobial,,mbpdb,
+real__SLPQNIPP_be7d71,SLPQNIPPLTQTPVVVPPF,Anticancer,Beta-casein,Bos taurus,Anticancer,,mbpdb,
+real__YYGYTGAF_e15558,YYGYTGAFRCLAENAGDVA,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__LCAGTGEN_2d96a5,LCAGTGENKCAFSSQEPYFS,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__TLDGGFIY_39c370,TLDGGFIYEAGLAPYKLRPVA,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__RKCNQWSG_5a2971,RKCNQWSGLSEGSVTCSSASTT,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__VLLHQQAK_1e3485,VLLHQQAKFGRNGSDCPDKFCL,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__AVVSRMDK_c56940,AVVSRMDKVERLKQVLLHQQAKF,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__VTVLQNTD_e47bb9,VTVLQNTDGNNNEAWAKDLKLAD,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__VVKKGGSF_aa8289,VVKKGGSFQLNELQGLKSCHTGLR,background digest peptide,Lactotransferrin (digest),Bos taurus,unannotated,,lf_peplist.txt,
+real__IMRNLENT_da516a,IMRNLENTVKETIKYLKSLFSHAFEVVKT,Antimicrobial,Glycosylation-dependent cell adhesion molecule 1,Bos taurus,Antimicrobial,,mbpdb,
+scr__DYKKY_eff544,DYKYK,scrambled Immunomodulatory,,control,scramble,,generated seed 20260923,real__DYKKY_eff544
+scr__WLAHK_1edc7c,AWKHL,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__WLAHK_1edc7c
+scr__DLKLAD_13d951,LAKLDD,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__DLKLAD_13d951
+scr__KAMKPW_946a3c,MWAPKK,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__KAMKPW_946a3c
+scr__LKKISQ_748808,IQKKSL,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__LKKISQ_748808
+scr__TTMPLW_4a5a27,TLMPTW,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__TTMPLW_4a5a27
+scr__GQFPNLC_42095e,GLFQCPN,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__GQFPNLC_42095e
+scr__QYVPFPP_1d148d,YPPPFVQ,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__QYVPFPP_1d148d
+scr__WLAHKAL_7f62f2,WHAKLAL,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__WLAHKAL_7f62f2
+scr__CLFQSETK_0b6d51,FTELQCSK,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__CLFQSETK_0b6d51
+scr__DAIWNLLR_a4e822,LIDARLNW,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__DAIWNLLR_a4e822
+scr__DLKLADFA_41ea50,DKALDAFL,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__DLKLADFA_41ea50
+scr__FALPQYLK_3f9aea,AKPYLLQF,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__FALPQYLK_3f9aea
+scr__LIVTQTMK_2b59f1,VIKTQTML,scrambled Cytotoxic,,control,scramble,,generated seed 20260923,real__LIVTQTMK_2b59f1
+scr__RRSVQWCA_b1b273,RWSARVQC,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__RRSVQWCA_b1b273
+scr__AMKPWIQP_c49b4d,PWMQIKPAK,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__AMKPWIQP_c49b4d
+scr__KALNEINQ_60605e,QEFNALKNI,scrambled Antioxidant,,control,scramble,,generated seed 20260923,real__KALNEINQ_60605e
+scr__VPPRIDSG_4ecbbc,SPYLPVIDGR,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__VPPRIDSG_4ecbbc
+scr__FSASCVPG_50215b,KGDCFSPAASV,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__FSASCVPG_50215b
+scr__FSYSGAFK_4d52f5,KRFASYGLFSC,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__FSYSGAFK_4d52f5
+scr__RSVNGKED_947d05,ERGVWIDNASK,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__RSVNGKED_947d05
+scr__RTAGWNIP_658637,AMWRGNPLGIT,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__RTAGWNIP_658637
+scr__YTAGKCGL_585cfc,GLAKVTYCPVG,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__YTAGKCGL_585cfc
+scr__CAVSQPEA_f1e23f,AQKVEFASCCPT,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__CAVSQPEA_f1e23f
+scr__PAAVRSPA_5d952e,PVRQLAPISAAQ,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__PAAVRSPA_5d952e
+scr__YPSFQPQP_97b45c,QPYYPPQFPLIS,scrambled ACE-inhibitory,,control,scramble,,generated seed 20260923,real__YPSFQPQP_97b45c
+scr__AENAGDVA_c4a244,DEAAFKAVVGDNV,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__AENAGDVA_c4a244
+scr__DLLFKDSA_686d03,RLFLDFIAKDSSG,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__DLLFKDSA_686d03
+scr__LRPVAAEV_43507b,RELTRYEVPVAGA,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__LRPVAAEV_43507b
+scr__SRVPPRID_0380a6,SPDPRLSGVLRIY,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__SRVPPRID_0380a6
+scr__DSPIQCIQ_3ab220,CEAIANQIPIRQSD,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__DSPIQCIQ_3ab220
+scr__LDGGFIYE_46b0c2,GLYYFEGDGPLAAI,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__LDGGFIYE_46b0c2
+scr__SASCVPGA_6a68ad,VKPNGGSAPCQASDF,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__SASCVPGA_6a68ad
+scr__FGSPSGQK_abf73a,GKFSSLKPSQLDGAFD,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__FGSPSGQK_abf73a
+scr__FSASCVPG_b9c7c8,NFGPAKFDVSQSCAGP,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__FSASCVPG_b9c7c8
+scr__GSPSGQKD_790568,LPGAFLKDGGSQKSIDS,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__GSPSGQKD_790568
+scr__SGAFKCLR_1dc15e,ICVLKAFSARGGGDDFA,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__SGAFKCLR_1dc15e
+scr__VVARSVNG_c90b6c,VGIRAASNEVKWDLVLN,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__VVARSVNG_c90b6c
+scr__LRKAQEKF_1300c0,RKGFAKLSKLQFSQKENQ,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__LRKAQEKF_1300c0
+scr__CFQWQRNM_90ecd4,VMQFKQPCCPGNRVRRIWS,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__CFQWQRNM_90ecd4
+scr__SLPQNIPP_be7d71,QPPFTNSPLPILVPTVPVQ,scrambled Anticancer,,control,scramble,,generated seed 20260923,real__SLPQNIPP_be7d71
+scr__YYGYTGAF_e15558,CVAARGLAFYEGAGDYNYT,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__YYGYTGAF_e15558
+scr__LCAGTGEN_2d96a5,CQCFKELEYSSSAATFGNPG,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__LCAGTGEN_2d96a5
+scr__TLDGGFIY_39c370,TRAGGPLLEYFDAGPLKAIVY,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__TLDGGFIY_39c370
+scr__RKCNQWSG_5a2971,QTKTGSEAVSGSLSSSWCCTNR,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__RKCNQWSG_5a2971
+scr__VLLHQQAK_1e3485,CCLPALHNGLFQRVGDKSKDFQ,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__VLLHQQAK_1e3485
+scr__AVVSRMDK_c56940,VKQQFRVLVEKRLKVQASLMAHD,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__AVVSRMDK_c56940
+scr__VTVLQNTD_e47bb9,DEDLWGQNVANDNLKAATNVKTL,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__VTVLQNTD_e47bb9
+scr__VVKKGGSF_aa8289,RVHQLSNELFLVLKCTGSGGGQKK,scrambled background digest peptide,,control,scramble,,generated seed 20260923,real__VVKKGGSF_aa8289
+scr__IMRNLENT_da516a,ETVLLFEKLTIRFNYSVNTEVHKKKAIMS,scrambled Antimicrobial,,control,scramble,,generated seed 20260923,real__IMRNLENT_da516a
