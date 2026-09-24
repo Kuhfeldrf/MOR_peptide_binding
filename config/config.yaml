@@ -99,6 +99,12 @@ abfe:
 
 # ---------------------------------------------------- Stage 7: benchmark
 benchmark:
+  # Benchmark set is GPI-assay only, unmodified C-termini, CTOP excluded.
+  # No length cutoff: 4-mers (YPFP, YPYY) are retained deliberately.
+  # Membership is precomputed in the benchmark_include column of
+  # data/reference/reference_peptides.tsv. n = 10.
+  reference_set: data/reference/reference_peptides.tsv
+  include_column: benchmark_include
   metrics: [spearman, mae]
   stratify_by: overlap_flag
   report_separately: [cofold_confidence, physics_scores]

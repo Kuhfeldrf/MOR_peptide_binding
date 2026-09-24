@@ -55,7 +55,7 @@ ROWS = [
   "Koch et al. 1985; Garg Table 3","3005882",""),
  ("casoxin_B_hum","YPYY","free","antagonist","human","100","GPI",
   "Chiba et al. 1989, J Dairy Res 56:363-366","2760234",
-  "Sequence identical to bovine casoxin B."),
+  "Sequence identical to bovine casoxin B (YPYY). Source workbook had YPFP in its duplicate sequence column; corrected 2026-09-24."),
  ("lactoferroxin_A_hum","YLGSGY","methyl_ester","antagonist","human","","Radioreceptor",
   "Tani et al. 1990, Agric Biol Chem 54:1803-1810","1369293",
   "C-TERMINAL METHYL ESTER (YLGSGY-OCH3). No IC50 value in source. "
@@ -69,17 +69,44 @@ ROWS = [
   "Radioligand binding, not GPI. Non-canonical: no FASTA representation."),
 ]
 
+def benchmark(name, c_term, ic50, assay):
+    """Benchmark-set membership, per the rules set 2026-09-24.
+
+    GPI only; no C-terminally modified peptides; no CTOP. No length cutoff -
+    4-mers such as YPFP and YPYY are retained deliberately.
+    """
+    if name == "CTOP":
+        return "NO", "excluded_by_instruction_non_canonical"
+    if c_term != "free":
+        return "NO", f"c_terminal_modification_{c_term}"
+    if not ic50:
+        return "NO", "no_ic50_reported"
+    if assay != "GPI":
+        return "NO", f"assay_not_GPI_{assay}"
+    if name == "casoxin_B_hum":
+        return "NO", "duplicate_sequence_of_casoxin_B"
+    return "YES", ""
+
+
 out = pathlib.Path("data/reference/reference_peptides.tsv")
 with out.open("w", newline="") as fh:
     w = csv.writer(fh, delimiter="\t")
     w.writerow(["name","sequence","c_term","role","species","ic50_um","assay",
                 "reference","pmid","affinity_status","ki_nM","ki_status",
-                "source_table","notes"])
+                "benchmark_include","exclusion_reason","source_table","notes"])
     for (n,s,c,r,sp,ic,a,ref,pmid,note) in ROWS:
         status = "SOURCED" if ic else "NO_VALUE_REPORTED"
-        w.writerow([n,s,c,r,sp,ic,a,ref,pmid,status,"","NOT_REPORTED",SRC,note])
+        inc, why = benchmark(n, c, ic, a)
+        w.writerow([n,s,c,r,sp,ic,a,ref,pmid,status,"","NOT_REPORTED",
+                    inc,why,SRC,note])
 
 print(f"wrote {out} ({len(ROWS)} rows)")
-n_val = sum(1 for r in ROWS if r[5])
-gpi = sum(1 for r in ROWS if r[5] and r[6] == "GPI")
-print(f"  with IC50: {n_val}   GPI-only: {gpi}")
+inc = [r for r in ROWS if benchmark(r[0], r[2], r[5], r[6])[0] == "YES"]
+print(f"  benchmark set: n={len(inc)}")
+for r in inc:
+    print(f"    {r[1]:<11} {r[5]:>6} uM  {r[3]:<10} {r[0]}")
+print("  excluded:")
+for r in ROWS:
+    ok, why = benchmark(r[0], r[2], r[5], r[6])
+    if ok == "NO":
+        print(f"    {r[0]:<28} {why}")
