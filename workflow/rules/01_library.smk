@@ -1,16 +1,23 @@
-# Stage 1 - peptide library ingestion and filtering.
+# Stage 1 - peptide library ingestion.
 #
-# STATUS: STUBBED. The rule structure, inputs, and outputs are real; the
-# script it calls exits non-zero with a STUBBED marker until implemented.
+# STATUS: WORKING.
+#
+# Joins the literature-sourced affinity data onto the screening library by
+# sequence. Nothing is silently dropped: every input row appears in the output
+# with an explicit `included` flag and, where excluded, a reason.
 
 rule library_ingest:
     input:
-        "data/reference/known_opioid_peptides.csv"
+        library="data/reference/known_opioid_peptides.csv",
+        reference="data/reference/reference_peptides.tsv",
+        config="config/config.yaml",
     output:
-        "results/01_library/peptides.tsv"
-    log:
-        "logs/library_ingest.log"
+        table="results/01_library/peptides.tsv",
+        fasta="results/01_library/peptides.fasta",
+        stats="results/01_library/library_stats.json",
     conda:
         "../../environment.yml"
-    script:
-        "../../scripts/01_library.py"
+    shell:
+        "python3 scripts/01_library.py "
+        "--library {input.library} --reference {input.reference} "
+        "--config {input.config} --outdir results/01_library"
