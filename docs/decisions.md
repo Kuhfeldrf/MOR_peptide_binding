@@ -47,6 +47,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D25](#d25) | Structure comparisons fit numbering by sequence | FIRM | 2026-09-24 |
 | [D26](#d26) | Bilayer composition for intestinal muOR | FIRM | 2026-09-24 |
 | [D27](#d27) | Box size raised for charged-ligand ABFE | FIRM | 2026-09-24 |
+| [D28](#d28) | QC must read the tool's own verdict, and be tested against known-bad input | FIRM | 2026-09-24 |
 
 ---
 
@@ -584,3 +585,76 @@ Raised to `--dist 18 --dist_wat 22.5`. Two reasons, both specific:
 
 **Cost:** more atoms means proportionally more MD time per nanosecond. Accepted;
 the pilot's MD is short and Stage 6 accuracy matters more than Stage 4 speed.
+
+
+<a name="d28"></a>
+## D28 - QC reads the tool's own verdict, and is tested against known-bad input · FIRM
+
+**Recorded because a failure was announced by the tool, in writing, and went
+unread through an entire build, a topology conversion and two minimisation
+attempts.**
+
+### What happened
+
+packmol did not converge. Its log ended:
+
+```
+packing problem with the desired distance tolerance.
+...
+contains the best solution found.
+STOP 173
+```
+
+It had written its best attempt rather than a converged pack, leaving 551
+inter-molecular pairs under 1.2 A, the worst at **0.090 A**, across 3,678
+molecules - mostly water-water and lipid-lipid. GROMACS then reported
+`Maximum force = inf` and steepest descent quit after 16 steps at
+5.2e17 kJ/mol.
+
+### Why the QC did not catch it
+
+Two independent blind spots:
+
+1. **It checked lipid-PROTEIN contacts only.** The actual overlaps were
+   lipid-lipid and water-water, which it never looked at. The check was aimed
+   at the failure mode I had imagined rather than the one packmol's tolerance
+   actually governs.
+2. **It never read packmol's status line.** The most reliable evidence
+   available - the tool's own verdict on its own work - was ignored in favour
+   of geometry I computed myself.
+
+### Rules adopted
+
+- **Read the tool's verdict first.** Before computing anything, parse whatever
+  the upstream tool says about whether it succeeded. It knows more about its
+  own convergence than any downstream geometric proxy.
+- **Check the quantity the upstream tool is actually controlling.** packmol
+  enforces a minimum distance between *molecules*; so the QC counts contacts
+  between molecules, not between the two species I happened to be thinking of.
+- **Test the QC against known-bad input.** QC v2 was run against the failed
+  pack and required to reject it before being trusted on a new one. A check
+  only ever validated against data believed to be good has never been shown to
+  detect anything.
+
+### A related self-inflicted error, recorded
+
+The first attempt to rescue the bad pack moved individual atoms apart with no
+restoring force on their bonded partners. Accumulated independent pushes
+stretched C-H bonds to 3.05 A (r0 1.09) and tore water H1-H2 to 2.99 A
+(r0 1.371). The structure was more broken after the repair than before it, and
+minimisation still failed on the same atom. **Repairing coordinates atom-by-atom
+without respecting molecular connectivity is not a valid remedy**; either move
+whole molecules rigidly, or re-pack. Here the correct answer was to re-pack,
+because 3,678 molecules were involved - a system-wide convergence failure, not
+a few local defects.
+
+### Earlier self-caught QC defects, kept for the same reason
+
+- QC v1 **passed vacuously**: it searched for `POPC`/`CHL1` while Lipid21 writes
+  the modular `PC` + `PA` + `OL` and `CHL`. It found zero lipids, so every
+  geometric test silently had nothing to test, and it reported PASSED. A check
+  that finds nothing to check now fails.
+- Its first enclosure test was a raw neighbour count, which flagged 1159 atoms
+  sitting in ordinary annular grooves of a 7-TM bundle. Replaced with a
+  convex-hull enclosure test, which asks whether protein SURROUNDS the atom
+  rather than whether protein is merely near it.

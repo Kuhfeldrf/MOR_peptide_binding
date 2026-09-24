@@ -1,0 +1,37 @@
+; Stage 3g - energy minimisation of the packed membrane system.
+;
+; PURPOSE: packmol enforces only a 2.0 A minimum separation, which is below a
+; real heavy-atom contact. The packed system carries 67 lipid-protein contacts
+; under 2.2 A and 134 lipid atoms enclosed by protein. No aromatic ring is
+; pierced, so these should be relievable; this run is the test of that, not an
+; assumption about it.
+;
+; Steepest descent first because the starting structure has hard contacts and
+; conjugate gradient is unstable there.
+
+integrator              = steep
+nsteps                  = 50000
+emtol                   = 1000.0          ; kJ/mol/nm
+emstep                  = 0.01
+
+; Neighbour searching
+cutoff-scheme           = Verlet
+nstlist                 = 10
+pbc                     = xyz
+verlet-buffer-tolerance = 0.005
+
+; Electrostatics and vdW - AMBER conventions for ff19SB/LIPID21
+coulombtype             = PME
+rcoulomb                = 1.0
+fourierspacing          = 0.12
+pme-order               = 4
+vdwtype                 = cutoff
+vdw-modifier            = potential-shift-verlet
+rvdw                    = 1.0
+DispCorr                = EnerPres
+
+; Constraints off during minimisation so geometry can relax freely
+constraints             = none
+
+nstlog                  = 500
+nstenergy               = 500
