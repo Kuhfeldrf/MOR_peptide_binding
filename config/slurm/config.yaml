@@ -1,0 +1,34 @@
+# Snakemake v8+ SLURM executor profile for ORCA (PSU ARC).
+executor: slurm
+jobs: 16
+latency-wait: 60
+rerun-incomplete: true
+printshellcmds: true
+
+default-resources:
+  slurm_account: ""
+  slurm_partition: "short"
+  runtime: 120               # minutes
+  mem_mb: 16000
+  cpus_per_task: 4
+
+# Per-rule resources. GPU stages request a card via gres.
+set-resources:
+  cofold_chai:
+    slurm_partition: "short"
+    slurm_extra: "'--gres=gpu:l40s:1'"
+    runtime: 240
+    mem_mb: 64000
+    cpus_per_task: 8
+  md_production:
+    slurm_partition: "long"
+    slurm_extra: "'--gres=gpu:a30:1'"
+    runtime: 4320
+    mem_mb: 32000
+    cpus_per_task: 8
+  abfe_windows:
+    slurm_partition: "long"
+    slurm_extra: "'--gres=gpu:a30:1'"
+    runtime: 4320
+    mem_mb: 32000
+    cpus_per_task: 8

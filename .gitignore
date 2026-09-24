@@ -1,0 +1,28 @@
+# Generated outputs
+results/
+logs/
+.snakemake/
+
+# Trajectories and MD artefacts
+*.xtc
+*.trr
+*.dcd
+*.nc
+*.rst7
+*.chk
+*.h5
+
+# Container images
+*.sif
+*.simg
+container/*.sif
+
+# Conda / Python
+__pycache__/
+*.pyc
+.venv/
+miniforge3/
+
+# Editor / OS
+.DS_Store
+*.swp

@@ -1,0 +1,34 @@
+# UNPINNED DRAFT - versions are pinned in step 3 after the first successful
+# solve on ORCA. Do not treat this file as the provenance record until this
+# header is removed.
+#
+# GROMACS is NOT listed here: it is built from source against CUDA so that the
+# build flags are recorded in docs/provenance.md and the OSU port is rehearsed.
+# See docs/arch_notes.md.
+name: mor-pilot
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - snakemake-minimal
+  - snakemake-executor-plugin-slurm
+  - ambertools           # packmol-memgen (Stage 3)
+  - parmed               # Amber -> GROMACS topology conversion (Stage 3/4)
+  - acpype               # fallback converter; non-canonical residue params
+  - pdbfixer             # Stage 0 loop / missing-atom modelling
+  - propka               # Stage 0 protonation assignment
+  - mdanalysis
+  - mdtraj
+  - alchemlyb            # reads GROMACS dhdl.xvg for Stage 6
+  - pymbar               # MBAR estimator (Stage 6)
+  - biopython
+  - numpy
+  - pandas
+  - scipy
+  - pyarrow
+  - matplotlib
+  - seaborn
+  - pip
+  - pip:
+      - chai_lab         # Stage 2; requires CUDA GPU with bfloat16

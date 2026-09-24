@@ -1,0 +1,102 @@
+# Global parameters for the uOR peptide screening pilot.
+# No thresholds are hard-coded in scripts; everything tunable lives here.
+
+project:
+  name: mor-peptide-pilot
+  root: /scratch/kuhfeldr-Kuhfeld_temp
+  profile: production        # overridden to "test" via --config profile=test
+
+# ---------------------------------------------------- Stage 0: receptor
+receptor:
+  primary_pdb: "6DDF"        # DAMGO-uOR-Gi, active state
+  alternates:                # downloaded, not processed by default
+    - "8F7Q"
+  keep_chain: "R"            # receptor chain in 6DDF; verified in stage 0 script
+  strip_entities:            # removed before modelling
+    - "Gi heterotrimer"
+    - "nanobody"
+    - "scFv16"
+  ph: 7.4
+  # Residues whose protonation state must be explicitly inspected and logged.
+  inspect_protonation:
+    - "D147"
+    - "H297"
+  model_missing_loops: true
+  critical_loop: "ECL2"
+
+# ---------------------------------------------------- Stage 1: library
+library:
+  min_length: 4
+  max_length: 20
+  min_id_score: 0.0          # MS identification score cutoff; set per instrument
+  deduplicate: true
+  reference_set: data/reference/reference_peptides.tsv
+  ms_input: data/ms/example_peptides.tsv
+
+# ---------------------------------------------------- Stage 2: co-folding
+cofold:
+  tool: chai-1
+  use_msa: false             # single-sequence mode: deliberate, see README
+  n_seeds: 5
+  retain_full_ensemble: true
+  metrics: [iptm, iplddt, ipsae, aggregate_score, pae]
+  cross_seed_agreement: true
+
+# ---------------------------------------------------- Stage 2b: overlap audit
+overlap:
+  # Thresholds for the HIGH_OVERLAP / MODERATE / NOVEL flag.
+  high_identity: 0.90
+  moderate_identity: 0.60
+
+# ---------------------------------------------------- Stage 3: membrane
+membrane:
+  builder: packmol-memgen
+  lipids: ["POPC", "CHL1"]
+  cholesterol_fraction: 0.25
+  ionic_strength_mM: 150
+  neutralise: true
+  orientation: OPM/PPM
+  expected_atoms: [100000, 150000]
+
+# ---------------------------------------------------- Stage 4: MD
+md:
+  # Decided 2026-09-24: GROMACS, for portability to the OSU NVIDIA target.
+  # Rationale in docs/arch_notes.md. Built from source; see docs/provenance.md.
+  engine: gromacs            # openmm | gromacs
+  production_ns: 50
+  staged_restraint_release: true
+  # Trajectory output policy - set BEFORE any run. See README.
+  reduced_traj_ps: 100       # receptor + peptide + proximal lipids
+  full_traj_ps: 5000         # full system, sparse
+
+# ---------------------------------------------------- Stage 5: MM/GBSA
+mmgbsa:
+  purpose: rank_ordering     # NOT absolute affinity
+  stride: 10
+
+# ---------------------------------------------------- Stage 6: ABFE
+abfe:
+  peptides: ["DAMGO"]        # pilot: DAMGO first
+  n_lambda_windows: 36
+  ns_per_window: 5
+  estimator: MBAR
+  # Storage policy: energies + subsampled coords only. See README.
+  save_full_trajectories: false
+  subsample_stride: 50
+
+# ---------------------------------------------------- Stage 7: benchmark
+benchmark:
+  metrics: [spearman, mae]
+  stratify_by: overlap_flag
+  report_separately: [cofold_confidence, physics_scores]
+
+# ---------------------------------------------------- test profile override
+# Applied ONLY when profile=test. Never alters production parameters.
+test_overrides:
+  cofold:
+    n_seeds: 2
+  md:
+    production_ns: 1
+  abfe:
+    n_lambda_windows: 8
+    ns_per_window: 0.2
