@@ -1,0 +1,4 @@
+peptide_id	n_seeds	n_pairs	peptide_rmsd_mean_A	peptide_rmsd_max_A	centroid_shift_mean_A	centroid_shift_max_A	cross_seed_agreement
+real__beta_casomorphin_5_bov	5	10	4.173	6.803	1.823	2.826	DIVERGENT
+real__casoxin_C	5	10	7.083	11.231	1.603	2.023	DIVERGENT
+real__met_enkephalin	5	10	1.637	1.984	1.05	1.515	CONVERGED
