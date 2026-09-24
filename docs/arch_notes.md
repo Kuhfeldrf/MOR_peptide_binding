@@ -68,12 +68,12 @@ principal advantage largely disappears.
 ### Costs accepted
 
 - A CUDA 12.9 source build on Zen4, which may take a few hours of wall time.
-- ~~**Topology conversion at the Stage 3 boundary.**~~ **No longer applies.**
-  The force-field decision of 2026-09-24 (`docs/forcefield_decision.md`) moved
-  the stack to CHARMM36m, which GROMACS reads natively via
-  `packmol-memgen --charmm`. The Amber-to-GROMACS conversion step, previously
-  flagged here as a silent-error risk, is removed entirely. This was not the
-  reason for the force-field choice, but it is a real secondary benefit.
+- **Topology conversion at the Stage 3 boundary.** `packmol-memgen` emits Amber
+  topologies; GROMACS needs them converted via ParmEd. A routine but real extra
+  step, and a genuine place for silent error. **Stage 3 must verify atom count
+  and total system charge across the conversion and fail loudly on mismatch.**
+  (This risk was briefly removed by a CHARMM36m decision on 2026-09-24 and
+  returned when that decision was reversed - see `docs/forcefield_decision.md`.)
 
 ### To revisit
 
