@@ -52,6 +52,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D30](#d30) | Benchmark restricted to agonists; receptor is active-state only | FIRM | 2026-09-25 |
 | [D31](#d31) | Bulk cation Na+, not K+ | FIRM | 2026-09-25 |
 | [D32](#d32) | The workflow is the deliverable | FIRM | 2026-09-25 |
+| [D33](#d33) | Co-folded ligands must be chemically completed before parameterisation | FIRM | 2026-09-25 |
 
 ---
 
@@ -864,3 +865,53 @@ were tuned until one system worked, and six scripts superseded by the
 parameterised Stage 3 entry points. Kept for history, off the main path, since
 a reviewer finding a hand-rolled repair script with magic constants would
 reasonably wonder what else was patched.
+
+
+<a name="d33"></a>
+## D33 - Co-folded ligands must be chemically completed before parameterisation · FIRM
+
+**Chai-1 output carries no C-terminal OXT.** Without that oxygen the backbone
+carbonyl reads as an **aldehyde** rather than a carboxylate, so every co-folded
+peptide was short one atom and its formal charge was wrong by +1.
+
+| Peptide | As predicted | Correct |
+|---------|--------------|---------|
+| Met-enkephalin | `C27H36N5O6S+`, q = +1 | `C27H35N5O7S`, q = 0 |
+| beta-casomorphin-4 | q = +1 | q = 0 |
+| beta-casomorphin-5 (human) | q = 0 | q = -1 |
+
+### Why this is the dangerous kind of error
+
+**Nothing fails.** The peptide parameterises, packs into a membrane, runs MD and
+produces a free energy. Every stage completes. The result is simply wrong, and
+wrong in the variable that matters most for a binding free energy: charge is
+what drives electrostatics, and electrostatics is most of what ABFE measures.
+
+It would also have been self-consistent. A reviewer checking that the pipeline
+ran would find nothing amiss.
+
+### Fix
+
+PDBFixer completes the ligand's heavy atoms before protonation, and **reports
+what it added** rather than assuming anything was missing. Met-enkephalin now
+resolves as `[NH3+]` at the N-terminus and `C(=O)[O-]` at the C-terminus - a
+neutral zwitterion.
+
+### A related default that was also wrong
+
+The workflow originally assumed a net charge of **+1** for every peptide. That
+is right only for a peptide with a free N-terminus, no charged side chain, and
+**no free C-terminal carboxylate**. It happened to be right for DAMGO, whose
+C-terminus is genuinely an alcohol (Gly-ol), which is exactly why the
+assumption survived until a co-folded peptide reached the same code path.
+
+Charge is now **computed at the stated pH and reported**, and asserted only
+where config names an expected value. Computing it revealed that three of the
+seven benchmark peptides carry a glutamate and are not +1 at all.
+
+### Rule adopted
+
+**A structure that came out of a model is not chemically complete.** Predicted
+coordinates satisfy the model's objective, not a valence check. Anything headed
+for a force field is completed and inspected first, and what was added is
+recorded.
