@@ -1,0 +1,53 @@
+; Stage 4b - NPT equilibration with STAGED RESTRAINT RELEASE.
+;
+; The force constant is supplied per stage via -DPOSRES_FC, stepping
+; 1000 -> 500 -> 100 -> 10 kJ/mol/nm^2 before production runs unrestrained.
+; Releasing restraints in one step lets the solute relax into a lipid and water
+; arrangement that has not yet adapted to it, which is the usual way a membrane
+; protein ends up distorted during equilibration.
+
+integrator              = md
+dt                      = 0.002
+nsteps                  = 250000          ; 500 ps per stage
+tinit                   = 0
+
+continuation            = yes
+constraints             = h-bonds
+constraint-algorithm    = lincs
+lincs-order             = 4
+lincs-iter              = 1
+
+cutoff-scheme           = Verlet
+nstlist                 = 20
+pbc                     = xyz
+coulombtype             = PME
+rcoulomb                = 1.0
+fourierspacing          = 0.12
+vdwtype                 = cutoff
+vdw-modifier            = potential-shift-verlet
+rvdw                    = 1.0
+DispCorr                = EnerPres
+
+tcoupl                  = v-rescale
+tc-grps                 = Protein_DAM MEMB SOLV
+tau-t                   = 1.0 1.0 1.0
+ref-t                   = 310 310 310
+
+; Semi-isotropic: xy and z must scale independently or the bilayer is squeezed
+; to the wrong area per lipid. This is also what relaxes a slightly loose pack
+; to the correct density.
+pcoupl                  = C-rescale
+pcoupltype              = semiisotropic
+tau-p                   = 5.0
+ref-p                   = 1.0 1.0
+compressibility         = 4.5e-5 4.5e-5
+; With position restraints under pressure coupling the reference coordinates
+; must be scaled with the box, or the restraints fight the barostat.
+refcoord-scaling        = com
+
+gen-vel                 = no
+
+nstlog                  = 5000
+nstenergy               = 5000
+nstxout-compressed      = 25000
+compressed-x-grps       = System
