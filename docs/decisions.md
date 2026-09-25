@@ -48,6 +48,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D26](#d26) | Bilayer composition for intestinal muOR | FIRM | 2026-09-24 |
 | [D27](#d27) | Box size raised for charged-ligand ABFE | FIRM | 2026-09-24 |
 | [D28](#d28) | QC must read the tool's own verdict, and be tested against known-bad input | FIRM | 2026-09-24 |
+| [D29](#d29) | Membrane must be packed periodically; contacts checked under minimum image | FIRM | 2026-09-25 |
 
 ---
 
@@ -700,3 +701,82 @@ a few local defects.
   sitting in ordinary annular grooves of a 7-TM bundle. Replaced with a
   convex-hull enclosure test, which asks whether protein SURROUNDS the atom
   rather than whether protein is merely near it.
+
+
+<a name="d29"></a>
+## D29 - The membrane must be packed periodically, and contacts checked under minimum image · FIRM
+
+**The single most consequential error in Stage 3, and it was invisible to every
+check that had been written.**
+
+### What was wrong
+
+The system was never built periodically. packmol packs molecules into a
+*region*; it knows nothing about periodic boundaries. Lipids at the edge of the
+patch extend past it, so under PBC they overlap the lipids on the opposite
+face.
+
+Measured:
+
+| Quantity | x | y | z |
+|----------|---|---|---|
+| Lipid extent | 91.1 A | 91.5 A | 48.6 A |
+| Box | 86.06 A | 86.06 A | 119.0 A |
+| **Overhang** | **+5.0** | **+5.4** | +1.7 |
+
+14.4% of atoms lay outside a single box cell. Under minimum-image convention
+the system carried **167 inter-molecular pairs under 0.5 A**, worst 0.118 A.
+
+The protein was never implicated: it spans only 42.8 x 46.7 A.
+
+### Why it took so long to find
+
+**Every contact search used raw Cartesian distances.** All of them were
+structurally blind to periodic images. The consequence was a system that looked
+clean by every available measure - worst Cartesian contact 1.767 A, zero bonds
+over 3 A, worst angle off by 17 degrees, rigidity verified to 1e-13 A - while
+both GROMACS and sander reported astronomical forces on an atom whose nearest
+Cartesian neighbour was 2.5 A away.
+
+That contradiction was the clue, and it should have been treated as one much
+sooner. An atom with no neighbour inside 2.5 A cannot carry an infinite force
+under any correct force field, so either the force field was wrong or **the
+distances being measured were not the distances the engine was using**. The
+second is what was true.
+
+The same data, measured correctly:
+
+| Cutoff | Cartesian | Minimum image |
+|--------|-----------|---------------|
+| < 0.5 A | 0 | **90** |
+| < 1.2 A | 55 | **1,315** |
+
+### What ruled out the wrong hypotheses
+
+Running the minimisation in **sander** was decisive. Both engines failed on the
+same atom, which eliminated the Amber-to-GROMACS conversion - the leading
+suspect at the time, since OPC is a 4-site model with a virtual site. Without
+that test the search would have continued down the conversion path.
+
+### Rules adopted
+
+1. **Pack periodically.** `packmol-memgen --pbc` makes packmol respect the
+   boundary and adapt its constraints, so the patch tiles instead of
+   overhanging.
+2. **Check contacts under minimum image, always.** The QC now reads the box
+   from the packing regions, compares it against the coordinate extent, and
+   runs a minimum-image contact census. A Cartesian-only check on a periodic
+   system answers a question nobody asked.
+3. **When a measurement contradicts an engine, suspect the measurement.** Two
+   independent engines agreeing on an impossible force outweighed a geometric
+   check that said everything was fine.
+
+### Cost
+
+Four packs (26 min, 5h39m, 1h09m, and the periodic rebuild) and five
+minimisation attempts. Two of the three diagnoses along the way were real and
+kept: the bilayer was over-packed (`--apl_offset`, an 11-fold reduction in
+pathological contacts) and the residual overlaps needed rigid-body separation
+rather than per-atom nudging. But the governing defect was the missing `--pbc`,
+and it would have been found on the first attempt by checking the coordinate
+extent against the box - a two-line comparison.

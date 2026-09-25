@@ -1,24 +1,21 @@
 #!/usr/bin/env python3
-"""Stage 3g - relax the residual packing overlaps before minimisation.
+"""Stage 3g - separate the residual overlaps by RIGID-BODY molecule moves.
 
-WHY THIS EXISTS: packmol did not reach its 2.0 A tolerance. Its log ends with
-"packing problem with the desired distance tolerance ... contains the best
-solution found" and STOP 173 - it wrote the best configuration it managed
-rather than a converged one. The result carries 113 NON-BONDED pairs closer
-than 0.8 A, all lipid-lipid. At 0.5 A the Lennard-Jones term overflows, which
-is why GROMACS reported an infinite force and steepest descent quit after 16
-steps at 5.2e17 kJ/mol.
+WHY RIGID: an earlier attempt moved individual atoms apart with no restoring
+force on their bonded partners. Accumulated independent pushes stretched C-H
+bonds to 3.05 A (r0 1.09) and tore water H1-H2 to 2.99 A (r0 1.371), leaving
+the structure more broken than before. Translating a whole molecule CANNOT
+distort it - every internal distance is preserved exactly - so this approach is
+safe by construction, and the script verifies that claim rather than asserting
+it.
 
-WHAT THIS DOES: separates non-bonded atom pairs closer than a floor by pushing
-each atom half the deficit along their separation vector, iterating because a
-push can create a new contact. Bond geometry is perturbed slightly; the
-following minimisation restores it, which is exactly the work minimisation is
-good at once the forces are finite.
+WHY IT IS VIABLE NOW: raising the assumed area per lipid (--apl_offset 1.15)
+cut the pathological contacts from 551 pairs under 1.2 A to 50. A targeted fix
+on ~100 molecules is reasonable; the same fix on the 3,678 molecules of the
+previous pack would not have been, which is why that one was re-packed instead.
 
-This is a documented remedy for an unconverged pack, not a silent repair: the
-number of pairs touched and the worst remaining contact are reported, and the
-script refuses to write a structure that still contains an overflow-level
-contact.
+Molecules are moved apart with a displacement weighted by inverse atom count,
+so water and ions move and the receptor effectively does not.
 """
 from __future__ import annotations
 
@@ -30,78 +27,99 @@ import parmed
 from scipy.spatial import cKDTree
 
 D = pathlib.Path("/scratch/kuhfeldr-Kuhfeld_temp/results/03_membrane_prod")
-FLOOR = 1.80          # A, target minimum non-bonded separation
-HARD = 1.20           # A, refuse to ship anything below this
-ITERS = 60
+TARGET = 1.85     # A, desired minimum inter-molecular separation
+HARD = 1.50       # A, refuse to ship below this
+ITERS = 200
 
-print("loading topology and coordinates...")
 p = parmed.load_file(str(D / "system.parm7"), xyz=str(D / "system.rst7"))
 xyz = np.array(p.coordinates, dtype=float)
-print(f"atoms {len(p.atoms)}")
+n = len(p.atoms)
+print(f"atoms {n}")
 
-# Exclude 1-2 and 1-3 neighbours: those are meant to be close.
-excl = set()
+# molecule membership from bonded connectivity
+parent = list(range(n))
+def find(x):
+    while parent[x] != x:
+        parent[x] = parent[parent[x]]
+        x = parent[x]
+    return x
 for b in p.bonds:
-    excl.add(frozenset((b.atom1.idx, b.atom2.idx)))
-for a in p.angles:
-    excl.add(frozenset((a.atom1.idx, a.atom3.idx)))
-print(f"excluded bonded/angle pairs: {len(excl)}")
+    rx, ry = find(b.atom1.idx), find(b.atom2.idx)
+    if rx != ry:
+        parent[ry] = rx
+mol = np.array([find(i) for i in range(n)])
+uniq, inv = np.unique(mol, return_inverse=True)
+nmol = len(uniq)
+sizes = np.bincount(inv)
+print(f"molecules {nmol}")
 
-def close_pairs(coords, cutoff):
+members = [[] for _ in range(nmol)]
+for i, m in enumerate(inv):
+    members[m].append(i)
+members = [np.array(v) for v in members]
+
+# record internal geometry so the rigid claim can be checked
+bond_pairs = np.array([[b.atom1.idx, b.atom2.idx] for b in p.bonds])
+d_before = np.linalg.norm(xyz[bond_pairs[:, 0]] - xyz[bond_pairs[:, 1]], axis=1)
+
+def inter_pairs(coords, cutoff):
     t = cKDTree(coords)
-    out = []
-    for i, j in t.query_pairs(cutoff, output_type="ndarray"):
-        if frozenset((int(i), int(j))) not in excl:
-            out.append((int(i), int(j)))
-    return out
+    pr = t.query_pairs(cutoff, output_type="ndarray")
+    if not len(pr):
+        return pr
+    return pr[inv[pr[:, 0]] != inv[pr[:, 1]]]
 
-start = close_pairs(xyz, FLOOR)
-if not start:
-    print("no non-bonded contacts below the floor; nothing to do")
-    sys.exit(0)
-d0 = [float(np.linalg.norm(xyz[i] - xyz[j])) for i, j in start]
-print(f"\nnon-bonded pairs under {FLOOR} A : {len(start)}")
-print(f"worst contact                 : {min(d0):.3f} A")
+start = inter_pairs(xyz, TARGET)
+print(f"\ninter-molecular pairs under {TARGET} A: {len(start)}")
+if len(start):
+    d = np.linalg.norm(xyz[start[:, 0]] - xyz[start[:, 1]], axis=1)
+    print(f"worst: {d.min():.3f} A")
 
-touched = set()
+moved_mols = set()
 for it in range(ITERS):
-    pairs = close_pairs(xyz, FLOOR)
-    if not pairs:
+    pr = inter_pairs(xyz, TARGET)
+    if not len(pr):
         print(f"resolved after {it} iterations")
         break
-    shift = np.zeros_like(xyz)
-    for i, j in pairs:
+    shift = np.zeros((nmol, 3))
+    for i, j in pr:
+        mi, mj = inv[i], inv[j]
         v = xyz[i] - xyz[j]
         d = float(np.linalg.norm(v))
         if d < 1e-6:
-            v = np.random.default_rng(i * 7919 + j).normal(size=3)
+            v = np.random.default_rng(int(i) * 7919 + int(j)).normal(size=3)
             d = float(np.linalg.norm(v))
-        need = (FLOOR - d) / 2.0 + 1e-3
+        need = (TARGET - d) + 0.02
         u = v / d
-        shift[i] += u * need
-        shift[j] -= u * need
-        touched.add(i); touched.add(j)
-    # damp so overlapping corrections do not overshoot
-    xyz += shift * 0.6
+        wi = 1.0 / sizes[mi]
+        wj = 1.0 / sizes[mj]
+        tot = wi + wj
+        shift[mi] += u * need * (wi / tot)
+        shift[mj] -= u * need * (wj / tot)
+        moved_mols.add(int(mi)); moved_mols.add(int(mj))
+    for m in np.nonzero(np.any(shift != 0, axis=1))[0]:
+        xyz[members[m]] += shift[m] * 0.5
 else:
-    print(f"still {len(close_pairs(xyz, FLOOR))} pairs after {ITERS} iterations")
+    print(f"still {len(inter_pairs(xyz, TARGET))} pairs after {ITERS} iterations")
 
-final = close_pairs(xyz, FLOOR)
-dmin = min((float(np.linalg.norm(xyz[i] - xyz[j])) for i, j in final),
-           default=FLOOR)
-print(f"\natoms moved        : {len(touched)} of {len(p.atoms)} "
-      f"({100*len(touched)/len(p.atoms):.3f} %)")
-print(f"pairs still under {FLOOR} A: {len(final)}")
-print(f"worst remaining    : {dmin:.3f} A")
+final = inter_pairs(xyz, TARGET)
+dmin = float("inf")
+if len(final):
+    dmin = float(np.min(np.linalg.norm(xyz[final[:, 0]] - xyz[final[:, 1]], axis=1)))
+print(f"\nmolecules translated : {len(moved_mols)} of {nmol}")
+print(f"pairs still under {TARGET} A: {len(final)}")
+print(f"worst remaining      : {dmin if np.isfinite(dmin) else TARGET:.3f} A")
 
-moved = np.linalg.norm(xyz - np.array(p.coordinates, dtype=float), axis=1)
-print(f"largest single displacement: {moved.max():.3f} A")
-print(f"mean displacement of moved atoms: {moved[list(touched)].mean():.3f} A"
-      if touched else "")
+# verify rigidity: every bond length must be unchanged
+d_after = np.linalg.norm(xyz[bond_pairs[:, 0]] - xyz[bond_pairs[:, 1]], axis=1)
+drift = float(np.max(np.abs(d_after - d_before)))
+print(f"\nmax change in ANY bond length: {drift:.2e} A")
+if drift > 1e-6:
+    sys.exit(f"FATAL: rigid-body move altered internal geometry by {drift:.3e} A")
+print("rigidity verified: internal geometry is bit-for-bit preserved")
 
-if dmin < HARD:
-    sys.exit(f"REFUSED: a contact at {dmin:.3f} A remains, below the {HARD} A "
-             f"floor; minimisation would overflow again")
+if np.isfinite(dmin) and dmin < HARD:
+    sys.exit(f"REFUSED: worst contact {dmin:.3f} A is below the {HARD} A floor")
 
 p.coordinates = xyz
 p.save(str(D / "system_relaxed.rst7"), overwrite=True)

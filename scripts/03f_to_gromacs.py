@@ -25,7 +25,7 @@ import parmed
 D = pathlib.Path("/scratch/kuhfeldr-Kuhfeld_temp/results/03_membrane_prod")
 
 print("loading Amber topology...")
-amb = parmed.load_file(str(D / "system.parm7"), xyz=str(D / "system.rst7"))
+amb = parmed.load_file(str(D / "system.parm7"), xyz=str(D / "system_relaxed.rst7"))
 print(f"  atoms {len(amb.atoms)}  residues {len(amb.residues)}")
 print(f"  box   {amb.box}")
 

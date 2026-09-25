@@ -113,13 +113,62 @@ def main() -> None:
         if abs(frac - a.expect_chol_frac) > 0.03:
             fail.append(f"cholesterol fraction {frac:.3f} off target")
 
+    # ---------------------------------------------------- 2b. PERIODIC IMAGES
+    #
+    # THE CHECK THAT WAS MISSING. Every earlier contact search used raw
+    # Cartesian distances and was structurally blind to periodic images.
+    # packmol packs into a region but knows nothing about periodic boundaries,
+    # so edge lipids extend past it and overlap the opposite face. A system can
+    # therefore look clean in Cartesian space - worst contact 1.767 A, no bond
+    # over 3 A - while both GROMACS and sander report infinite forces.
+    #
+    # The box is read from packmol.inp, whose packing regions define it.
+    rid_hash = np.array([hash(r) for r in resid])
+    print("\n=== periodic images ===")
+    box = None
+    pinp = a.dir / "packmol.inp"
+    if pinp.exists():
+        lo = np.array([np.inf] * 3)
+        hi = np.array([-np.inf] * 3)
+        for line in pinp.read_text().splitlines():
+            if "inside box" in line:
+                v = [float(x) for x in line.split()[2:8]]
+                lo = np.minimum(lo, v[:3])
+                hi = np.maximum(hi, v[3:])
+        if np.all(np.isfinite(lo)):
+            box = hi - lo
+            print(f"  box from packing regions: {np.round(box, 2)}")
+    if box is None:
+        warn.append("box could not be determined; periodic check skipped")
+    else:
+        ext = xyz.max(0) - xyz.min(0)
+        print(f"  coordinate extent       : {np.round(ext, 2)}")
+        over = ext - box
+        print(f"  overhang (extent - box) : {np.round(over, 2)}")
+        if np.any(over > 1.0):
+            fail.append(f"coordinates overhang the box by {np.round(over,1)} A; "
+                        f"atoms will overlap their own periodic images")
+        w = xyz - xyz.min(0)
+        wrapped = w - np.floor(w / box) * box
+        tpbc = cKDTree(wrapped, boxsize=box)
+        for cut in (0.5, 1.2, a.hard):
+            pr = tpbc.query_pairs(cut, output_type="ndarray")
+            if not len(pr):
+                print(f"  minimum-image < {cut:.1f} A : 0")
+                continue
+            inter = pr[rid_hash[pr[:, 0]] != rid_hash[pr[:, 1]]]
+            print(f"  minimum-image < {cut:.1f} A : {len(inter)} inter-residue")
+            if cut <= 1.2 and len(inter):
+                fail.append(f"{len(inter)} inter-residue contacts under {cut} A "
+                            f"under MINIMUM IMAGE - the pack is not periodic")
+
     # ---------------------------------------------------- 3. inter-molecular
     # Molecule identity from residue id, with the three Lipid21 fragments of one
     # POPC (PC + PA + OL) treated as one molecule via their shared chain+resid
     # block is not reliable here, so use residue id and report lipid-internal
     # contacts separately rather than counting them as clashes.
     print(f"\n=== inter-molecular contacts ===")
-    rid_arr = np.array([hash(r) for r in resid])
+    rid_arr = rid_hash
     t = cKDTree(xyz)
     for cut in (1.2, 1.5, a.hard, a.warn):
         pr = t.query_pairs(cut, output_type="ndarray")
