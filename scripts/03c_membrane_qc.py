@@ -131,6 +131,11 @@ def main() -> None:
         lo = np.array([np.inf] * 3)
         hi = np.array([-np.inf] * 3)
         for line in pinp.read_text().splitlines():
+            # --pbc writes a single `pbc` directive instead of packing regions.
+            if line.strip().startswith("pbc "):
+                v = [float(x) for x in line.split()[1:7]]
+                lo = np.minimum(lo, v[:3]); hi = np.maximum(hi, v[3:])
+                continue
             if "inside box" in line:
                 v = [float(x) for x in line.split()[2:8]]
                 lo = np.minimum(lo, v[:3])
@@ -145,9 +150,13 @@ def main() -> None:
         print(f"  coordinate extent       : {np.round(ext, 2)}")
         over = ext - box
         print(f"  overhang (extent - box) : {np.round(over, 2)}")
-        if np.any(over > 1.0):
+        periodic_pack = "pbc " in pinp.read_text()
+        if np.any(over > 1.0) and not periodic_pack:
             fail.append(f"coordinates overhang the box by {np.round(over,1)} A; "
                         f"atoms will overlap their own periodic images")
+        elif np.any(over > 1.0):
+            print("  overhang is expected for a --pbc pack: molecules straddle")
+            print("  the boundary. The minimum-image census below is the test.")
         w = xyz - xyz.min(0)
         wrapped = w - np.floor(w / box) * box
         tpbc = cKDTree(wrapped, boxsize=box)

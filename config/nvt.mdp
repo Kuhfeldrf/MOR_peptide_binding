@@ -1,0 +1,49 @@
+; Stage 4a - NVT heating, 0 -> 310 K over 200 ps, protein and ligand restrained.
+;
+; 310 K is body temperature, which is the relevant condition for a receptor in
+; intestinal tissue (D26). Restraints hold the receptor and DAMGO while the
+; lipids and water, which packmol placed rather than equilibrated, find their
+; own arrangement around them.
+
+integrator              = md
+dt                      = 0.002
+nsteps                  = 100000          ; 200 ps
+tinit                   = 0
+
+continuation            = no
+constraints             = h-bonds
+constraint-algorithm    = lincs
+lincs-order             = 4
+lincs-iter              = 1
+
+cutoff-scheme           = Verlet
+nstlist                 = 20
+pbc                     = xyz
+coulombtype             = PME
+rcoulomb                = 1.0
+fourierspacing          = 0.12
+vdwtype                 = cutoff
+vdw-modifier            = potential-shift-verlet
+rvdw                    = 1.0
+DispCorr                = EnerPres
+
+; Thermostat: lipids and solvent coupled separately from the solute, so a cold
+; solute cannot be masked by hot solvent in the reported temperature.
+tcoupl                  = v-rescale
+tc-grps                 = Protein_DAM MEMB SOLV
+tau-t                   = 1.0 1.0 1.0
+ref-t                   = 310 310 310
+
+pcoupl                  = no              ; NVT
+
+gen-vel                 = yes
+gen-temp                = 310
+gen-seed                = 20260925        ; fixed: heating is reproducible
+
+; Position restraints on solute heavy atoms, released in stage 4b.
+define                  = -DPOSRES -DPOSRES_FC=1000.0
+
+nstlog                  = 5000
+nstenergy               = 5000
+nstxout-compressed      = 25000
+compressed-x-grps       = System

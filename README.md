@@ -23,13 +23,13 @@ Runtime and hardware are recorded only for stages that have actually run.
 | 1 | Peptide library ingestion | `WORKING` | < 1 s | login node, CPU |
 | 2 | Co-folding (Chai-1, 5 seeds) | `WORKING` | ~78 s/run | 1x L40S |
 | 2b | Training-overlap audit | `WORKING` | < 1 s | CPU |
-| 3 | Membrane system build | `IN PROGRESS` | ~20-40 min | CPU, 8 cores |
+| 3 | Membrane system build | `WORKING` | ~1.5 h pack + 3 min build | CPU + 1 GPU |
 | 4 | Molecular dynamics (GROMACS) | `STUBBED` | - | - |
 | 5 | MM/GBSA triage | `STUBBED` | - | - |
 | 6 | ABFE (DAMGO first) | `STUBBED` | - | - |
 | 7 | Benchmark figure | `STUBBED` | - | - |
 
-**Stages 0, 1, 2 and 2b run. Stage 3 is in progress. Stages 4-7 are stubbed.** The rule graph, inputs, and
+**Stages 0-3 run. Stages 4-7 are stubbed.** The rule graph, inputs, and
 outputs are real and wired together throughout; each remaining stub exits
 non-zero with a `STUBBED` marker rather than writing an empty or fabricated
 output, so a stubbed stage cannot be mistaken for one that ran.
