@@ -41,3 +41,10 @@ build_gromacs.sbatch
 .chai_weights/
 *.sbatch
 results/
+
+# Snakemake conda environments (multi-GB, rebuilt from the yml files)
+.snakemake-conda/
+.snakemake/
+
+# Visualisation exports
+viz/
