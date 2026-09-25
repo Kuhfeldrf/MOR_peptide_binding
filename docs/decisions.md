@@ -40,7 +40,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D18](#d18) | CGenFF academic licence | OPEN (not blocking) | — |
 | [D19](#d19) | LICENSE copyright holder | DEFERRED | 2026-09-24 |
 | [D20](#d20) | OSU target architecture | OPEN (narrowed) | 2026-09-24 |
-| [D21](#d21) | ipSAE not produced by Chai-1 | OPEN | 2026-09-24 |
+| [D21](#d21) | ipSAE computed; unusable for short peptides | RESOLVED | 2026-09-24 |
 | [D22](#d22) | i-pLDDT taken as peptide-chain pLDDT | PROVISIONAL | 2026-09-24 |
 | [D23](#d23) | Cross-seed agreement by receptor-superposed peptide RMSD | FIRM | 2026-09-24 |
 | [D24](#d24) | Stage 2 test-peptide selection | FIRM | 2026-09-24 |
@@ -370,22 +370,64 @@ to Power $200 Million Oregon State University Innovation Complex".
 
 
 <a name="d21"></a>
-## D21 — ipSAE is not produced by Chai-1 · OPEN
+## D21 - ipSAE: computed, and found unusable at this peptide length · RESOLVED
 
-The instructions require ipTM, **i-pLDDT, ipSAE**, aggregate score and PAE per
-complex. Chai-1 provides `aggregate_score`, `ptm`, `iptm`, `per_chain_ptm`,
-`per_chain_pair_iptm` and clash flags in `scores.model_idx_*.npz`; `plddt` and
-`pae` come off the returned `StructureCandidates`. **ipSAE is not among them.**
+The instructions require ipSAE. Chai-1 does not produce it, so the reference
+implementation was **vendored** (`vendor/ipsae.py`, Dunbrack lab, MIT licence)
+and only a format adapter written (`scripts/02c_ipsae.py`), targeting the
+script's Boltz path, which takes a PAE `.npz` plus a `.cif` - the pair Chai-1
+already emits. A home-rolled scoring function that was subtly wrong would look
+entirely plausible in a results table.
 
-ipSAE is a separate published interface metric derived from the PAE matrix, not
-something Chai-1 emits. The column is written as `NOT_COMPUTED` rather than
-omitted or filled with a substitute, so its absence is visible in the output
-table rather than inferred from a missing column.
+### The expectation
 
-**Options:** implement it from the PAE matrix against the published definition
-and validate that implementation; vendor the reference implementation; or
-record it as out of scope with the reason stated. **Not yet decided — needs a
-call before Stage 7**, since the instructions name it as a reported quantity.
+Stage 2 found ipTM flat at 0.27-0.35 across a 32-fold affinity range, unable to
+separate a memorised and correct pose from two the model could not place.
+ipSAE exists to fix precisely that defect: ipTM scores whole chains, so pairs
+far from the interface dilute it, and 281 residues against 5 is close to worst
+case. The expectation was that ipSAE would restore the discrimination.
+
+### The result
+
+| Peptide | Interface residues | ipSAE (mean) |
+|---------|-------------------|--------------|
+| Met-enkephalin (converged, correct) | 5 | **0.046** |
+| beta-casomorphin-5 (divergent) | 5 | **0.046** |
+| Casoxin C (divergent) | 7-10 | **0.031** |
+
+**ipSAE did not separate them either.** The memorised, experimentally validated
+pose scores identically to one the model placed 4-11 A apart across seeds.
+
+### Why - a structural limit, not a bad run
+
+The input is sound: 286 tokens, interchain PAE mean 7.33 A with a minimum of
+3.76 A, which is a reasonable interface.
+
+The cause is in `calc_d0`: for an interface of **27 residues or fewer, d0 is
+clamped to 1.0 A**. Each pair contribution is then roughly 1/(1+(PAE/d0)^2), so
+with PAE around 7 A every pair contributes about 0.02 and the total collapses
+to the 0.03-0.05 band observed. **A 4-10 residue peptide interface cannot score
+well on ipSAE regardless of how correct the pose is.**
+
+### Conclusion carried into the README
+
+**Both learned-confidence metrics are unfit for ranking peptides of this length
+against a GPCR, for opposite structural reasons:**
+
+- **ipTM** is *diluted* by the chain-size mismatch - too many irrelevant pairs.
+- **ipSAE** is *compressed* by its d0 floor at small interface size - too few
+  relevant ones.
+
+The residual ordering ipSAE does show (casoxin C below the 5-mers) tracks
+interface residue count, not pose quality.
+
+**Cross-seed agreement remains the only Stage 2 diagnostic that separated a
+correct pose from a failed one**, and it did so decisively (1.6 A against
+4-11 A). That is the column Stage 7 should stratify on, and the confidence
+scores should be reported as what they are rather than used for ranking.
+
+ipSAE is still computed and reported, because the instructions ask for it and
+because its failure here is informative. It is not used to rank.
 
 <a name="d22"></a>
 ## D22 — i-pLDDT taken as mean pLDDT over the peptide chain · PROVISIONAL
