@@ -64,18 +64,27 @@ def main() -> None:
     ap.add_argument("--receptor", required=True, type=pathlib.Path)
     ap.add_argument("--peptides", required=True, type=pathlib.Path)
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
-    ap.add_argument("--seeds", type=int, default=5)
-    ap.add_argument("--only", default="", help="comma-separated peptide ids")
+    ap.add_argument("--peptide", required=True,
+                    help="peptide name, as keyed in the reference table")
+    ap.add_argument("--seed", type=int, required=True)
+    ap.add_argument("--library", type=pathlib.Path,
+                    help="results/01_library/peptides.tsv")
+    ap.add_argument("--recycles", type=int, default=3)
+    ap.add_argument("--timesteps", type=int, default=200)
     a = ap.parse_args()
 
     receptor = read_fasta(a.receptor)[0][1]
-    peptides = read_fasta(a.peptides)
-    if a.only:
-        want = {s.strip() for s in a.only.split(",") if s.strip()}
-        peptides = [(n, s) for n, s in peptides if n in want]
-        missing = want - {n for n, _ in peptides}
-        if missing:
-            raise SystemExit(f"FATAL: peptide ids not found: {sorted(missing)}")
+    # One peptide, one seed: the workflow owns the fan-out, not this script.
+    import csv as _csv
+    seq = None
+    with a.library.open() as fh:
+        for row in _csv.DictReader(fh, delimiter="	"):
+            if row.get("name") == a.peptide or row.get("peptide_id") == a.peptide:
+                seq = row["sequence"].strip().upper()
+                break
+    if not seq:
+        raise SystemExit(f"FATAL: peptide {a.peptide!r} not in {a.library}")
+    peptides = [(a.peptide, seq)]
 
     a.outdir.mkdir(parents=True, exist_ok=True)
     print(f"receptor: {len(receptor)} aa")
@@ -86,11 +95,11 @@ def main() -> None:
     t_start = time.time()
 
     for pid, pseq in peptides:
-        for seed in range(a.seeds):
+        for seed in [a.seed]:
             tag = f"{pid}_seed{seed}"
-            rundir = a.outdir / pid / f"seed{seed}"
+            rundir = a.outdir
             # Chai-1 asserts its output_dir is empty, so inputs live elsewhere.
-            indir = a.outdir / pid / "inputs"
+            indir = a.outdir / "inputs"
             indir.mkdir(parents=True, exist_ok=True)
             fa = indir / f"seed{seed}.fasta"
             fa.write_text(f">protein|name=receptor\n{receptor}\n"
@@ -111,8 +120,8 @@ def main() -> None:
                     output_dir=rundir,
                     use_msa_server=False,   # single-sequence mode, deliberate
                     use_esm_embeddings=True,
-                    num_trunk_recycles=3,
-                    num_diffn_timesteps=200,
+                    num_trunk_recycles=a.recycles,
+                    num_diffn_timesteps=a.timesteps,
                     seed=seed,
                     device="cuda:0",
                 )

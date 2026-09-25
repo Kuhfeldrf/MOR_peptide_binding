@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 
 import gemmi
 
-RECEPTOR_CHAIN = "R"
+RECEPTOR_CHAIN = "R"   # overridden by --keep-chain
 LIGAND_CHAIN = "D"
 DAMGO_COMPONENTS = ["TYR", "DAL", "GLY", "MEA", "ETA"]
 INSPECT = [147, 297]
@@ -38,7 +38,7 @@ def sha256(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def extract(cif: pathlib.Path, outdir: pathlib.Path, lines: list[str]):
+def extract(cif, outdir, lines, keep_chain="R", ligand_names=()):
     st = gemmi.read_structure(str(cif))
     st.setup_entities()
     model = st[0]
@@ -47,6 +47,8 @@ def extract(cif: pathlib.Path, outdir: pathlib.Path, lines: list[str]):
     log(lines, f"Chains present: {present}")
 
     # --- what the instructions expect to strip, versus what is actually here
+    global RECEPTOR_CHAIN
+    RECEPTOR_CHAIN = keep_chain
     if RECEPTOR_CHAIN not in present:
         sys.exit(f"FATAL: receptor chain {RECEPTOR_CHAIN!r} absent from {cif}")
     stripped = [c for c in present if c not in (RECEPTOR_CHAIN, LIGAND_CHAIN)]
@@ -107,7 +109,7 @@ def extract(cif: pathlib.Path, outdir: pathlib.Path, lines: list[str]):
         ml.add_chain(lig.clone())
         st_lig.add_model(ml)
         st_lig.setup_entities()
-        out_lig = outdir / "damgo_ref.pdb"
+        out_lig = outdir / (next(iter(ligand_names), "DAMGO") + "_ref.pdb")
         st_lig.write_pdb(str(out_lig))
         log(lines, f"Wrote DAMGO (experimental pose, not predicted): {out_lig.name}")
     else:
@@ -178,6 +180,10 @@ def main() -> None:
     ap.add_argument("--cif", required=True, type=pathlib.Path)
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
     ap.add_argument("--ph", type=float, default=7.4)
+    ap.add_argument("--keep-chain", default="R")
+    ap.add_argument("--extract-ligands", default="",
+                    help="comma-separated ligand names to extract from the "
+                         "structure; each is written <name>_ref.pdb")
     a = ap.parse_args()
 
     a.outdir.mkdir(parents=True, exist_ok=True)
@@ -186,7 +192,8 @@ def main() -> None:
     log(lines, "Stage 0 - receptor preparation")
     log(lines, "=" * 70)
 
-    raw = extract(a.cif, a.outdir, lines)
+    ligs = [x for x in a.extract_ligands.split(",") if x]
+    raw = extract(a.cif, a.outdir, lines, a.keep_chain, ligs)
     clean = protonate(raw, a.outdir, a.ph, lines)
 
     # --- determinism record
@@ -197,6 +204,13 @@ def main() -> None:
     log(lines, "Output digests (SHA-256):")
     for n, d in digests.items():
         log(lines, f"  {d}  {n}")
+
+    import gemmi as _g
+    _st = _g.read_structure(str(clean))
+    _seq = "".join(c for c in _g.one_letter_code(
+        [r.name for r in _st[0][0]]) if c.isalpha()).upper()
+    (a.outdir / "mOR_clean.fasta").write_text(f">mOR_receptor\n{_seq}\n")
+    log(lines, f"Wrote mOR_clean.fasta ({len(_seq)} aa)")
 
     (a.outdir / "checksums.json").write_text(
         json.dumps(digests, indent=2, sort_keys=True) + "\n")
