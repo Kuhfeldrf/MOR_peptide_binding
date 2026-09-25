@@ -49,6 +49,9 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D27](#d27) | Box size raised for charged-ligand ABFE | FIRM | 2026-09-24 |
 | [D28](#d28) | QC must read the tool's own verdict, and be tested against known-bad input | FIRM | 2026-09-24 |
 | [D29](#d29) | Membrane must be packed periodically; contacts checked under minimum image | FIRM | 2026-09-25 |
+| [D30](#d30) | Benchmark restricted to agonists; receptor is active-state only | FIRM | 2026-09-25 |
+| [D31](#d31) | Bulk cation Na+, not K+ | FIRM | 2026-09-25 |
+| [D32](#d32) | The workflow is the deliverable | FIRM | 2026-09-25 |
 
 ---
 
@@ -780,3 +783,84 @@ pathological contacts) and the residual overlaps needed rigid-body separation
 rather than per-atom nudging. But the governing defect was the missing `--pbc`,
 and it would have been found on the first attempt by checking the coordinate
 extent against the box - a two-line comparison.
+
+
+<a name="d30"></a>
+## D30 - Benchmark restricted to agonists · FIRM
+
+The receptor is **6DDF, the Gi-bound ACTIVE state**. Antagonists preferentially
+bind the **inactive** conformation, so scoring them against this receptor tests
+the wrong state. Three of the ten benchmark peptides were antagonists - casoxins
+A, B and C - and they would have appeared in Stage 7 as failures for a reason
+that has nothing to do with whether the pipeline works.
+
+**Decision: exclude antagonists. The benchmark is n = 7 agonists**, spanning
+0.2 to 59 uM, roughly a 300-fold range.
+
+### Options considered
+
+| Option | Effect |
+|--------|--------|
+| Restrict to agonists | Smaller n, cleanest claim. **Chosen.** |
+| Add an inactive-state receptor (e.g. 4DKL) | Scientifically strongest; roughly doubles Stage 3-4 cost |
+| Keep all ten, stratify by pharmacology | Makes the mismatch visible but still reports a number computed in the wrong state |
+
+The second is the better science and the better story for a scale-up argument -
+"the pipeline handles agonists and antagonists against their respective
+receptor states" - and it is recorded here as the obvious extension rather than
+as something ruled out.
+
+### What this costs, stated in the README
+
+n drops from 10 to 7. A rank correlation over seven points is weakly
+determined, and Stage 7 must report n on the figure rather than only in the
+caption. Combined with the inter-laboratory spread already recorded in D14,
+this bounds what the benchmark can establish: it is a demonstration that the
+comparison runs end to end, not a validation of the physics.
+
+<a name="d31"></a>
+## D31 - Bulk cation is Na+, not K+ · FIRM
+
+packmol-memgen defaults to K+. The receptor's extracellular and interstitial
+faces sit in **Na+-dominated fluid** - roughly 140 mM Na+ against 4 mM K+ -
+while K+ dominance is the **intracellular** condition.
+
+This is not cosmetic for this receptor family. Opioid receptors carry a
+**conserved allosteric Na+ site at D2.50**, which in muOR is **Asp114** - the
+residue PROPKA protonated to ASH in Stage 0. That protonation is *correct* for
+the active state, where the sodium pocket collapses, so the model is internally
+consistent. The point of this decision is that it should be a **stated choice
+about a known allosteric site**, not an accident of a tool default.
+
+**Revisit if** an inactive-state receptor is added ([D30](#d30)): there D2.50
+is deprotonated and coordinates Na+, so the protonation must change with the
+conformation.
+
+<a name="d32"></a>
+## D32 - The workflow is the deliverable · FIRM
+
+Seven of nine Snakemake rules were stubs while every real result came from
+hand-written sbatch scripts. For a repository whose stated purpose is
+demonstrating that this **scales**, that inverted the deliverable: it showed
+that an operator can hand-drive a membrane build, not that the pipeline runs
+without one.
+
+**What changed:** every stage now fans out over peptides as Snakemake
+wildcards. The full pipeline is a **218-job DAG**; `stage4` alone is 172 jobs
+across 10 peptides, and switching `md.peptides` from `benchmark` to `all` gives
+325 jobs across 19. Scaling is a config change, not a workflow edit.
+
+Paths are gone from the scripts - previously 14 of 28 hardcoded an absolute
+scratch directory, so the repository could not be cloned and run anywhere else.
+
+**Why this is the right emphasis:** a reviewer cannot verify a scaling claim
+from a pile of shell scripts, which demonstrate only that a skilled person did
+it once. A workflow file is a checkable assertion: run `snakemake -n`, see the
+fan-out, change one line, see it grow. Stage 0 determinism is treated the same
+way - a rule with an inspectable output rather than a sentence in a log.
+
+**Retired to `scripts/contrib/`:** the coordinate-repair script whose constants
+were tuned until one system worked, and six scripts superseded by the
+parameterised Stage 3 entry points. Kept for history, off the main path, since
+a reviewer finding a hand-rolled repair script with magic constants would
+reasonably wonder what else was patched.

@@ -122,6 +122,7 @@ benchmark:
   report_separately:
   - cofold_confidence
   - physics_scores
+  assay_filter: GPI
 test_overrides:
   cofold:
     n_seeds: 2

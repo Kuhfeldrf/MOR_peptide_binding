@@ -1,0 +1,41 @@
+peptide_id	sequence	length	peptide_name	parent_protein	species	activity	is_control	scramble_of	ic50_um	assay	pmid	reference	affinity_status	benchmark_include	included	exclusion_reason
+real__alpha_lactorphin	YGLF	4	alpha-lactorphin	alpha-lactalbumin	bovine	agonist	no						NO_REFERENCE_MATCH	NO	yes	
+real__alphas1_casein_exorphin_6	RYLGYL	6	alphas1-casein-exorphin-6	alphas1-casein	bovine	agonist	no		70	MVD	6326810	Loukas et al. 1983, Biochemistry 22:4567-4573	SOURCED	NO	yes	
+real__alphas1_casein_exorphin_7	RYLGYLE	7	alphas1-casein-exorphin-7	alphas1-casein	bovine	agonist	no		30	MVD	6326810	Loukas et al. 1983, Biochemistry 22:4567-4573	SOURCED	NO	yes	
+real__beta_casomorphin_4_bov	YPFP	4	beta-casomorphin-4	beta-casein	bovine	agonist	no		22	GPI	7278645	Brantl et al. 1981, Life Sci 28:1903-1909	SOURCED	YES	yes	
+real__beta_casomorphin_5_bov	YPFPG	5	beta-casomorphin-5	beta-casein	bovine	agonist	no		6.5	GPI	6265721	Brantl et al. 1981, Life Sci 28:1903-1909	SOURCED	YES	yes	
+real__beta_casomorphin_5_hum	YPFVE	5	beta-casomorphin-5	beta-casein	human	agonist	no		13.5	GPI	3005882	Koch, Wiedemann & Teschemacher 1985, Naunyn-Schmiedeberg's Arch Pharmacol 331:351-354, Table 1	SOURCED	YES	yes	
+real__beta_casomorphin_7_bov	YPFPGPI	7	beta-casomorphin-7	beta-casein	bovine	agonist	no		57	GPI	6265721	Brantl et al. 1981, Life Sci 28:1903-1909	SOURCED	YES	yes	
+real__beta_casomorphin_7_hum	YPFVEPI	7	beta-casomorphin-7	beta-casein	human	agonist	no		29.0	GPI	3005882	Koch, Wiedemann & Teschemacher 1985, Naunyn-Schmiedeberg's Arch Pharmacol 331:351-354, Table 1	SOURCED	YES	yes	
+real__beta_lactorphin	YLLF	4	beta-lactorphin	beta-lactoglobulin	bovine	agonist	no						NO_REFERENCE_MATCH	NO	yes	
+real__casoxin_A	YPSYGLNY	8	casoxin A	kappa-casein	bovine	antagonist	no		200	GPI	2760234	Chiba et al. 1989, J Dairy Res 56:363-366	SOURCED	YES	yes	
+real__casoxin_B	YPYY	4	casoxin B	kappa-casein	bovine	antagonist	no		100	GPI	2760234	Chiba et al. 1989, J Dairy Res 56:363-366	SOURCED	YES	yes	
+real__casoxin_C	YIPIQYVLSR	10	casoxin C	kappa-casein	bovine	antagonist	no		5	GPI	2760234	Chiba et al. 1989, J Dairy Res 56:363-366	SOURCED	YES	yes	
+real__casoxin_D	SRYPSY	6	casoxin D	alphas1-casein	bovine	antagonist	no					Yoshikawa et al. 1994, beta-Casomorphins and Related Peptides, VCH, 43-48	NO_VALUE_REPORTED	NO	yes	
+real__lactoferroxin_A_bov	YLGSRY	6	lactoferroxin A	lactoferrin	bovine	antagonist	no		15	Radioreceptor	1369293	Tani et al. 1990, Agric Biol Chem 54:1803-1810	SOURCED	NO	yes	
+real__lactoferroxin_A_hum	YLGSGY	6	lactoferroxin A	lactoferrin	human	antagonist	no						NO_REFERENCE_MATCH	NO	yes	
+real__met_enkephalin	YGGFM	5	Met-enkephalin	proenkephalin	human	agonist	no		0.2	GPI	6276540	Gacel et al. 1981, Life Sci 29:2483-2488	SOURCED	YES	yes	
+real__neocasomorphin_6	YPVEPF	6	neocasomorphin-6	beta-casein	bovine	agonist	no		59	GPI	10503774	Jinsmaa & Yoshikawa 1999, Peptides 20:957-962	SOURCED	YES	yes	
+real__soymorphin_5	YPFVV	5	soymorphin-5	beta-conglycinin	soybean	agonist	no						NO_REFERENCE_MATCH	NO	yes	
+real__soymorphin_6	YPFVVN	6	soymorphin-6	beta-conglycinin	soybean	agonist	no						NO_REFERENCE_MATCH	NO	yes	
+real__soymorphin_7	YPFVVNA	7	soymorphin-7	beta-conglycinin	soybean	agonist	no						NO_REFERENCE_MATCH	NO	yes	
+scr__alpha_lactorphin	LFYG	4	scrambled alpha-lactorphin		control	scramble	yes	real__alpha_lactorphin					NO_REFERENCE_MATCH	NO	yes	
+scr__alphas1_casein_exorphin_6	YLRGYL	6	scrambled alphas1-casein-exorphin-6		control	scramble	yes	real__alphas1_casein_exorphin_6					NO_REFERENCE_MATCH	NO	yes	
+scr__alphas1_casein_exorphin_7	GLYLEYR	7	scrambled alphas1-casein-exorphin-7		control	scramble	yes	real__alphas1_casein_exorphin_7					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_casomorphin_4_bov	PYPF	4	scrambled beta-casomorphin-4		control	scramble	yes	real__beta_casomorphin_4_bov					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_casomorphin_5_bov	FGPYP	5	scrambled beta-casomorphin-5		control	scramble	yes	real__beta_casomorphin_5_bov					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_casomorphin_5_hum	PYEVF	5	scrambled beta-casomorphin-5		control	scramble	yes	real__beta_casomorphin_5_hum					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_casomorphin_7_bov	GYPIFPP	7	scrambled beta-casomorphin-7		control	scramble	yes	real__beta_casomorphin_7_bov					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_casomorphin_7_hum	EPVIPFY	7	scrambled beta-casomorphin-7		control	scramble	yes	real__beta_casomorphin_7_hum					NO_REFERENCE_MATCH	NO	yes	
+scr__beta_lactorphin	FLYL	4	scrambled beta-lactorphin		control	scramble	yes	real__beta_lactorphin					NO_REFERENCE_MATCH	NO	yes	
+scr__casoxin_A	PLYNYGYS	8	scrambled casoxin A		control	scramble	yes	real__casoxin_A					NO_REFERENCE_MATCH	NO	yes	
+scr__casoxin_B	PYYY	4	scrambled casoxin B		control	scramble	yes	real__casoxin_B					NO_REFERENCE_MATCH	NO	yes	
+scr__casoxin_C	IIRSYQVYPL	10	scrambled casoxin C		control	scramble	yes	real__casoxin_C					NO_REFERENCE_MATCH	NO	yes	
+scr__casoxin_D	YSRPYS	6	scrambled casoxin D		control	scramble	yes	real__casoxin_D					NO_REFERENCE_MATCH	NO	yes	
+scr__lactoferroxin_A_bov	LYGSRY	6	scrambled lactoferroxin A		control	scramble	yes	real__lactoferroxin_A_bov					NO_REFERENCE_MATCH	NO	yes	
+scr__lactoferroxin_A_hum	LSGYGY	6	scrambled lactoferroxin A		control	scramble	yes	real__lactoferroxin_A_hum					NO_REFERENCE_MATCH	NO	yes	
+scr__met_enkephalin	GMYGF	5	scrambled Met-enkephalin		control	scramble	yes	real__met_enkephalin					NO_REFERENCE_MATCH	NO	yes	
+scr__neocasomorphin_6	VFEPYP	6	scrambled neocasomorphin-6		control	scramble	yes	real__neocasomorphin_6					NO_REFERENCE_MATCH	NO	yes	
+scr__soymorphin_5	FVYPV	5	scrambled soymorphin-5		control	scramble	yes	real__soymorphin_5					NO_REFERENCE_MATCH	NO	yes	
+scr__soymorphin_6	NYPVVF	6	scrambled soymorphin-6		control	scramble	yes	real__soymorphin_6					NO_REFERENCE_MATCH	NO	yes	
+scr__soymorphin_7	VYNFAPV	7	scrambled soymorphin-7		control	scramble	yes	real__soymorphin_7					NO_REFERENCE_MATCH	NO	yes	

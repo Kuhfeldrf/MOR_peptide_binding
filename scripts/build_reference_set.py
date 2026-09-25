@@ -93,11 +93,18 @@ ROWS = [
   "Radioligand binding, not GPI. Non-canonical: no FASTA representation."),
 ]
 
-def benchmark(name, c_term, ic50, assay):
+def benchmark(name, c_term, ic50, assay, role):
     """Benchmark-set membership, per the rules set 2026-09-24.
 
-    GPI only; no C-terminally modified peptides; no CTOP. No length cutoff -
-    4-mers such as YPFP and YPYY are retained deliberately.
+    GPI only; no C-terminally modified peptides; no CTOP; AGONISTS ONLY. No
+    length cutoff - the 4-mer YPFP is retained deliberately.
+
+    Antagonists are excluded because the receptor is 6DDF, the Gi-bound ACTIVE
+    state. Antagonists preferentially bind the inactive conformation, so
+    scoring them here would test the wrong receptor state and would show up in
+    Stage 7 as apparent failure for a reason unrelated to the pipeline. The
+    honest options were to drop them, to add an inactive-state receptor, or to
+    keep them and stratify; dropping them gives the smaller but cleaner claim.
     """
     if name == "CTOP":
         return "NO", "excluded_by_instruction_non_canonical"
@@ -109,6 +116,8 @@ def benchmark(name, c_term, ic50, assay):
         return "NO", f"assay_not_GPI_{assay}"
     if name == "casoxin_B_hum":
         return "NO", "duplicate_sequence_of_casoxin_B"
+    if role != "agonist":
+        return "NO", "antagonist_excluded_active_state_receptor"
     return "YES", ""
 
 
@@ -120,17 +129,17 @@ with out.open("w", newline="") as fh:
                 "benchmark_include","exclusion_reason","source_table","notes"])
     for (n,s,c,r,sp,ic,a,ref,pmid,note) in ROWS:
         status = "SOURCED" if ic else "NO_VALUE_REPORTED"
-        inc, why = benchmark(n, c, ic, a)
+        inc, why = benchmark(n, c, ic, a, r)
         w.writerow([n,s,c,r,sp,ic,a,ref,pmid,status,"","NOT_REPORTED",
                     inc,why,SRC,note])
 
 print(f"wrote {out} ({len(ROWS)} rows)")
-inc = [r for r in ROWS if benchmark(r[0], r[2], r[5], r[6])[0] == "YES"]
+inc = [r for r in ROWS if benchmark(r[0], r[2], r[5], r[6], r[3])[0] == "YES"]
 print(f"  benchmark set: n={len(inc)}")
 for r in inc:
     print(f"    {r[1]:<11} {r[5]:>6} uM  {r[3]:<10} {r[0]}")
 print("  excluded:")
 for r in ROWS:
-    ok, why = benchmark(r[0], r[2], r[5], r[6])
+    ok, why = benchmark(r[0], r[2], r[5], r[6], r[3])
     if ok == "NO":
         print(f"    {r[0]:<28} {why}")
