@@ -40,6 +40,7 @@ library:
   deduplicate: true
   reference_set: data/reference/reference_peptides.tsv
   ms_input: data/ms/example_peptides.tsv
+  screening_set: data/reference/known_opioid_peptides.csv
 cofold:
   tool: chai-1
   exclude:

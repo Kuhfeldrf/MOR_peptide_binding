@@ -96,7 +96,23 @@ def main() -> None:
                     seen[seq] = pid
 
             m = ref.get(seq, {})
+            # CANONICAL NAME. The screening library keys peptides as
+            # real__casoxin_C while the curated reference table uses
+            # casoxin_C. Carrying both conventions meant the workflow, which
+            # keys on the reference name, could not find its own peptides.
+            # Stage 1 is where the two tables meet, so it emits one canonical
+            # name: the reference name where a row matched, otherwise the
+            # library id with its real__ / scr__ prefix stripped.
+            # Strip only the real__ prefix. Stripping scr__ as well would make
+            # scr__casoxin_C collapse onto casoxin_C and collide with the real
+            # peptide, so a lookup could silently return a scrambled control in
+            # place of the peptide it is the control FOR.
+            if pid.startswith("real__"):
+                name = m.get("name") or pid[len("real__"):]
+            else:
+                name = pid
             rows.append({
+                "name": name,
                 "peptide_id": pid,
                 "sequence": seq,
                 "length": len(seq),

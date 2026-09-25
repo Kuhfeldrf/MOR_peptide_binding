@@ -38,12 +38,39 @@ LOGS = config["paths"]["logs"]
 # Peptide sets, read from the curated reference table.
 # ---------------------------------------------------------------------------
 def read_peptides():
-    """Every peptide the library defines, with its metadata."""
-    path = config["library"]["reference_set"]
-    out = {}
-    with open(path) as fh:
+    """Peptides present in BOTH the curated reference and the screening library.
+
+    The two are not the same set and must not be assumed to be. The reference
+    table carries affinity metadata for peptides drawn from the literature; the
+    screening library carries the sequences actually available to fold.
+
+    casoxin_B_hum is the case that exposed this. It appears in the reference
+    but has no library row, because its sequence is identical to bovine
+    casoxin B - which is also why it is already excluded from the benchmark as
+    a duplicate. Deriving the work list from the reference alone scheduled five
+    jobs that could only ever fail.
+
+    Taking the intersection means the workflow schedules only peptides it can
+    actually run, and reports the ones it dropped rather than failing on them.
+    """
+    ref = {}
+    with open(config["library"]["reference_set"]) as fh:
         for row in csv.DictReader(fh, delimiter="\t"):
-            out[row["name"]] = row
+            ref[row["name"]] = row
+
+    # Canonical names as Stage 1 emits them: real__ stripped, scr__ kept, so a
+    # scrambled control cannot collide with the peptide it is a control for.
+    available = set()
+    with open(config["library"]["screening_set"]) as fh:
+        for row in csv.DictReader(fh):
+            pid = row.get("peptide_id", "")
+            available.add(pid[6:] if pid.startswith("real__") else pid)
+
+    out = {k: v for k, v in ref.items() if k in available}
+    missing = sorted(set(ref) - available)
+    if missing:
+        print(f"note: {len(missing)} reference peptides have no library row "
+              f"and are not scheduled: {missing}")
     return out
 
 

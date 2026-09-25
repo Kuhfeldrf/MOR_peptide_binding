@@ -14,7 +14,8 @@ This is the stated reason the pipeline continues into physics.
 Usage:
     02_cofold.py --receptor results/00_receptor/mOR_clean.fasta \
                  --peptides results/01_library/peptides.fasta \
-                 --outdir results/02_cofold --seeds 5 [--only ID,ID,...]
+                 --outdir results/02_cofold/<peptide>/seed<N> \
+                 --peptide <name> --seed <N> --library <peptides.tsv>
 """
 from __future__ import annotations
 
@@ -62,12 +63,11 @@ def interface_plddt(plddt, n_receptor: int) -> tuple[float, float]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--receptor", required=True, type=pathlib.Path)
-    ap.add_argument("--peptides", required=True, type=pathlib.Path)
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
     ap.add_argument("--peptide", required=True,
                     help="peptide name, as keyed in the reference table")
     ap.add_argument("--seed", type=int, required=True)
-    ap.add_argument("--library", type=pathlib.Path,
+    ap.add_argument("--library", required=True, type=pathlib.Path,
                     help="results/01_library/peptides.tsv")
     ap.add_argument("--recycles", type=int, default=3)
     ap.add_argument("--timesteps", type=int, default=200)
@@ -88,7 +88,7 @@ def main() -> None:
 
     a.outdir.mkdir(parents=True, exist_ok=True)
     print(f"receptor: {len(receptor)} aa")
-    print(f"peptides: {len(peptides)}  seeds: {a.seeds}")
+    print(f"peptide: {a.peptide}  seed: {a.seed}")
     print(f"GPU: {torch.cuda.get_device_name(0)}  bf16={torch.cuda.is_bf16_supported()}")
 
     rows: list[dict] = []
@@ -99,9 +99,9 @@ def main() -> None:
             tag = f"{pid}_seed{seed}"
             rundir = a.outdir
             # Chai-1 asserts its output_dir is empty, so inputs live elsewhere.
-            indir = a.outdir / "inputs"
+            indir = a.outdir.parent / "inputs"
             indir.mkdir(parents=True, exist_ok=True)
-            fa = indir / f"seed{seed}.fasta"
+            fa = indir / f"{a.outdir.name}.fasta"
             fa.write_text(f">protein|name=receptor\n{receptor}\n"
                           f">protein|name=peptide\n{pseq}\n")
 
@@ -179,10 +179,10 @@ def main() -> None:
             w.writerow(r)
 
     total = time.time() - t_start
-    n_runs = len(peptides) * a.seeds
+    n_runs = 1
     (a.outdir / "cofold_stats.json").write_text(json.dumps({
         "n_peptides": len(peptides),
-        "seeds_per_peptide": a.seeds,
+        "seed": a.seed,
         "inference_runs": n_runs,
         "structures_per_run": 5,
         "total_structures": len(rows),
