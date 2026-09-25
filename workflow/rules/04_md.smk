@@ -39,7 +39,7 @@ rule md_minimise:
         f"{LOGS}/04_min_{{pep}}.log",
     resources:
         runtime=90,
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../environment.yml"
     shell:
@@ -61,7 +61,7 @@ rule md_heat:
         f"{LOGS}/04_nvt_{{pep}}.log",
     resources:
         runtime=120,
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../environment.yml"
     shell:
@@ -91,7 +91,7 @@ rule md_equilibrate:
         f"{LOGS}/04_npt_{{pep}}.log",
     resources:
         runtime=240,
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../environment.yml"
     shell:
@@ -114,7 +114,7 @@ rule md_production:
     resources:
         runtime=lambda wc, attempt: 60 * config["md"]["production_ns"],
         slurm_partition="long",
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../environment.yml"
     shell:

@@ -31,7 +31,7 @@ rule cofold_seed:
     resources:
         runtime=90,
         mem_mb=64000,
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../envs/chai.yml"
     shell:

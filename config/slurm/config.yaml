@@ -1,37 +1,78 @@
-# Snakemake v8+ SLURM executor profile for ORCA (PSU ARC).
+# Snakemake SLURM executor profile for ORCA (PSU ARC).
+#
+# GPUs are requested through the plugin's own gres key: it rejects --gres
+# inside slurm_extra, and that rejection only appears at submission time,
+# so a dry run does not catch it.
+#
+# Rule names here must match the workflow. An earlier version referenced
+# cofold_chai and abfe_windows, which no longer exist after the refactor, so
+# those resource requests silently did not apply - a stale profile fails quietly
+# rather than erroring.
+
 executor: slurm
-jobs: 16
-latency-wait: 60
+jobs: 12                     # concurrent SLURM jobs
+latency-wait: 60             # NFS: wait for outputs to appear
 rerun-incomplete: true
 printshellcmds: true
+keep-going: true             # one peptide failing must not stop the rest
+
 use-conda: true
-# Shared prefix: without this Snakemake rebuilds the torch env per invocation.
 conda-prefix: /scratch/kuhfeldr-Kuhfeld_temp/.snakemake-conda
 
 default-resources:
-  slurm_account: ""
   slurm_partition: "short"
   runtime: 120               # minutes
   mem_mb: 16000
   cpus_per_task: 4
 
-# Per-rule resources. GPU stages request a card via gres.
 set-resources:
-  cofold_chai:
+  # Stage 2: one GPU per inference. L40S and A30 both have bfloat16, which is
+  # Chai-1's hard requirement.
+  cofold_seed:
     slurm_partition: "short"
-    slurm_extra: "'--gres=gpu:l40s:1'"
-    runtime: 240
+    gres: "gpu:1"
+    runtime: 120
     mem_mb: 64000
+    cpus_per_task: 8
+
+  # Stage 3: packmol is CPU-bound and slow; give it room and a long walltime.
+  membrane_pack:
+    slurm_partition: "normal"
+    runtime: 720
+    mem_mb: 64000
+    cpus_per_task: 8
+
+  membrane_topology:
+    runtime: 120
+    mem_mb: 32000
+
+  # Stage 4: every MD stage needs a GPU.
+  md_minimise:
+    gres: "gpu:1"
+    runtime: 90
+    mem_mb: 32000
+    cpus_per_task: 8
+  md_heat:
+    gres: "gpu:1"
+    runtime: 120
+    mem_mb: 32000
+    cpus_per_task: 8
+  md_equilibrate:
+    gres: "gpu:1"
+    runtime: 240
+    mem_mb: 32000
     cpus_per_task: 8
   md_production:
     slurm_partition: "long"
-    slurm_extra: "'--gres=gpu:a30:1'"
-    runtime: 4320
+    gres: "gpu:1"
+    runtime: 1200
     mem_mb: 32000
     cpus_per_task: 8
-  abfe_windows:
+
+  # Stage 6: each lambda window is its own job.
+  abfe_window:
     slurm_partition: "long"
-    slurm_extra: "'--gres=gpu:a30:1'"
-    runtime: 4320
+    gres: "gpu:1"
+    runtime: 720
     mem_mb: 32000
     cpus_per_task: 8

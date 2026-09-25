@@ -34,7 +34,7 @@ rule abfe_window:
     resources:
         runtime=720,
         slurm_partition="long",
-        slurm_extra="'--gres=gpu:1'",
+        gres="gpu:1",
     conda:
         "../../environment.yml"
     shell:
