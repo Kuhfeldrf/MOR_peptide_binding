@@ -48,3 +48,17 @@ results/
 
 # Visualisation exports
 viz/
+
+# One-off diagnostic scripts, kept locally but not part of the pipeline
+build_envs2.*
+gputest.sbatch
+chai_*.sbatch
+memgen*.sbatch
+min*.sbatch
+npt.sbatch
+nvt.sbatch
+prod.sbatch
+repack*.sbatch
+sander_min.sbatch
+convert.sbatch
+pipeline34.sbatch
