@@ -41,12 +41,38 @@ def main() -> None:
     a = ap.parse_args()
     a.outdir.mkdir(parents=True, exist_ok=True)
 
+    # ------------------------------------------------ complete the chemistry
+    # Co-folding output carries no C-terminal OXT: the backbone carbonyl is
+    # then read as an ALDEHYDE rather than a carboxylate, so the peptide is
+    # short one oxygen and its net charge is wrong by +1. PDBFixer adds the
+    # missing heavy atoms, including OXT, before protonation.
+    #
+    # This does not apply to ligands taken from experiment - DAMGO genuinely
+    # ends in an alcohol - so the check below reports what was added rather
+    # than assuming anything.
+    from pdbfixer import PDBFixer
+    from openmm.app import PDBFile
+    fixed_path = a.outdir / "ligand_complete.pdb"
+    fixer = PDBFixer(filename=str(a.ligand))
+    fixer.findMissingResidues()
+    fixer.missingResidues = {}          # do not build loops into a ligand
+    fixer.findMissingAtoms()
+    added = {str(k): [x.name for x in v] for k, v in fixer.missingAtoms.items()}
+    fixer.addMissingAtoms()
+    with open(fixed_path, "w") as fh:
+        PDBFile.writeFile(fixer.topology, fixer.positions, fh, keepIds=True)
+    if added:
+        print(f"PDBFixer added missing heavy atoms: {added}")
+    else:
+        print("PDBFixer: no missing heavy atoms")
+    source = fixed_path
+
     # ------------------------------------------------ protonate at pH
     # obabel IGNORES -p when -h is also given, which silently produces a
     # NEUTRAL N-terminus. For an opioid peptide that removes the ammonium that
     # forms the salt bridge with D147 - the defining interaction of binding.
     prot = a.outdir / "ligand_ph.pdb"
-    r = subprocess.run(["obabel", str(a.ligand), "-O", str(prot),
+    r = subprocess.run(["obabel", str(source), "-O", str(prot),
                         "-p", str(a.ph)], capture_output=True, text=True)
     if r.returncode != 0 or not prot.exists():
         sys.exit(f"FATAL: obabel failed: {r.stderr[-400:]}")
