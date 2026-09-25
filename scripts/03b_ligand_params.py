@@ -31,7 +31,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ligand", required=True, type=pathlib.Path)
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
-    ap.add_argument("--net-charge", type=int, required=True)
+    ap.add_argument("--net-charge", type=int, default=None,
+                    help="expected formal charge at the given pH. When given "
+                         "it is ASSERTED, which is how a wrong input gets "
+                         "caught; when omitted the value obabel computes is "
+                         "used and reported.")
     ap.add_argument("--resname", default="LIG")
     ap.add_argument("--ph", type=float, default=7.4)
     a = ap.parse_args()
@@ -50,7 +54,10 @@ def main() -> None:
     from openbabel import pybel
     m = next(pybel.readfile("pdb", str(prot)))
     print(f"formula {m.formula}   charge {m.charge}   atoms {len(m.atoms)}")
-    if m.charge != a.net_charge:
+    if a.net_charge is None:
+        a.net_charge = m.charge
+        print(f"net charge not specified; using computed {m.charge:+d} at pH {a.ph}")
+    elif m.charge != a.net_charge:
         sys.exit(f"FATAL: protonated charge {m.charge}, expected "
                  f"{a.net_charge}. Check the pH and the expected state.")
 

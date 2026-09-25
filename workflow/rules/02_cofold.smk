@@ -49,6 +49,7 @@ rule cofold_best_pose:
             f"{RESULTS}/02_cofold/{w.pep}/seed{{seed}}/scores.tsv", seed=SEEDS),
     output:
         pose=f"{RESULTS}/02_cofold/{{pep}}/best_pose.pdb",
+        ligand=f"{RESULTS}/02_cofold/{{pep}}/best_ligand.pdb",
     log:
         f"{LOGS}/02_bestpose_{{pep}}.log",
     conda:

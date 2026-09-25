@@ -64,6 +64,25 @@ def main() -> None:
     st.setup_entities()
     st.write_pdb(str(a.out))
 
+    # The complex is what Stage 3 places in the membrane, but the ligand
+    # parameterisation needs the PEPTIDE ALONE. Passing the complex gave
+    # antechamber a 4,682-atom, +15 system and it rejected it, which is the
+    # good outcome: the charge assertion caught a wrong input rather than
+    # silently parameterising a receptor.
+    lig = gemmi.Structure()
+    lig.name = 'LIG'
+    lig.spacegroup_hm = 'P 1'
+    m = gemmi.Model('1')
+    if len(st[0]) < 2:
+        sys.exit('FATAL: predicted structure has no second chain to take as ligand')
+    m.add_chain(st[0][1].clone())      # chain 2 is the peptide
+    lig.add_model(m)
+    lig.setup_entities()
+    ligpath = a.out.parent / 'best_ligand.pdb'
+    lig.write_pdb(str(ligpath))
+    print(f'ligand-only structure: {ligpath} '
+          f'({sum(len(r) for r in st[0][1])} atoms)')
+
     meta = {
         "peptide": a.dir.name,
         "chosen_seed": seed,

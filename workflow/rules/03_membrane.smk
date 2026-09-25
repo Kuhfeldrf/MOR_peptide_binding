@@ -38,15 +38,22 @@ rule membrane_complex:
         "--opm {input.opm} --outdir $(dirname {output.complex}) > {log} 2>&1"
 
 
+def ligand_only(wildcards):
+    """The PEPTIDE alone. complex_source gives receptor+peptide, which Stage 3
+    places in the membrane; parameterisation needs just the ligand."""
+    if wildcards.pep in EXPERIMENTAL:
+        return f"{RESULTS}/00_receptor/{wildcards.pep}_ref.pdb"
+    return f"{RESULTS}/02_cofold/{wildcards.pep}/best_ligand.pdb"
+
+
 rule ligand_params:
     """GAFF2 / AM1-BCC parameters for the peptide as a single molecule (D10)."""
     input:
-        ligand=complex_source,
+        ligand=ligand_only,
     output:
         mol2=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.mol2",
         frcmod=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.frcmod",
-    params:
-        charge=lambda w: PEPTIDES[w.pep].get("net_charge", "1"),
+
     log:
         f"{LOGS}/03_params_{{pep}}.log",
     resources:
@@ -56,7 +63,7 @@ rule ligand_params:
     shell:
         "python3 {SCRIPTS}/03b_ligand_params.py "
         "--ligand {input.ligand} --outdir $(dirname {output.mol2}) "
-        "--net-charge {params.charge} > {log} 2>&1"
+        "> {log} 2>&1"
 
 
 rule membrane_pack:
