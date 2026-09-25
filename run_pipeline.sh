@@ -28,8 +28,13 @@ echo "=== $(date -Is) launching pipeline ==="
 echo "GMX_PREFIX=$GMX_PREFIX"
 gmx --version 2>/dev/null | head -1 || echo "WARNING: gmx not on PATH"
 
-snakemake -s workflow/Snakefile \
-          --profile config/slurm \
+# A killed Snakemake leaves a lock on the working directory. Clearing it here
+# is safe because this script is the only thing that launches the workflow, and
+# the alternative is a LockException that looks like a workflow error.
+snakemake -s workflow/Snakefile --profile config/slurm --unlock >/dev/null 2>&1 || true
+
+snakemake -s workflow/Snakefile \\
+          --profile config/slurm \\
           --rerun-incomplete \
           --keep-going \
           2>&1
