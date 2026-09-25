@@ -94,14 +94,10 @@ rule membrane_pack:
     conda:
         "../../environment.yml"
     shell:
-        "cd $(dirname {output.packed}) && "
-        "packmol-memgen --pdb $(basename {input.complex}) "
-        "--lipids {params.lipids} --ratio {params.ratio} "
-        "--apl_offset {params.apl} --pbc --preoriented "
-        "--salt --saltcon {params.salt} --salt_c {params.cation} "
-        "--dist {params.dist} --dist_wat {params.wat} "
-        "--notprotonate --nottrim --keepligs "
-        "--output $(basename {output.packed}) "
+        "bash {SCRIPTS}/03_pack_membrane.sh "
+        "{input.complex} {output.packed} "
+        "{params.lipids} {params.ratio} {params.apl} "
+        "{params.dist} {params.wat} {params.salt} {params.cation} "
         "> {log} 2>&1"
 
 
