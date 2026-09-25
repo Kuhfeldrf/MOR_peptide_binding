@@ -106,8 +106,13 @@ def main() -> None:
                           f">protein|name=peptide\n{pseq}\n")
 
             # Restartable: a seed that already produced scores is not redone.
+            # A run counts as complete only if BOTH the per-model scores and
+            # the metadata written afterwards are present. Checking the scores
+            # alone treats a partially written directory - a killed job, or an
+            # earlier attempt under different code - as finished, and the next
+            # step then fails loading metadata that was never written.
             done = sorted(rundir.glob("scores.model_idx_*.npz")) if rundir.exists() else []
-            if done:
+            if done and (rundir / "_cand_meta.npz").exists():
                 print(f"  {tag}: already complete ({len(done)} models), skipping")
                 dt = float("nan")
             else:
