@@ -1,133 +1,127 @@
-# Global parameters for the uOR peptide screening pilot.
-# No thresholds are hard-coded in scripts; everything tunable lives here.
-
+paths:
+  data: data
+  results: results
+  scripts: scripts
+  logs: logs
 project:
   name: mor-peptide-pilot
   root: /scratch/kuhfeldr-Kuhfeld_temp
-  profile: production        # overridden to "test" via --config profile=test
-
-# ---------------------------------------------------- Stage 0: receptor
+  profile: production
 receptor:
-  primary_pdb: "6DDF"        # DAMGO-uOR-Gi, active state
-  alternates:                # downloaded, not processed by default
-    - "8F7Q"
-  keep_chain: "R"            # receptor chain in 6DDF; verified in stage 0 script
-  strip_entities:            # removed before modelling
-    - "Gi heterotrimer"
-    - "nanobody"
-    - "scFv16"
+  primary_pdb: 6DDF
+  alternates:
+  - 8F7Q
+  keep_chain: R
+  strip_entities:
+  - Gi heterotrimer
+  - nanobody
+  - scFv16
   ph: 7.4
-  # Residues whose protonation state must be explicitly inspected and logged.
   inspect_protonation:
-    - "D147"
-    - "H297"
+  - D147
+  - H297
   model_missing_loops: true
-  critical_loop: "ECL2"
-  # DAMGO is experimentally resolved in 6DDF as entity 5
-  # (TYR-DAL-GLY-MEA-ETA). Extracted, not predicted. See docs/damgo_notes.md.
-  extract_ligand:
-    name: "DAMGO"
-    entity: 5
-    components: ["TYR", "DAL", "GLY", "MEA", "ETA"]
-    output: "results/00_receptor/damgo_ref.pdb"
-
-# ---------------------------------------------------- Stage 1: library
+  critical_loop: ECL2
+  extract_ligands:
+    DAMGO:
+      entity: 5
+      components:
+      - TYR
+      - DAL
+      - GLY
+      - MEA
+      - ETA
+      net_charge: 1
+  resid_offset: 64
 library:
   min_length: 4
   max_length: 20
-  min_id_score: 0.0          # MS identification score cutoff; set per instrument
+  min_id_score: 0.0
   deduplicate: true
   reference_set: data/reference/reference_peptides.tsv
   ms_input: data/ms/example_peptides.tsv
-
-# ---------------------------------------------------- Stage 2: co-folding
 cofold:
   tool: chai-1
-  # DAMGO has no canonical FASTA form and is excluded from sequence co-folding.
-  exclude: ["DAMGO"]
-  use_msa: false             # single-sequence mode: deliberate, see README
+  exclude:
+  - DAMGO
+  use_msa: false
   n_seeds: 5
   retain_full_ensemble: true
-  metrics: [iptm, iplddt, ipsae, aggregate_score, pae]
+  metrics:
+  - iptm
+  - iplddt
+  - ipsae
+  - aggregate_score
+  - pae
   cross_seed_agreement: true
-
-# ---------------------------------------------------- Stage 2b: overlap audit
+  num_trunk_recycles: 3
+  num_diffn_timesteps: 200
 overlap:
-  # Thresholds for the HIGH_OVERLAP / MODERATE / NOVEL flag.
-  high_identity: 0.90
-  moderate_identity: 0.60
-
-# ---------------------------------------------------- Stage 3: membrane
+  high_identity: 0.9
+  moderate_identity: 0.6
 membrane:
   builder: packmol-memgen
-  # AMBER stack, per docs/forcefield_decision.md. packmol-memgen default mode.
   output_format: amber
   forcefield:
     protein: ff19SB
     lipid: lipid21
     ligand: gaff2
     water: opc
-  # Amber -> GROMACS conversion happens here. Stage 3 MUST verify atom count
-  # and total charge across it and fail loudly on mismatch.
   verify_conversion: true
-  lipids: ["POPC", "CHL1"]
-  lipid_ratio: "7:3"           # 30 mol% cholesterol (D26)
-  boundary_dist: 18            # A (D27)
-  water_layer: 22.5            # A, raised for charged-ligand ABFE (D27)
-  cholesterol_fraction: 0.30   # basolateral/neuronal, see D26
+  lipids:
+  - POPC
+  - CHL1
+  lipid_ratio: '7:3'
+  boundary_dist: 18
+  water_layer: 22.5
+  cholesterol_fraction: 0.3
   ionic_strength_mM: 150
+  cation: Na+
+  apl_offset: 1.15
   neutralise: true
   orientation: OPM/PPM
-  expected_atoms: [100000, 150000]
-
-# ---------------------------------------------------- Stage 4: MD
+  expected_atoms:
+  - 100000
+  - 150000
 md:
-  # Decided 2026-09-24: GROMACS, for portability to the OSU NVIDIA target.
-  # Rationale in docs/arch_notes.md. Built from source; see docs/provenance.md.
-  engine: gromacs            # openmm | gromacs
+  engine: gromacs
+  temperature_K: 310
+  peptides: benchmark
+  restraint_stages:
+  - 1000
+  - 500
+  - 100
+  - 10
+  proximal_cutoff: 12.0
   production_ns: 50
   staged_restraint_release: true
-  # Trajectory output policy - set BEFORE any run. See README.
-  reduced_traj_ps: 100       # receptor + peptide + proximal lipids
-  full_traj_ps: 5000         # full system, sparse
-
-# ---------------------------------------------------- Stage 5: MM/GBSA
+  reduced_traj_ps: 100
+  full_traj_ps: 5000
 mmgbsa:
-  purpose: rank_ordering     # NOT absolute affinity
+  purpose: rank_ordering
   stride: 10
-
-# ---------------------------------------------------- Stage 6: ABFE
 abfe:
-  peptides: ["DAMGO"]        # pilot: DAMGO first
-  # Starts from the 6DDF experimental pose, NOT a predicted one. This validates
-  # the free-energy machinery only; it does not test pose prediction.
+  peptides:
+  - DAMGO
   start_from: experimental
-  reference_structure: "results/00_receptor/damgo_ref.pdb"
+  reference_structure: results/00_receptor/damgo_ref.pdb
   n_lambda_windows: 36
   ns_per_window: 5
   estimator: MBAR
-  # DAMGO is decoupled as a single GAFF2 molecule, avoiding a mixed
-  # force-field junction mid-peptide. See docs/forcefield_decision.md.
   ligand_forcefield: gaff2
-  ligand_charges: am1bcc      # escalate to RESP if convergence is poor
-  # Storage policy: energies + subsampled coords only. See README.
+  ligand_charges: am1bcc
   save_full_trajectories: false
   subsample_stride: 50
-
-# ---------------------------------------------------- Stage 7: benchmark
 benchmark:
-  # Benchmark set is GPI-assay only, unmodified C-termini, CTOP excluded.
-  # No length cutoff: 4-mers (YPFP, YPYY) are retained deliberately.
-  # Membership is precomputed in the benchmark_include column of
-  # data/reference/reference_peptides.tsv. n = 10.
   reference_set: data/reference/reference_peptides.tsv
   include_column: benchmark_include
-  metrics: [spearman, mae]
+  metrics:
+  - spearman
+  - mae
   stratify_by: overlap_flag
-  report_separately: [cofold_confidence, physics_scores]
-
-# ---------------------------------------------------- test profile override
-# Applied ONLY when profile=test. Never alters production parameters.
+  report_separately:
+  - cofold_confidence
+  - physics_scores
 test_overrides:
   cofold:
     n_seeds: 2

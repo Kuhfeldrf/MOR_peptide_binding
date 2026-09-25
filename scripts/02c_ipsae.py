@@ -37,7 +37,7 @@ import sys
 
 import numpy as np
 
-VENDOR = pathlib.Path("/scratch/kuhfeldr-Kuhfeld_temp/vendor/ipsae.py")
+VENDOR = pathlib.Path(__file__).resolve().parent.parent / "vendor" / "ipsae.py"
 PAE_CUTOFF = 10
 DIST_CUTOFF = 15
 

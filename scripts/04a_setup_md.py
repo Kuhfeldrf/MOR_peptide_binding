@@ -24,10 +24,20 @@ import sys
 import numpy as np
 import parmed
 
-D = pathlib.Path("/scratch/kuhfeldr-Kuhfeld_temp/results/03_membrane_prod")
-PROXIMAL = 12.0       # A, lipid atoms this close to the solute are "proximal"
+import argparse
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--membrane", required=True, type=pathlib.Path,
+                 help="directory holding system.parm7 and the minimised gro")
+_ap.add_argument("--outdir", required=True, type=pathlib.Path)
+_ap.add_argument("--proximal", type=float, default=12.0)
+_ap.add_argument("--structure", default="system.gro")
+_A = _ap.parse_args()
+D = _A.membrane
+OUT = _A.outdir
+OUT.mkdir(parents=True, exist_ok=True)
+PROXIMAL = _A.proximal
 
-p = parmed.load_file(str(D / "system.parm7"), xyz=str(D / "min.gro"))
+p = parmed.load_file(str(D / "system.parm7"), xyz=str(D / _A.structure))
 xyz = np.array(p.coordinates)
 n = len(p.atoms)
 print(f"atoms {n}")
@@ -72,13 +82,13 @@ def write_group(fh, name, idx):
     fh.write("\n")
 
 
-with (D / "index.ndx").open("w") as fh:
+with (OUT / "index.ndx").open("w") as fh:
     write_group(fh, "System", list(range(n)))
     write_group(fh, "Protein_DAM", np.nonzero(solute)[0].tolist())
     write_group(fh, "MEMB", np.nonzero(memb)[0].tolist())
     write_group(fh, "SOLV", np.nonzero(solv)[0].tolist())
     write_group(fh, "Reduced", reduced)
-print(f"Wrote {D/'index.ndx'}")
+print(f"Wrote {OUT/'index.ndx'}")
 
 # ---------------------------------------------------------------- restraints
 # Restraints go inside the moleculetype they belong to, with indices local to
@@ -120,7 +130,7 @@ for mt, fc in (("system1", "POSRES_FC"), ("DAM", "POSRES_FC")):
         i += 1
         if mass > 2.0:
             heavy.append(i)
-    out = D / f"posre_{mt}.itp"
+    out = OUT / f"posre_{mt}.itp"
     with out.open("w") as fh:
         fh.write(f"; position restraints for {mt}, heavy atoms only\n")
         fh.write("[ position_restraints ]\n")

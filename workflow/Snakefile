@@ -1,19 +1,22 @@
 # uOR peptide screening pilot.
 #
-# No logic lives in this file. Every rule delegates to a script in scripts/,
-# so that each stage is independently runnable, re-runnable, and testable.
+# The workflow fans out over peptides. Stage 2 co-folds every peptide in the
+# library; stages 3 to 5 run per peptide on the subset selected in config.yaml;
+# stage 6 runs on the ABFE targets only. Nothing in this file contains a path:
+# everything derives from config, so the repository runs anywhere.
+#
+# Peptide selection lives in config, not in code, so scaling from 3 peptides to
+# 300 is a config change rather than an edit to the workflow.
 
+import csv
 import os
 
 configfile: "config/config.yaml"
 
 
 # ---------------------------------------------------------------------------
-# Test-profile override.
-#
-# The test path shortens MD production and reduces ABFE lambda windows. It must
-# never silently alter production parameters, so the override is applied here,
-# once, and the active profile is echoed into every output directory.
+# Test-profile override. The test path shortens MD and reduces ABFE windows; it
+# must never silently alter production parameters, so it is applied once, here.
 # ---------------------------------------------------------------------------
 def apply_profile(cfg):
     profile = cfg.get("project", {}).get("profile", "production")
@@ -25,8 +28,65 @@ def apply_profile(cfg):
 
 config, PROFILE = apply_profile(config)
 
-RESULTS = "results"
-PEPTIDES = []   # populated by stage 1; see rules/01_library.smk
+RESULTS = config["paths"]["results"]
+DATA = config["paths"]["data"]
+SCRIPTS = config["paths"]["scripts"]
+LOGS = config["paths"]["logs"]
+
+
+# ---------------------------------------------------------------------------
+# Peptide sets, read from the curated reference table.
+# ---------------------------------------------------------------------------
+def read_peptides():
+    """Every peptide the library defines, with its metadata."""
+    path = config["library"]["reference_set"]
+    out = {}
+    with open(path) as fh:
+        for row in csv.DictReader(fh, delimiter="\t"):
+            out[row["name"]] = row
+    return out
+
+
+PEPTIDES = read_peptides()
+
+# Stage 2 co-folds anything with a canonical sequence. DAMGO is excluded:
+# it has no valid FASTA form and its pose is taken from experiment instead.
+COFOLD = sorted(
+    name for name, r in PEPTIDES.items()
+    if r["sequence"] not in ("NON_CANONICAL", "")
+    and name not in config["cofold"].get("exclude", [])
+)
+
+# Stages 3-5 are expensive, so they run on an explicit subset. "benchmark"
+# means every peptide in the Stage 7 benchmark set; a list names them directly.
+_md_sel = config["md"].get("peptides", "benchmark")
+if _md_sel == "benchmark":
+    MD_PEPTIDES = sorted(n for n, r in PEPTIDES.items()
+                         if r.get("benchmark_include") == "YES")
+elif _md_sel == "all":
+    MD_PEPTIDES = sorted(PEPTIDES)
+else:
+    MD_PEPTIDES = sorted(_md_sel)
+
+# Stage 6 is the most expensive stage of all; the pilot runs DAMGO first.
+ABFE_PEPTIDES = sorted(config["abfe"]["peptides"])
+
+# Peptides whose starting pose comes from experiment rather than co-folding.
+EXPERIMENTAL = set(config["receptor"].get("extract_ligands", {}).keys())
+
+SEEDS = list(range(config["cofold"]["n_seeds"]))
+
+wildcard_constraints:
+    pep = r"[A-Za-z0-9_\-]+",
+    seed = r"\d+",
+
+
+onstart:
+    print(f"profile          : {PROFILE}")
+    print(f"peptides in set  : {len(PEPTIDES)}")
+    print(f"stage 2 co-fold  : {len(COFOLD)}")
+    print(f"stages 3-5 MD    : {len(MD_PEPTIDES)}  {MD_PEPTIDES}")
+    print(f"stage 6 ABFE     : {ABFE_PEPTIDES}")
 
 
 include: "rules/00_receptor.smk"
@@ -44,3 +104,17 @@ rule all:
     input:
         f"{RESULTS}/07_benchmark/benchmark.tsv",
         f"{RESULTS}/07_benchmark/benchmark.svg",
+
+
+rule stage2:
+    """Co-folding and the overlap audit only - the cheap, wide part."""
+    input:
+        f"{RESULTS}/02_cofold/scores.tsv",
+        f"{RESULTS}/02_cofold/cross_seed_agreement.tsv",
+        f"{RESULTS}/02b_overlap/overlap.tsv",
+
+
+rule stage4:
+    """Everything through production MD, for the selected peptides."""
+    input:
+        expand(f"{RESULTS}/04_md/{{pep}}/md_stats.json", pep=MD_PEPTIDES),
