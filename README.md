@@ -24,12 +24,12 @@ Runtime and hardware are recorded only for stages that have actually run.
 | 2 | Co-folding (Chai-1, 5 seeds) | `WORKING` | ~78 s/run | 1x L40S |
 | 2b | Training-overlap audit | `WORKING` | < 1 s | CPU |
 | 3 | Membrane system build | `WORKING` | ~1.5 h pack + 3 min build | CPU + 1 GPU |
-| 4 | Molecular dynamics (GROMACS) | `STUBBED` | - | - |
+| 4 | Molecular dynamics (GROMACS) | `WORKING` | ~9 h / peptide | 1x L40S |
 | 5 | MM/GBSA triage | `STUBBED` | - | - |
 | 6 | ABFE (DAMGO first) | `STUBBED` | - | - |
 | 7 | Benchmark figure | `STUBBED` | - | - |
 
-**Stages 0-3 run. Stages 4-7 are stubbed.** The rule graph, inputs, and
+**Stages 0-4 run through the workflow. Stages 5-7 are stubbed.** The rule graph, inputs, and
 outputs are real and wired together throughout; each remaining stub exits
 non-zero with a `STUBBED` marker rather than writing an empty or fabricated
 output, so a stubbed stage cannot be mistaken for one that ran.
@@ -185,29 +185,83 @@ figure caption, not only in the methods.
 
 ---
 
-## Reproducing the test path
+## Running the pipeline
 
-The test profile shortens MD production and reduces ABFE lambda windows. It
-never alters production parameters: overrides live in `test_overrides` in
-`config/config.yaml` and are applied once, in the Snakefile.
+Everything is driven by Snakemake. No step is run by hand, and no path is
+hardcoded: the workflow reads `config/config.yaml` and runs wherever it is
+cloned.
+
+### 1. Build the environments (once, and in a job)
 
 ```bash
-export PILOT_ROOT=/scratch/kuhfeldr-Kuhfeld_temp
-cd "$PILOT_ROOT"
-
-source /etc/profile.d/z00_lmod.sh      # module is undefined otherwise
-module load apptainer cuda/12.9.0
-
-conda activate mor-pilot
-
-snakemake --profile config/slurm --config profile=test -n   # dry run
-snakemake --profile config/slurm --config profile=test
+sbatch build_envs.sbatch
 ```
 
-Target: three peptides through all seven stages in under one hour on a single
-GPU node. **Not yet achieved - every stage is stubbed.**
+**This must be a job, not a login-node command.** The libmamba solve for
+`environment.yml` is large - AmberTools dominates it - and is OOM-killed on a
+login node. Snakemake reports that as `CreateCondaEnvironmentException` with
+output truncated at `Solving environment`, mentioning nothing about memory, so
+the real cause is not visible from the error.
 
----
+Two environments are built, and they cannot be merged: `chai_lab` pulls a torch
+build that pins `numpy<2`, which breaks every conda-forge package compiled
+against `numpy>=2`. Stage 2 therefore runs in its own environment.
+
+### 2. See what would run
+
+```bash
+snakemake -s workflow/Snakefile -n                # whole pipeline
+snakemake -s workflow/Snakefile -n stage2         # co-folding only
+snakemake -s workflow/Snakefile --dag | dot -Tsvg > dag.svg
+```
+
+### 3. Run it
+
+```bash
+bash run_pipeline.sh
+```
+
+Snakemake stays on the login node and submits one SLURM job per rule instance,
+so it runs detached and survives a dropped connection.
+
+### Scaling is a configuration change
+
+The expensive stages run on the peptide subset named in `config.yaml`:
+
+```yaml
+md:
+  peptides: benchmark     # the Stage 7 benchmark set
+  # peptides: all         # every peptide in the library
+  # peptides: [met_enkephalin, casoxin_C]   # or name them
+```
+
+| `md.peptides` | Peptides through physics | Jobs in the DAG |
+|---------------|--------------------------|-----------------|
+| `benchmark`   | 7                        | 91              |
+| `all`         | 19                       | 325             |
+
+Nothing in `workflow/` changes. Stage 2 always co-folds the full library -
+cheap and wide - while only the selected subset reaches the expensive physics.
+That asymmetry is the triage design, and it is visible in the dependency graph
+rather than asserted in prose.
+
+### Determinism is a rule, not a claim
+
+```bash
+snakemake -s workflow/Snakefile results/00_receptor/determinism.txt
+```
+
+Re-runs Stage 0 into a temporary directory and compares SHA-256 digests against
+the recorded ones. It currently passes: `mOR_clean.pdb`, `mOR_clean.pqr`,
+`mOR_chainR_raw.pdb` and `DAMGO_ref.pdb` are byte-identical across runs.
+
+### The test path
+
+`test/peptides_test.fasta` holds three peptides intended to traverse all seven
+stages in under an hour with `--config profile=test`, which shortens MD and
+reduces ABFE windows. **This has not yet been demonstrated end to end**, because
+stages 5 to 7 are still stubbed. Saying otherwise would be exactly the
+overclaiming this README is supposed to avoid.
 
 ## Known limitations
 
