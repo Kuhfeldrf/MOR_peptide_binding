@@ -6,24 +6,39 @@
 # parameterisation and topology, and Snakemake schedules them independently
 # through the SLURM executor. Scaling from 3 peptides to 300 is a config change.
 #
-# The starting complex comes from one of two places. DAMGO and any other ligand
+# The starting pose comes from one of two places. DAMGO and any other ligand
 # resolved in the receptor structure are EXTRACTED from experiment; everything
 # else uses its best-ranked Chai-1 pose. Which applies is decided by config, not
 # by a branch buried in a script.
+#
+# Both rules below want the PEPTIDE ALONE, so both use ligand_only. There used
+# to be a second function, complex_source, returning Chai-1's best_pose.pdb -
+# the receptor AND peptide together - and membrane_complex passed it as
+# --ligand. 03a_prep_complex.py relabels every atom it is handed as residue
+# LIG, so each co-folded system got the receptor twice: once properly as chain
+# R, and again as a 2294-atom "ligand" sitting at Chai-1's coordinates ~200 A
+# away. The bounding box grew to 251 x 251 x 303 A and packmol dutifully filled
+# it with 1.9M atoms instead of 84k. Nothing failed; the jobs just ran for
+# hours. DAMGO was unaffected because for an experimental ligand both functions
+# returned the same peptide-only file, so the bug could not show up in the one
+# system that had been checked by hand.
+#
+# complex_source is deleted rather than fixed: two nearly identical functions
+# whose names differ by what they include is the footgun that caused this.
 
 
-def complex_source(wildcards):
-    """Where this peptide's starting pose comes from."""
+def ligand_only(wildcards):
+    """The PEPTIDE ALONE - never receptor+peptide. See the note above."""
     if wildcards.pep in EXPERIMENTAL:
         return f"{RESULTS}/00_receptor/{wildcards.pep}_ref.pdb"
-    return f"{RESULTS}/02_cofold/{wildcards.pep}/best_pose.pdb"
+    return f"{RESULTS}/02_cofold/{wildcards.pep}/best_ligand.pdb"
 
 
 rule membrane_complex:
     """Receptor + peptide in the OPM membrane frame, AMBER-named."""
     input:
         receptor=f"{RESULTS}/00_receptor/mOR_clean.pdb",
-        ligand=complex_source,
+        ligand=ligand_only,
         opm=f"{DATA}/raw/6ddf_opm.pdb",
     output:
         complex=f"{RESULTS}/03_membrane/{{pep}}/complex_opm.pdb",
@@ -36,14 +51,6 @@ rule membrane_complex:
         "python3 {SCRIPTS}/03a_prep_complex.py "
         "--receptor {input.receptor} --ligand {input.ligand} "
         "--opm {input.opm} --outdir $(dirname {output.complex}) > {log} 2>&1"
-
-
-def ligand_only(wildcards):
-    """The PEPTIDE alone. complex_source gives receptor+peptide, which Stage 3
-    places in the membrane; parameterisation needs just the ligand."""
-    if wildcards.pep in EXPERIMENTAL:
-        return f"{RESULTS}/00_receptor/{wildcards.pep}_ref.pdb"
-    return f"{RESULTS}/02_cofold/{wildcards.pep}/best_ligand.pdb"
 
 
 rule ligand_params:

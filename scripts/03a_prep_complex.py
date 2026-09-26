@@ -104,9 +104,34 @@ def main() -> None:
 
     # ---------------------------------------------- 2. ligand
     lig = atoms(a.ligand)
+
+    # Every atom handed in here is relabelled as a single residue LIG, so this
+    # file MUST be the peptide alone. When it was accidentally wired to a
+    # co-folding output containing receptor+peptide, the receptor was silently
+    # duplicated into the "ligand", the bounding box tripled in every
+    # dimension, and packmol packed a 1.9M-atom system. Every step still
+    # exited 0.
+    #
+    # The test is a backbone count measured against the receptor, so there is
+    # no absolute cutoff to go stale. A digestion peptide is a handful of
+    # residues; anything approaching the receptor's own chain length is the
+    # receptor. A positional test would NOT work here: the duplicate arrived at
+    # the co-folding model's coordinates, hundreds of angstroms away, so it
+    # overlapped nothing.
+    rec_ca = ca_map(rec)
+    lig_ca = ca_map(lig)
+    if len(lig_ca) > 0.25 * len(rec_ca):
+        sys.exit(
+            f"FATAL: --ligand {a.ligand} has {len(lig_ca)} CA atoms against "
+            f"the receptor's {len(rec_ca)} - this is a receptor+peptide "
+            f"complex, not a ligand.\n"
+            f"       Pass the peptide alone (best_ligand.pdb), not the "
+            f"co-folded pose (best_pose.pdb).")
+
     lig_fixed = [l[:17] + f"{a.ligand_resname:>3}" + " L" + f"{1:>4}" + l[26:]
                  for l in lig]
-    print(f"Ligand: {len(lig_fixed)} atoms as {a.ligand_resname}")
+    print(f"Ligand: {len(lig_fixed)} atoms as {a.ligand_resname} "
+          f"({len(lig_ca)} CA)")
 
     body = fixed + ["TER"] + lig_fixed
     body = [l if l == "TER" else l[:6] + f"{i+1:>5}" + l[11:]
