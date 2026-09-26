@@ -32,9 +32,34 @@ echo "=== $(date -Is) launching pipeline ==="
 echo "GMX_PREFIX=$GMX_PREFIX"
 gmx --version 2>/dev/null | grep -m1 "GROMACS version" || echo "WARNING: gmx not on PATH"
 
-# A killed Snakemake leaves the working directory locked, and the next launch
-# then fails with a LockException that reads like a workflow error. Clearing it
-# is safe because this script is the only thing that starts the workflow.
+# Only one launch may be live at a time.
+#
+# This script used to run `--unlock` unconditionally, on the reasoning that
+# clearing the lock "is safe because this script is the only thing that starts
+# the workflow." That reasoning was wrong, and it conflated two different
+# claims: that only this script launches the workflow, and that only one launch
+# is ever active. Snakemake's directory lock exists precisely to enforce the
+# second, so clearing it on every launch meant a new instance silently STOLE
+# the lock from a running one instead of being refused by it.
+#
+# Three instances ended up live against this directory at once. Each of the
+# seven benchmark peptides got two concurrent membrane_pack jobs writing the
+# same output directory - packmol-memgen cd's into that directory and writes
+# fixed filenames - so both copies of every output were interleaved garbage,
+# and nothing anywhere reported a problem.
+#
+# flock is the guard the comment above wrongly assumed. A second launch now
+# exits immediately and says which PID holds the lock.
+exec 9>"$ROOT/.pipeline.lock"
+if ! flock -n 9; then
+  echo "ERROR: a pipeline launch is already running (pid $(cat "$ROOT/.pipeline.pid" 2>/dev/null || echo '?'))." >&2
+  echo "       Wait for it, or stop it before launching again." >&2
+  exit 1
+fi
+echo $$ > "$ROOT/.pipeline.pid"
+
+# Safe only now: holding the flock proves no other launch is live, so any
+# Snakemake lock still present is genuinely stale from a killed run.
 snakemake -s workflow/Snakefile --cores 1 --unlock >/dev/null 2>&1 || true
 
 snakemake -s workflow/Snakefile --profile config/slurm --rerun-incomplete --keep-going

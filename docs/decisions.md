@@ -53,6 +53,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D31](#d31) | Bulk cation Na+, not K+ | FIRM | 2026-09-25 |
 | [D32](#d32) | The workflow is the deliverable | FIRM | 2026-09-25 |
 | [D33](#d33) | Co-folded ligands must be chemically completed before parameterisation | FIRM | 2026-09-25 |
+| [D34](#d34) | One pipeline launch at a time, enforced by flock | FIRM | 2026-09-25 |
 
 ---
 
@@ -915,3 +916,64 @@ seven benchmark peptides carry a glutamate and are not +1 at all.
 coordinates satisfy the model's objective, not a valence check. Anything headed
 for a force field is completed and inspected first, and what was added is
 recorded.
+
+
+<a name="d34"></a>
+## D34 - One pipeline launch at a time, enforced by flock · FIRM
+
+`run_pipeline.sh` cleared Snakemake's working-directory lock on every launch:
+
+```bash
+snakemake -s workflow/Snakefile --cores 1 --unlock >/dev/null 2>&1 || true
+```
+
+The comment justifying it read: *"Clearing it is safe because this script is
+the only thing that starts the workflow."*
+
+### Why that reasoning was wrong
+
+It conflates two different claims:
+
+- only this script launches the workflow - **true**
+- only one launch is ever active - **assumed, never enforced**
+
+Snakemake's lock exists to enforce the second. Clearing it unconditionally
+disabled the only thing standing between a relaunch and a concurrent run, so a
+new instance **stole the lock from a live one** rather than being refused by it.
+
+### What it cost
+
+Three instances ran against `/scratch/kuhfeldr-Kuhfeld_temp` at once (launched
+12:42, 13:13, 13:48). Each of the seven benchmark peptides had **two concurrent
+`membrane_pack` jobs writing the same output directory** - packmol-memgen cd's
+into that directory and writes fixed filenames, so the two processes interleaved
+writes to identical paths. Roughly four hours of compute, and every one of the
+seven packed systems had to be discarded.
+
+### Why nothing caught it
+
+This is the same shape as D33. **Every job exits 0.** Two packmol processes
+writing the same file produce a file; downstream stages parameterise it, run it
+and report numbers. `squeue` showed fourteen healthy running jobs. The only
+visible symptom was two rows with the same rule and the same wildcard, which
+requires resolving each job's log path to notice.
+
+### Fix
+
+`flock` on a lock file held for the life of the script. A second launch exits
+immediately and names the PID holding it. `--unlock` now runs only *after* the
+flock is acquired - at which point no other launch can be live, so any
+remaining Snakemake lock is genuinely stale.
+
+### Rule adopted
+
+**A guard removed to stop an error message must be replaced, not deleted.** The
+`--unlock` call was added because a killed run left a lock whose `LockException`
+looked like a workflow error. That annoyance was real, but the fix silenced the
+mechanism instead of handling the stale case, and the comment rationalised it
+well enough that it read as considered.
+
+### Revisit trigger
+
+If the workflow ever needs to run against the same directory from two hosts,
+flock over a shared filesystem is not sufficient and this needs a real lease.

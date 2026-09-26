@@ -34,6 +34,18 @@ outputs are real and wired together throughout; each remaining stub exits
 non-zero with a `STUBBED` marker rather than writing an empty or fabricated
 output, so a stubbed stage cannot be mistaken for one that ran.
 
+### First production result
+
+[`docs/stage4_damgo_50ns.md`](docs/stage4_damgo_50ns.md) - DAMGO, 50 ns, 137.7
+ns/day on one L40S. The ligand holds the orthosteric pose (RMSD 1.30 A, centre
+of mass 0.50 A from start) and **ASP147 is in contact in all 501 frames**, which
+is the conserved TM3 salt bridge that defines opioid binding.
+
+This validates the system build, not the science: the run starts from the
+experimental pose, so it shows the force field and protonation hold a
+known-correct structure, not that the pipeline can predict a pose or an
+affinity. Those are Stages 5-7.
+
 ### Stage 0 findings
 
 Two expectations in the build instructions did not survive contact with the
