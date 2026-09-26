@@ -72,6 +72,22 @@ def main() -> None:
                     help="results/01_library/peptides.tsv")
     ap.add_argument("--recycles", type=int, default=3)
     ap.add_argument("--timesteps", type=int, default=200)
+    # Template conditioning. Off by default, so the single-sequence arm is
+    # unchanged and the two are directly comparable.
+    #
+    # The receptor is otherwise re-predicted from sequence on every run even
+    # though its experimental structure is already in the repository - and the
+    # prediction is 2.72 A from it over 281 CA. A template pins the receptor to
+    # the structure we actually transplant into at Stage 3.
+    #
+    # The PEPTIDE gets no template: a 4-7mer has no homologue to template from,
+    # and supplying one would be telling the model the answer.
+    ap.add_argument("--template-m8", type=pathlib.Path, default=None,
+                    help="m8 hit file; query_id must match the FASTA entity "
+                         "name ('receptor'), subject_id is '<pdb>_<chain>'.")
+    # The template CIF itself is fetched by chai_lab into <outdir>/templates;
+    # it cannot be pre-seeded because run_inference requires an empty output
+    # directory. Compute nodes have outbound HTTPS, so this works.
     a = ap.parse_args()
 
     receptor = read_fasta(a.receptor)[0][1]
@@ -125,12 +141,24 @@ def main() -> None:
                 if rundir.exists():
                     shutil.rmtree(rundir)
                 rundir.mkdir(parents=True, exist_ok=True)
+
+                # NOTE: chai_lab fetches the template CIF into
+                # <output_dir>/templates itself. Seeding that cache beforehand
+                # is NOT possible - run_inference asserts its output directory
+                # is empty - and it is not needed: ORCA compute nodes do have
+                # outbound HTTPS (verified against files.rcsb.org). Each job
+                # therefore downloads 6DDF once, ~176 KB.
+                #
+                # The dependency is on a PDB entry, which is immutable, so this
+                # does not make the run irreproducible - but it does make
+                # template mode require network, unlike the default arm.
                 t0 = time.time()
                 cand = run_inference(
                     fasta_file=fa,
                     output_dir=rundir,
                     use_msa_server=False,   # single-sequence mode, deliberate
                     use_esm_embeddings=True,
+                    template_hits_path=a.template_m8,
                     num_trunk_recycles=a.recycles,
                     num_diffn_timesteps=a.timesteps,
                     seed=seed,
