@@ -113,7 +113,13 @@ md:
   full_traj_ps: 5000
 mmgbsa:
   purpose: rank_ordering
-  stride: 10
+  # Scored from a MINIMISED COMPLEX, not a trajectory, so the tier is cheap
+  # enough to run over the scrambled decoys. A triage score that cannot be run
+  # over negatives cannot be validated.
+  igb: 8                 # GBn2, the AmberTools pairing for mbondi3 radii
+  minsteps: 2000
+  disulfide: "140,217"   # TM3-ECL2, receptor numbering
+  stride: 10             # retained for the trajectory-ensemble variant
 abfe:
   peptides:
   - DAMGO

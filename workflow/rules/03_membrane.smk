@@ -94,6 +94,10 @@ rule ligand_params:
     output:
         mol2=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.mol2",
         frcmod=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.frcmod",
+        # Declared because Stage 5 needs it: it is the only file carrying the
+        # ligand with the SAME atom names and count as the mol2. The script
+        # always wrote it; leaving it undeclared made it invisible to the DAG.
+        unique=f"{RESULTS}/03_membrane/{{pep}}/params/ligand_unique.pdb",
 
     log:
         f"{LOGS}/03_params_{{pep}}.log",

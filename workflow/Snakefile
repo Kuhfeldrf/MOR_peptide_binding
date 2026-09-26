@@ -121,6 +121,19 @@ elif _md_sel == "all":
 else:
     MD_PEPTIDES = sorted(_md_sel)
 
+# The TRIAGE tier. This is where the funnel actually is.
+#
+# Building a complex and parameterising a ligand cost seconds and minutes, so
+# they run for EVERY co-folded peptide - including the scrambled decoys, which
+# are the only way to know whether a score discriminates. Packing a bilayer and
+# running MD cost hours to days, so those stay on MD_PEPTIDES.
+#
+# The split matters because Stage 7 showed the co-folding confidence scores
+# cannot separate binders from decoys (AUROC 0.38-0.48 across two arms). The
+# cheap physics tier is what replaces them, and a tier that cannot be run over
+# the decoys cannot be validated at all.
+TRIAGE_PEPTIDES = sorted(set(COFOLD) | set(MD_PEPTIDES))
+
 # Stage 6 is the most expensive stage of all; the pilot runs DAMGO first.
 ABFE_PEPTIDES = sorted(config["abfe"]["peptides"])
 
@@ -138,7 +151,9 @@ onstart:
     print(f"profile          : {PROFILE}")
     print(f"peptides in set  : {len(PEPTIDES)}")
     print(f"stage 2 co-fold  : {len(COFOLD)}")
-    print(f"stages 3-5 MD    : {len(MD_PEPTIDES)}  {MD_PEPTIDES}")
+    print(f"triage (cheap)   : {len(TRIAGE_PEPTIDES)}  "
+          f"({sum(1 for p in TRIAGE_PEPTIDES if p.startswith('scr__'))} decoys)")
+    print(f"stages 3b-4 MD   : {len(MD_PEPTIDES)}  {MD_PEPTIDES}")
     print(f"stage 6 ABFE     : {ABFE_PEPTIDES}")
 
 
