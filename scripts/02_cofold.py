@@ -23,6 +23,7 @@ import argparse
 import csv
 import json
 import pathlib
+import shutil
 import time
 
 import numpy as np
@@ -116,9 +117,14 @@ def main() -> None:
                 print(f"  {tag}: already complete ({len(done)} models), skipping")
                 dt = float("nan")
             else:
+                # An incomplete run is cleared before retrying. iterdir() also
+                # yields DIRECTORIES - _ipsae among them - and unlink() raises
+                # IsADirectoryError on those, so a restart into a dirty output
+                # directory died where a fresh run succeeded. shutil.rmtree
+                # removes the whole thing rather than walking its contents.
                 if rundir.exists():
-                    for f in rundir.iterdir():
-                        f.unlink()
+                    shutil.rmtree(rundir)
+                rundir.mkdir(parents=True, exist_ok=True)
                 t0 = time.time()
                 cand = run_inference(
                     fasta_file=fa,
