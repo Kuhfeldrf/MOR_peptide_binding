@@ -7,7 +7,7 @@ First completed production run. DAMGO in the mu-opioid receptor, POPC with
 | Quantity | Value |
 |----------|-------|
 | Duration | 50 ns, 501 frames |
-| Wall time | 8 h 43 m on one L40S |
+| Wall time | 8 h 43 m on one A30 |
 | Performance | 137.7 ns/day |
 | Ligand RMSD, mean | **1.30 A** |
 | Ligand RMSD, second half | **1.26 A** |
@@ -93,3 +93,15 @@ Stage 5 and Stage 6, which are still stubbed.
 40 MB total for 50 ns. The instructions name uncontrolled trajectory writing as
 the single most likely way to fill the filesystem; writing the full system at
 analysis frequency instead would have produced roughly 2 GB for the same run.
+
+## Correction, 2026-09-26
+
+This report originally said the run took 8 h 43 m **on one L40S**. It was an
+**A30** (job 182895, node orcaga20). The `md_production` rule was pinned to the
+`long` partition, which contains only A30 nodes, so the card was a consequence
+of that setting rather than a choice - and 137.7 ns/day is therefore an A30
+number.
+
+Production has since moved to `normal`, which holds the L40S nodes and still
+allows 24 h. Whether the L40S is materially faster here is an expectation, not
+yet a measurement.

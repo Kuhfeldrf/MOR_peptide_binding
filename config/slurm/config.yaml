@@ -66,14 +66,26 @@ set-resources:
     runtime: 120
     mem_mb: 32000
     cpus_per_task: 8
+  # 240 min is exactly `short`'s 4 h ceiling, leaving no margin at all, so
+  # equilibration runs in `normal` (24 h) instead.
   md_equilibrate:
+    slurm_partition: "normal"
     gres: "gpu:1"
     runtime: 240
     mem_mb: 32000
     cpus_per_task: 8
+
+  # `long` contains ONLY A30 nodes. The 50 ns DAMGO benchmark - 8 h 43 m,
+  # 137.7 ns/day - was an A30 for that reason, not a deliberate choice.
+  # `normal` holds the L40S nodes and still allows 24 h, nearly 3x that run,
+  # so production goes there and asks for an L40S specifically.
+  #
+  # The L40S is expected to be the faster card for this workload, but that is
+  # an expectation and not a measurement: 137.7 ns/day is the A30 number, and
+  # the first L40S run is what will show the real difference.
   md_production:
-    slurm_partition: "long"
-    gres: "gpu:1"
+    slurm_partition: "normal"
+    gres: "gpu:l40s:1"
     runtime: 1200
     mem_mb: 32000
     cpus_per_task: 8

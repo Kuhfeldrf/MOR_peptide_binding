@@ -24,7 +24,7 @@ Runtime and hardware are recorded only for stages that have actually run.
 | 2 | Co-folding (Chai-1, 5 seeds) | `WORKING` | ~78 s/run | 1x L40S |
 | 2b | Training-overlap audit | `WORKING` | < 1 s | CPU |
 | 3 | Membrane system build | `WORKING` | ~1.5 h pack + 3 min build | CPU + 1 GPU |
-| 4 | Molecular dynamics (GROMACS) | `WORKING` | ~9 h / peptide | 1x L40S |
+| 4 | Molecular dynamics (GROMACS) | `WORKING` | ~9 h / peptide | 1x A30 |
 | 5 | MM/GBSA triage | `STUBBED` | - | - |
 | 6 | ABFE (DAMGO first) | `STUBBED` | - | - |
 | 7 | Benchmark figure | `STUBBED` | - | - |
@@ -37,7 +37,7 @@ output, so a stubbed stage cannot be mistaken for one that ran.
 ### First production result
 
 [`docs/stage4_damgo_50ns.md`](docs/stage4_damgo_50ns.md) - DAMGO, 50 ns, 137.7
-ns/day on one L40S. The ligand holds the orthosteric pose (RMSD 1.30 A, centre
+ns/day on one A30. The ligand holds the orthosteric pose (RMSD 1.30 A, centre
 of mass 0.50 A from start) and **ASP147 is in contact in all 501 frames**, which
 is the conserved TM3 salt bridge that defines opioid binding.
 
