@@ -10,7 +10,16 @@
 # rather than erroring.
 
 executor: slurm
-jobs: 12                     # concurrent SLURM jobs
+# Concurrent SLURM jobs. Sized to the hardware rather than picked round:
+# a node is 64 CPU / 570 GB / 4 GPUs, so a GPU rule packs 4 per node (its
+# 8 CPU and 64 GB are far from binding), and `short` alone holds 16 idle
+# nodes = 64 free GPUs. At 12 the workflow left ~60 GPUs idle and co-folded
+# 185 seed jobs a dozen at a time.
+#
+# 48 keeps the widest stage saturated without taking the whole partition on a
+# shared machine. It does not affect the expensive stages, which are limited by
+# peptide count (7 MD jobs) rather than by this number.
+jobs: 48
 latency-wait: 60             # NFS: wait for outputs to appear
 rerun-incomplete: true
 printshellcmds: true
