@@ -6,34 +6,54 @@ casomorphins. It is the wrong tool for the 10-20+ residue peptides this
 project ultimately wants to screen, and scaling it there would be a
 methodological error a reviewer would catch.**
 
-## The DAMGO reference value - NOT YET USABLE
+## The DAMGO reference value - the literature does not agree with itself
 
-A computed ΔG needs an experimental number to be validated against. The
-reference table currently has `ki_status = NOT_REPORTED` for every row, and
-DAMGO is not in it at all.
+A computed ΔG needs an experimental number to be validated against. Looking for
+one turned up a bigger problem than a missing citation.
 
-| | |
-|---|---|
-| Value found | **Ki = 1.23 nM** (→ ΔG ≈ -12.2 kcal/mol at 310 K) |
-| Attributed to | "Binding affinity and selectivity of opioids at mu, delta and kappa receptors in monkey brain membranes" (J Pharmacol Exp Ther) |
-| Status | **UNCONFIRMED** |
+| Kd | preparation / method | ΔG at 310 K |
+|---|---|---|
+| 0.689 nM | [3H]DAMGO saturation, rat brain | **-13.00** kcal/mol |
+| 1.23 nM | monkey brain membranes, competition | **-12.64** kcal/mol |
+| 15.06 nM | rat midbrain/brainstem, optimised saturation, 37 °C | **-11.10** kcal/mol |
 
-Two reasons it is not yet usable as the yardstick:
+**A 22-fold spread in Kd, which is 1.90 kcal/mol in ΔG.**
 
-1. **Not read in full text.** The value came from a search summary, not from
-   the paper. Under the project's own sourcing rule that is not a source.
-2. **Wrong preparation.** It is monkey brain membrane, whereas the receptor
-   modelled here is **human** MOR (6DDF). Opioid affinities differ between
-   native tissue and cloned receptor preparations, so the assay system has to
-   match the claim.
+The best-sourced of these is the last: Khoramjouy, Ahmadi, Faizi et al.,
+*Pharmacological Reports* 2021, [PMID
+33871815](https://pubmed.ncbi.nlm.nih.gov/33871815/) - 160 µg membrane protein,
+20 nM [3H]DAMGO, 37 °C, 35 min, centrifugation rather than filtration,
+Kd = 15.06 nM (95% CI 8.12-22.00), Bmax = 0.475 pmol/mg. Notably that paper
+exists *because* the authors found the standard protocol unreliable, and their
+"optimised" value is an order of magnitude weaker than the commonly cited one.
 
-The right citation is likely Raynor et al. 1994, *Mol Pharmacol* 45:330-334
-([PMID 8114680](https://pubmed.ncbi.nlm.nih.gov/8114680/)), which characterised
-the **cloned** receptors - but the DAMGO value was not extracted from it, so it
-is recorded here as a lead, not a source.
+### Why this matters more than a bookkeeping detail
 
-**Action required before any ΔG is called validated:** obtain the full text,
-extract the value with its assay conditions, and record it with its PMID.
+**The experimental uncertainty is as large as the method's own error bar.** A
+well-converged small-molecule ABFE is typically good to 0.5-1.5 kcal/mol, and a
+flexible peptide is worse. Against a reference that spans 1.90 kcal/mol, "our
+ΔG matches experiment" is not a meaningful claim - almost any answer in that
+window matches *something* in the literature.
+
+**None of these is the right preparation.** The receptor modelled here is
+**human** MOR (6DDF). These are rat and monkey brain tissue. Native-tissue and
+cloned-receptor affinities differ, and so do 25 °C and 37 °C measurements.
+
+### Consequences
+
+1. **Do not claim ΔG validation against a single literature value.** Report the
+   computed ΔG with its convergence, alongside the *range* of reported
+   experimental values and the preparation each came from.
+2. **A condition-matched human cloned-receptor Kd is still wanted.** It was not
+   found in open access; Raynor et al. 1994, *Mol Pharmacol* 45:330-334
+   ([PMID 8114680](https://pubmed.ncbi.nlm.nih.gov/8114680/)) characterised the
+   cloned receptors and is the likely source, but it is paywalled and the value
+   was not extracted, so it remains a lead rather than a source.
+3. **This strengthens the case for RELATIVE over ABSOLUTE free energies.**
+   Systematic errors in the experimental reference partly cancel in a ΔΔG
+   between two peptides measured in the *same* assay, and the casomorphin
+   IC50 values all come from GPI preparations. Ranking a congeneric series is a
+   claim the data can actually support; hitting an absolute number is not.
 
 ## Why ABFE degrades with peptide length
 
