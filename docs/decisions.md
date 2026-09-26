@@ -55,6 +55,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D33](#d33) | Co-folded ligands must be chemically completed before parameterisation | FIRM | 2026-09-25 |
 | [D34](#d34) | One pipeline launch at a time, enforced by flock | FIRM | 2026-09-25 |
 | [D35](#d35) | A ligand input must be checked for being a complex | FIRM | 2026-09-26 |
+| [D36](#d36) | A predicted pose is transferred by rigid superposition, never repositioned | FIRM | 2026-09-26 |
 
 ---
 
@@ -1071,3 +1072,92 @@ what it was handed, so it has to check before it overwrites.
 
 If the library ever includes genuine protein-sized binders, the 0.25 ratio stops
 being meaningful and the check needs to become an explicit chain-count test.
+
+
+<a name="d36"></a>
+## D36 - A predicted pose is transferred by rigid superposition, never repositioned · FIRM
+
+A co-folding model predicts receptor and peptide together in **its own frame**,
+near the origin. The experimental receptor sits at its crystal coordinates. For
+this system the two are about 230 A apart:
+
+| file | centroid |
+|---|---|
+| `best_ligand.pdb` (Chai-1) | (9.8, -5.0, -3.4) |
+| `best_pose.pdb` (Chai-1) | (-0.1, 1.0, 1.6) |
+| `mOR_clean.pdb` (crystal) | (119.2, 144.6, 132.6) |
+
+`03a_prep_complex.py` concatenated the crystal receptor with the predicted
+peptide as if they shared a frame. They do not, so the peptide landed outside
+the protein and the box grew to contain both. Fixing [D35](#d35) alone did not
+fix this: the peptide was then the right molecule, still in the wrong frame.
+
+### How the peptide is placed
+
+The prediction's **own receptor** is the only thing relating the two frames. It
+is superposed onto the experimental receptor and the resulting **rigid**
+transform is applied to the peptide:
+
+```
+predicted receptor  --Kabsch-->  experimental receptor        (RMSD 2.72 A)
+peptide             --same R,t->  peptide, now in crystal frame
+```
+
+Because the transform is rigid, every ligand-receptor distance the model
+predicted is preserved exactly. The peptide is moved **with** the receptor, not
+**towards** it.
+
+### Two corrections the superposition needs
+
+Both fail silently by matching the wrong residues rather than erroring:
+
+- **The peptide is a separate chain** in the pose (A = receptor, B = peptide).
+  Without a chain filter its residues 1-5 collided with the receptor's own
+  residues 1-5 in a residue-number-keyed map.
+- **The prediction numbers the construct from 1; the crystal starts at 65.**
+  Superposing without `resid_offset: 64` gave a **24.6 A** fit. With it, 2.72 A
+  over all 281 CA.
+
+The 24.6 A figure is why the fit RMSD is checked and printed: a wrong mapping
+produces a confident, completely incorrect placement.
+
+### Nothing forces the peptide into the pocket
+
+This is a **policy**, not an implementation detail, and it is the point of the
+benchmark. A peptide that binds weakly or not at all is a result worth having;
+a pipeline that quietly improves poses cannot produce one.
+
+- The frame transfer is rigid. It cannot change the predicted pose.
+- An earlier version of the check **aborted** when the nearest ligand atom was
+  more than 5 A from the receptor. That was wrong and is removed: it would have
+  killed exactly the negative results the benchmark needs. It now records the
+  distance and carries on, printing a NOTE.
+- What remains is a check on the **operation**, not the outcome: a rigid
+  transform preserves ligand-receptor distance, so the closest approach
+  measured against the predicted receptor and against the experimental one must
+  agree. For met-enkephalin, **1.03 A predicted vs 1.29 A after** - the
+  difference being model-vs-crystal deviation. A frame error shows up as
+  hundreds of angstroms. Weak binding does not trip it.
+- Position restraints exist only during heating and staged NPT equilibration
+  (1000 -> 500 -> 100 -> 10 kJ/mol/nm2) to settle the bilayer, and are fully
+  released. **`prod.mdp` has no `define` line at all** - no POSRES, no
+  `pull`, no `freezegrps` anywhere in the workflow. The 50 ns DAMGO
+  trajectory ([`stage4_damgo_50ns.md`](stage4_damgo_50ns.md)) was run with the
+  ligand completely free.
+
+`pose_geometry.tsv` records the approach distances per peptide as data for
+Stage 7 to interpret.
+
+### Why it was not caught earlier
+
+DAMGO is extracted from the receptor structure and is **already in frame**, so
+it needs no transform and never exercised this path. The one system built,
+equilibrated, run for 50 ns and inspected by hand was structurally incapable of
+showing the bug - the same blind spot as [D35](#d35).
+
+### Revisit trigger
+
+If the co-folding tool changes its chain lettering or numbering, the fit RMSD
+check fires rather than silently mis-placing the peptide. If a future receptor
+construct has a different offset, `receptor.resid_offset` is the single place
+to change it.

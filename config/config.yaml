@@ -43,6 +43,9 @@ library:
   screening_set: data/reference/known_opioid_peptides.csv
 cofold:
   tool: chai-1
+  # Chai-1 writes the receptor as chain A and the peptide as chain B. Stage 3
+  # needs the receptor chain to relate the prediction's frame to the crystal's.
+  receptor_chain: A
   exclude:
   - DAMGO
   use_msa: false

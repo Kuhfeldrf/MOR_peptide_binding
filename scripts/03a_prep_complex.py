@@ -59,6 +59,19 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--receptor", required=True, type=pathlib.Path)
     ap.add_argument("--ligand", required=True, type=pathlib.Path)
+    ap.add_argument(
+        "--pose", type=pathlib.Path,
+        help="Co-folded receptor+peptide, used ONLY to bring the ligand into "
+             "the receptor's coordinate frame. Required when the ligand comes "
+             "from co-folding; omitted when it was extracted from the "
+             "receptor structure and is already in frame.")
+    ap.add_argument("--pose-chain", default="A",
+                    help="Receptor chain within --pose (the peptide is a "
+                         "separate chain and must be excluded).")
+    ap.add_argument("--pose-offset", type=int, default=0,
+                    help="Added to --pose residue numbers to reach the "
+                         "receptor's numbering. Co-folding numbers the "
+                         "construct from 1; the crystal starts at 65.")
     ap.add_argument("--opm", required=True, type=pathlib.Path)
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
     ap.add_argument("--ligand-resname", default="LIG")
@@ -127,6 +140,105 @@ def main() -> None:
             f"complex, not a ligand.\n"
             f"       Pass the peptide alone (best_ligand.pdb), not the "
             f"co-folded pose (best_pose.pdb).")
+
+    # ------------------------------------- 2b. bring the ligand into frame
+    #
+    # A co-folding model predicts receptor and peptide together in ITS OWN
+    # arbitrary frame, near the origin. The experimental receptor is at its
+    # crystal coordinates - here about 230 A away. Concatenating the two
+    # directly leaves the peptide hundreds of angstroms outside the protein,
+    # which is geometrically absurd but breaks nothing: the box simply grows to
+    # contain both, and packmol fills it.
+    #
+    # So the peptide is moved by superposing the PREDICTED receptor onto the
+    # experimental one and applying that transform to the peptide. The
+    # prediction's own receptor is the only thing that relates the two frames.
+    #
+    # DAMGO never needed this - it was extracted from the receptor structure and
+    # is already in frame - which is exactly why the gap went unnoticed until a
+    # co-folded peptide first reached this stage.
+    if a.pose:
+        # Two corrections are needed before the numbering lines up, and getting
+        # either wrong superposes mismatched residues rather than failing:
+        #   - the peptide is a separate chain in the pose and must be excluded,
+        #     or its residues 1-5 collide with the receptor's own 1-5;
+        #   - the prediction numbers the construct from 1, the crystal from 65.
+        pose_ca = {k + a.pose_offset: v for k, v in
+                   ca_map(atoms(a.pose), chain=a.pose_chain).items()}
+        shared = sorted(set(pose_ca) & set(rec_ca))
+        print(f"\nPose frame: chain {a.pose_chain}, {len(pose_ca)} CA, "
+              f"offset {a.pose_offset:+d}, {len(shared)} shared with receptor")
+        if len(shared) < 100:
+            sys.exit(f"FATAL: only {len(shared)} CA shared with --pose "
+                     f"{a.pose} - cannot determine the ligand's frame")
+        Rp, tp = kabsch(np.array([pose_ca[i] for i in shared]),
+                        np.array([rec_ca[i] for i in shared]))
+        fit_p = float(np.sqrt(np.mean(np.sum(
+            ((Rp @ np.array([pose_ca[i] for i in shared]).T).T + tp
+             - np.array([rec_ca[i] for i in shared])) ** 2, axis=1))))
+        # A predicted receptor is not identical to the crystal one, so this is
+        # a model-vs-experiment RMSD, not the ~0 of a same-structure fit.
+        print(f"predicted -> experimental receptor RMSD: {fit_p:.3f} A")
+        if fit_p > 5.0:
+            sys.exit(f"FATAL: {fit_p:.3f} A - the predicted receptor does not "
+                     f"match the experimental one well enough to place the "
+                     f"ligand")
+        lig = [l[:30] + "".join(f"{v:8.3f}" for v in (
+                   Rp @ np.array([float(l[30:38]), float(l[38:46]),
+                                  float(l[46:54])]) + tp)) + l[54:]
+               for l in lig]
+
+    # ------------------------------------- 2c. verify the MOVE, not the POSE
+    #
+    # A weak or non-binding peptide is a RESULT, not an error. Nothing here may
+    # reject a peptide for sitting outside the pocket, and nothing anywhere in
+    # the workflow pulls it towards one: the transform above is rigid, so the
+    # peptide keeps exactly the pose the co-folding model predicted relative to
+    # the receptor.
+    #
+    # What must still be caught is the transform going wrong, which looks like
+    # a peptide hundreds of angstroms away. The two are told apart by checking
+    # the OPERATION rather than the outcome: a rigid transform preserves
+    # ligand-receptor distance, so the closest approach measured against the
+    # PREDICTED receptor and against the EXPERIMENTAL one must agree to within
+    # the difference between those two structures. That test is indifferent to
+    # whether the peptide binds well, badly, or not at all.
+    def closest(lig_lines, rec_lines):
+        a1 = np.array([[float(l[30:38]), float(l[38:46]), float(l[46:54])]
+                       for l in lig_lines])
+        a2 = np.array([[float(l[30:38]), float(l[38:46]), float(l[46:54])]
+                       for l in rec_lines])
+        return float(np.min(np.linalg.norm(a1[:, None, :] - a2[None, :, :],
+                                           axis=2)))
+
+    gap = closest(lig, rec)
+    if a.pose:
+        pose_lines = atoms(a.pose)
+        pred_rec = [l for l in pose_lines if l[21] == a.pose_chain]
+        pred_lig = [l for l in pose_lines if l[21] != a.pose_chain]
+        gap_pred = closest(pred_lig, pred_rec)
+        print(f"closest ligand-receptor approach: {gap:.2f} A "
+              f"(as predicted: {gap_pred:.2f} A)")
+        if abs(gap - gap_pred) > 10.0:
+            sys.exit(
+                f"FATAL: closest approach changed from {gap_pred:.1f} A to "
+                f"{gap:.1f} A across a RIGID transform, which is impossible - "
+                f"the ligand was not placed in the receptor's frame.\n"
+                f"       This is a coordinate error, not a weak binder.")
+    else:
+        print(f"closest ligand-receptor approach: {gap:.2f} A")
+
+    # Recorded as data for Stage 7 to interpret, never used to gate the run.
+    # A peptide parked on the surface is exactly the negative result the
+    # benchmark needs in order to mean anything.
+    (a.outdir / "pose_geometry.tsv").write_text(
+        "metric\tvalue_A\n"
+        f"closest_ligand_receptor_approach\t{gap:.3f}\n"
+        + (f"closest_as_predicted\t{gap_pred:.3f}\n" if a.pose else ""))
+    if gap > 5.0:
+        print(f"NOTE: nearest ligand atom is {gap:.1f} A from the receptor - "
+              f"this peptide is not in close contact. Recorded and carried "
+              f"forward; it is a finding, not a failure.")
 
     lig_fixed = [l[:17] + f"{a.ligand_resname:>3}" + " L" + f"{1:>4}" + l[26:]
                  for l in lig]

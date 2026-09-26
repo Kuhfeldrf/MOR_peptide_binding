@@ -34,22 +34,56 @@ def ligand_only(wildcards):
     return f"{RESULTS}/02_cofold/{wildcards.pep}/best_ligand.pdb"
 
 
+def pose_reference(wildcards):
+    """The co-folded receptor+peptide, used ONLY to relate two coordinate
+    frames - never as the ligand itself.
+
+    A co-folding model predicts in its own frame near the origin; the
+    experimental receptor sits at its crystal coordinates. The prediction's own
+    receptor is the only thing that relates the two, so it is superposed onto
+    the experimental receptor and the resulting RIGID transform is applied to
+    the peptide. The peptide therefore keeps exactly the pose that was
+    predicted, in the correct frame.
+
+    An experimental ligand was extracted from the receptor structure and is
+    already in frame, so it needs no reference.
+    """
+    if wildcards.pep in EXPERIMENTAL:
+        return []
+    return f"{RESULTS}/02_cofold/{wildcards.pep}/best_pose.pdb"
+
+
+def pose_flags(wildcards, input):
+    if wildcards.pep in EXPERIMENTAL:
+        return ""
+    # The prediction numbers the construct from 1; the crystal starts at 65.
+    # Superposing without that offset silently matches the wrong residues -
+    # it gave a 24.6 A fit where the correct mapping gives 2.7 A.
+    return (f"--pose {input.pose} "
+            f"--pose-chain {config['cofold']['receptor_chain']} "
+            f"--pose-offset {config['receptor']['resid_offset']}")
+
+
 rule membrane_complex:
     """Receptor + peptide in the OPM membrane frame, AMBER-named."""
     input:
         receptor=f"{RESULTS}/00_receptor/mOR_clean.pdb",
         ligand=ligand_only,
+        pose=pose_reference,
         opm=f"{DATA}/raw/6ddf_opm.pdb",
+    params:
+        pose=pose_flags,
     output:
         complex=f"{RESULTS}/03_membrane/{{pep}}/complex_opm.pdb",
         renames=f"{RESULTS}/03_membrane/{{pep}}/prep_renames.log",
+        geometry=f"{RESULTS}/03_membrane/{{pep}}/pose_geometry.tsv",
     log:
         f"{LOGS}/03_complex_{{pep}}.log",
     conda:
         "../../environment.yml"
     shell:
         "python3 {SCRIPTS}/03a_prep_complex.py "
-        "--receptor {input.receptor} --ligand {input.ligand} "
+        "--receptor {input.receptor} --ligand {input.ligand} {params.pose} "
         "--opm {input.opm} --outdir $(dirname {output.complex}) > {log} 2>&1"
 
 
