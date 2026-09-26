@@ -86,6 +86,12 @@ membrane:
   ionic_strength_mM: 150
   cation: Na+
   apl_offset: 1.15
+  # Packing iterations. NOT defaults: packmol-memgen defaults to 100/20, but the
+  # DAMGO system that ran 50 ns of production MD was packed with 200/40. Leaving
+  # these implicit meant the workflow could not reproduce the configuration
+  # behind its own validated result (see docs/packing_calibration.md).
+  nloop_all: 200
+  nloop: 40
   neutralise: true
   orientation: OPM/PPM
   expected_atoms:

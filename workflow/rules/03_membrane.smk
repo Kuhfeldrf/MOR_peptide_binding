@@ -127,6 +127,8 @@ rule membrane_pack:
         wat=config["membrane"]["water_layer"],
         salt=config["membrane"]["ionic_strength_mM"] / 1000.0,
         cation=config["membrane"]["cation"],
+        nloop_all=config["membrane"]["nloop_all"],
+        nloop=config["membrane"]["nloop"],
     log:
         f"{LOGS}/03_pack_{{pep}}.log",
     resources:
@@ -139,6 +141,7 @@ rule membrane_pack:
         "{input.complex} {output.packed} "
         "{params.lipids} {params.ratio} {params.apl} "
         "{params.dist} {params.wat} {params.salt} {params.cation} "
+        "{params.nloop_all} {params.nloop} "
         "> {log} 2>&1"
 
 

@@ -12,6 +12,16 @@
 # in Cartesian space while both GROMACS and sander report infinite forces
 # (decision D29).
 #
+# --nloop_all / --nloop are set EXPLICITLY rather than left to
+# packmol-memgen's defaults (100 / 20). The DAMGO system that minimised,
+# equilibrated and ran 50 ns of production MD was packed with 200 / 40, set by
+# hand during the manual Stage 3 work - so the workflow, relying on defaults,
+# could not reproduce the configuration that produced its own validated result.
+# The peptide packs run with half the iterations came out roughly twice as bad
+# on every contact metric, and packmol was still reducing its objective
+# function 3.4x over the last four loops when it hit the ceiling: it ran out of
+# iterations, not out of progress.
+#
 # --apl_offset leaves room for the receptor footprint. packmol-memgen's default
 # lipid count fills the whole box cross-section, over-packing the bilayer by
 # roughly 20 lipids per leaflet (D27). Under-packing is recoverable because
@@ -20,6 +30,7 @@ set -euo pipefail
 
 COMPLEX=$1; OUTPDB=$2; LIPIDS=$3; RATIO=$4; APL=$5
 DIST=$6; WAT=$7; SALTCON=$8; CATION=$9
+NLOOP_ALL=${10}; NLOOP=${11}
 
 OUTDIR=$(dirname "$OUTPDB")
 mkdir -p "$OUTDIR"
@@ -28,11 +39,13 @@ cd "$OUTDIR"
 
 echo "=== packing $(basename "$OUTDIR") ==="
 echo "lipids ${LIPIDS} ratio ${RATIO} apl_offset ${APL} cation ${CATION}"
+echo "nloop_all ${NLOOP_ALL} nloop ${NLOOP}"
 
 packmol-memgen \
   --pdb "$COMPLEX" \
   --lipids "$LIPIDS" --ratio "$RATIO" \
   --apl_offset "$APL" \
+  --nloop_all "$NLOOP_ALL" --nloop "$NLOOP" \
   --pbc \
   --preoriented \
   --salt --saltcon "$SALTCON" --salt_c "$CATION" \
