@@ -154,10 +154,17 @@ rule membrane_qc:
         f"{LOGS}/03_qc_{{pep}}.log",
     conda:
         "../../environment.yml"
+    # The report is written to the LOG first, then copied to the output on
+    # success. It used to be written straight to {output.report}, which meant a
+    # FAILED pack destroyed its own explanation: Snakemake deletes the outputs
+    # of a failed job, {log} stayed empty because nothing was redirected there,
+    # and the only way to learn why QC rejected a system was to re-run the
+    # script by hand. A rule whose whole purpose is to explain a rejection must
+    # keep its reasoning on the failure path.
     shell:
         "python3 {SCRIPTS}/03c_membrane_qc.py "
         "--dir $(dirname {input.packed}) --expect-chol-frac {params.chol} "
-        "> {output.report} 2>&1"
+        "> {log} 2>&1 && cp {log} {output.report}"
 
 
 rule membrane_topology:
