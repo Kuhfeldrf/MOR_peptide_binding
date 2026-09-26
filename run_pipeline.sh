@@ -42,11 +42,15 @@ gmx --version 2>/dev/null | grep -m1 "GROMACS version" || echo "WARNING: gmx not
 # second, so clearing it on every launch meant a new instance silently STOLE
 # the lock from a running one instead of being refused by it.
 #
-# Three instances ended up live against this directory at once. Each of the
+# Three instances ended up live against this directory at once, and each of the
 # seven benchmark peptides got two concurrent membrane_pack jobs writing the
 # same output directory - packmol-memgen cd's into that directory and writes
-# fixed filenames - so both copies of every output were interleaved garbage,
-# and nothing anywhere reported a problem.
+# fixed filenames. That wastes the compute and races over every output path.
+#
+# It was NOT, however, what corrupted those systems: the oversized packs had a
+# separate cause upstream (D35), and the duplicate jobs were a second fault
+# found while investigating the first. Concurrency here is a hazard worth
+# closing on its own terms, not the explanation for a bad result.
 #
 # flock is the guard the comment above wrongly assumed. A second launch now
 # exits immediately and says which PID holds the lock.

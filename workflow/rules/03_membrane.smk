@@ -17,11 +17,11 @@
 # --ligand. 03a_prep_complex.py relabels every atom it is handed as residue
 # LIG, so each co-folded system got the receptor twice: once properly as chain
 # R, and again as a 2294-atom "ligand" sitting at Chai-1's coordinates ~200 A
-# away. The bounding box grew to 251 x 251 x 303 A and packmol dutifully filled
-# it with 1.9M atoms instead of 84k. Nothing failed; the jobs just ran for
-# hours. DAMGO was unaffected because for an experimental ligand both functions
-# returned the same peptide-only file, so the bug could not show up in the one
-# system that had been checked by hand.
+# away. The bounding box grew from 86 x 86 x 119 A to 251 x 251 x 303 A and
+# packmol dutifully filled it with 1.9M atoms instead of 84k. Nothing failed;
+# the jobs just ran for hours. DAMGO was unaffected because for an experimental
+# ligand both functions returned the same peptide-only file, so the bug could
+# not show up in the one system that had been checked by hand.
 #
 # complex_source is deleted rather than fixed: two nearly identical functions
 # whose names differ by what they include is the footgun that caused this.

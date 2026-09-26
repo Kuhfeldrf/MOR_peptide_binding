@@ -54,6 +54,7 @@ choice when its assumptions change. **Reversals are recorded, not overwritten**
 | [D32](#d32) | The workflow is the deliverable | FIRM | 2026-09-25 |
 | [D33](#d33) | Co-folded ligands must be chemically completed before parameterisation | FIRM | 2026-09-25 |
 | [D34](#d34) | One pipeline launch at a time, enforced by flock | FIRM | 2026-09-25 |
+| [D35](#d35) | A ligand input must be checked for being a complex | FIRM | 2026-09-26 |
 
 ---
 
@@ -946,9 +947,24 @@ new instance **stole the lock from a live one** rather than being refused by it.
 Three instances ran against `/scratch/kuhfeldr-Kuhfeld_temp` at once (launched
 12:42, 13:13, 13:48). Each of the seven benchmark peptides had **two concurrent
 `membrane_pack` jobs writing the same output directory** - packmol-memgen cd's
-into that directory and writes fixed filenames, so the two processes interleaved
-writes to identical paths. Roughly four hours of compute, and every one of the
-seven packed systems had to be discarded.
+into that directory and writes fixed filenames, so the two processes raced over
+identical paths. Roughly four hours of wasted compute.
+
+> **Correction, 2026-09-26.** This entry originally continued: *"so the two
+> processes interleaved writes to identical paths"*, and concluded that the
+> concurrency is why all seven packed systems had to be discarded. **That was
+> wrong.** The systems were discarded for an unrelated upstream reason
+> ([D35](#d35)): each contained the receptor twice, which tripled the box.
+> Measuring the outputs showed a single `CRYST1`, a single `END`, and an atom
+> count matching the inflated box volume to within a few percent - a coherently
+> packed system, not interleaved output.
+>
+> The concurrency was real and is still worth closing; it was simply the
+> *second* fault found while investigating the first, and it got blamed for the
+> first because it was found first. The lesson kept here is that a plausible
+> cause discovered en route to a result is not thereby the cause - the
+> correction came from measuring the artefact rather than reasoning from the
+> mechanism.
 
 ### Why nothing caught it
 
@@ -977,3 +993,81 @@ well enough that it read as considered.
 
 If the workflow ever needs to run against the same directory from two hosts,
 flock over a shared filesystem is not sufficient and this needs a real lease.
+
+
+<a name="d35"></a>
+## D35 - A ligand input must be checked for being a complex · FIRM
+
+`03a_prep_complex.py` relabels **every atom** it is given as `--ligand` into a
+single residue named `LIG`. The `membrane_complex` rule passed
+`complex_source()`, which for a co-folded peptide returns Chai-1's
+`best_pose.pdb` - the receptor **and** the peptide.
+
+So every co-folded system contained the receptor twice:
+
+| | |
+|---|---|
+| chain R | 4610 atoms, correctly prepared, OPM frame |
+| chain L | **2294 atoms** labelled `LIG`, at Chai-1 coordinates ~200 A away |
+
+`best_ligand.pdb`, which should have been passed, is 39 atoms and 5 CA -
+met-enkephalin, YGGFM.
+
+### What it produced
+
+| | DAMGO (correct) | met-enkephalin (broken) |
+|---|---|---|
+| box | 86 x 86 x 119 A | **251 x 251 x 303 A** |
+| atoms | 84,142 | **1,874,415** |
+| file | 6.9 MB | 154 MB |
+
+packmol-memgen derives the box from the input's extent, so the stray copy
+tripled every dimension. The atom count tracks the volume ratio (~22x vs ~24x)
+almost exactly: these were **correctly packed systems around a wrong input**,
+which is why nothing downstream complained.
+
+### Why it survived
+
+**DAMGO could not show it.** For an experimental ligand, `complex_source` and
+`ligand_only` return the same peptide-only file. The one system that had been
+built, minimised, equilibrated, run for 50 ns and inspected by hand was
+structurally incapable of exhibiting the bug. Confidence from that run
+transferred to six peptides that did not share its code path.
+
+### This is the second occurrence
+
+The first was `ligand_params` receiving the whole complex, caught by its charge
+assertion. **Fixing that call site did not fix this one**, and the same mistake
+returned at the next site that took a ligand.
+
+So the guard belongs in the script both call sites pass through, not in the
+wiring:
+
+```python
+rec_ca, lig_ca = ca_map(rec), ca_map(lig)
+if len(lig_ca) > 0.25 * len(rec_ca):
+    sys.exit("FATAL: --ligand ... is a receptor+peptide complex, not a ligand")
+```
+
+Measured **against the receptor** rather than as an absolute atom cutoff, so it
+cannot go stale as peptides change. On the real data it separates 5 CA from 286
+with the threshold at 70.
+
+A positional test - "does the ligand sit on top of receptor residues" - was
+written first and **would not have fired**: the duplicate arrived at the
+co-folding model's coordinates, hundreds of angstroms away, overlapping
+nothing. Worth recording, because it is the more natural test to reach for.
+
+`complex_source` is deleted rather than repaired. Two near-identical functions
+differing only in whether they include the receptor is the footgun itself.
+
+### Rule adopted
+
+**Code that relabels its input must validate its input.** Any step that
+rewrites identity - chain, residue name, element - destroys the evidence of
+what it was handed, so it has to check before it overwrites.
+
+### Revisit trigger
+
+If the library ever includes genuine protein-sized binders, the 0.25 ratio stops
+being meaningful and the check needs to become an explicit chain-count test.
