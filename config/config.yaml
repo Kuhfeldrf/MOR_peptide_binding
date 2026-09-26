@@ -34,6 +34,10 @@ receptor:
       net_charge: 1
   resid_offset: 64
 library:
+  # Scrambled decoys are the negative control: one matched permutation per real
+  # peptide. They co-fold (Stage 2) and stop there - carrying no affinity data,
+  # they never enter the expensive stages.
+  include_scrambles: true
   min_length: 4
   max_length: 20
   min_id_score: 0.0

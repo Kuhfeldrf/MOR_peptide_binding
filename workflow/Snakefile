@@ -60,17 +60,43 @@ def read_peptides():
 
     # Canonical names as Stage 1 emits them: real__ stripped, scr__ kept, so a
     # scrambled control cannot collide with the peptide it is a control for.
-    available = set()
+    lib = {}
     with open(config["library"]["screening_set"]) as fh:
         for row in csv.DictReader(fh):
             pid = row.get("peptide_id", "")
-            available.add(pid[6:] if pid.startswith("real__") else pid)
+            lib[pid[6:] if pid.startswith("real__") else pid] = row
+    available = set(lib)
 
     out = {k: v for k, v in ref.items() if k in available}
     missing = sorted(set(ref) - available)
     if missing:
         print(f"note: {len(missing)} reference peptides have no library row "
               f"and are not scheduled: {missing}")
+
+    # Scrambled controls are added from the LIBRARY, not the reference table.
+    #
+    # The intersection above is right for real peptides - a reference row
+    # without a library row is unrunnable. It is wrong for decoys: a scramble
+    # has no literature affinity BY CONSTRUCTION, so it can never appear in the
+    # reference table, and requiring a row there silently dropped all 20 of
+    # them. The library held a matched decoy for every real peptide and none
+    # was ever scheduled.
+    #
+    # That is not a cosmetic omission. Without negatives the screen has nothing
+    # to discriminate against: ranking 7 real peptides tests calibration,
+    # whereas separating 20 real from 20 scrambled tests whether the triage
+    # works at all, at far higher statistical power and no MD cost.
+    #
+    # They carry no affinity metadata and no benchmark flag, so they reach
+    # Stage 2 and stop there - "benchmark" selects on benchmark_include, which
+    # they do not have.
+    if config["library"].get("include_scrambles", True):
+        decoys = {k: dict(v, role="scramble", benchmark_include="NO")
+                  for k, v in lib.items()
+                  if v.get("activity") == "scramble" and k not in out}
+        out.update(decoys)
+        print(f"note: {len(decoys)} scrambled controls scheduled for Stage 2")
+
     return out
 
 
