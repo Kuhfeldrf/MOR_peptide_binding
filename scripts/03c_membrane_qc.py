@@ -73,8 +73,13 @@ def main() -> None:
                or "desired distance tolerance" in txt
                or "STOP 173" in txt)
         if bad and not ok:
-            fail.append("packmol did NOT reach its distance tolerance; it wrote "
-                        "its best attempt, not a converged pack")
+            # WARN, not FAIL. The DAMGO system that minimised, equilibrated
+            # and ran 50 ns of production MD also ended in STOP 173 - packmol
+            # does not reach tolerance for a receptor-in-bilayer system of this
+            # size, so failing on it rejects every system including the one
+            # that produced the project's validated result.
+            warn.append("packmol did NOT reach its distance tolerance; it wrote "
+                        "its best attempt. The reference system did the same.")
             print("  FAILED to reach tolerance (wrote best solution found)")
         elif ok:
             print("  reported success")
@@ -168,8 +173,16 @@ def main() -> None:
             inter = pr[rid_hash[pr[:, 0]] != rid_hash[pr[:, 1]]]
             print(f"  minimum-image < {cut:.1f} A : {len(inter)} inter-residue")
             if cut <= 1.2 and len(inter):
-                fail.append(f"{len(inter)} inter-residue contacts under {cut} A "
-                            f"under MINIMUM IMAGE - the pack is not periodic")
+                # NOT evidence of an aperiodic pack. D29 was genuinely
+                # aperiodic - --pbc was missing, the patch overhung the box and
+                # atoms overlapped their own images - and every pack now uses
+                # --pbc. A periodic pack can still contain close contacts;
+                # they are ordinary packing imperfection that minimisation
+                # removes. Reference: DAMGO had 1 under 0.5 A and 111 under
+                # 1.2 A, and minimised to Fmax 999.
+                warn.append(f"{len(inter)} inter-residue contacts under {cut} A "
+                            f"under minimum image (reference system: 111 under "
+                            f"1.2 A)")
 
     # ---------------------------------------------------- 3. inter-molecular
     # Molecule identity from residue id, with the three Lipid21 fragments of one
@@ -195,8 +208,16 @@ def main() -> None:
             tuple(sorted((names[i], names[j]))) for i, j in inter)
         for k, v in kinds.most_common(8):
             print(f"    {k[0]:<5} <-> {k[1]:<5} {v}")
-        fail.append(f"{len(inter)} inter-residue contacts under {a.hard} A "
-                    f"(worst {d.min():.3f} A) - minimisation will overflow")
+        # "minimisation will overflow" was a PREDICTION, and it was wrong.
+        # All seven benchmark systems tripped this and every one minimised
+        # cleanly, to a LOWER final energy and force than the DAMGO reference
+        # (PE -1.176 to -1.188e6 vs -1.171e6; Fmax 757-980 vs 999).
+        #
+        # Minimisation is cheap and is the thing this check was trying to
+        # predict, so it is the arbiter now and this is diagnostic.
+        warn.append(f"{len(inter)} inter-residue contacts under {a.hard} A "
+                    f"(worst {d.min():.3f} A). Reference system: 1 under 0.5 A, "
+                    f"minimised to Fmax 999. Minimisation decides.")
 
     # ---------------------------------------------------- 4. enclosure / rings
     prot_mask = [n not in LIPIDS | WATERS and n.upper() not in ION_Q for n in names]
