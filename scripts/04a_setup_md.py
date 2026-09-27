@@ -31,6 +31,11 @@ _ap.add_argument("--membrane", required=True, type=pathlib.Path,
 _ap.add_argument("--outdir", required=True, type=pathlib.Path)
 _ap.add_argument("--proximal", type=float, default=12.0)
 _ap.add_argument("--structure", default="system.gro")
+# The ligand's moleculetype name. This was hardcoded to DAM - DAMGO's residue
+# name - which is a DAMGO-specific assumption baked into a stage meant to run
+# for every peptide. Co-folded peptides are LIG, and Stage 4 died on the first
+# one it saw with "FATAL: moleculetype DAM not found".
+_ap.add_argument("--ligand-resname", default="LIG")
 _A = _ap.parse_args()
 D = _A.membrane
 OUT = _A.outdir
@@ -84,6 +89,8 @@ def write_group(fh, name, idx):
 
 with (OUT / "index.ndx").open("w") as fh:
     write_group(fh, "System", list(range(n)))
+    # Group name stays Protein_DAM because config/*.mdp reference it in
+    # tc-grps; renaming it per peptide would silently break thermostat coupling.
     write_group(fh, "Protein_DAM", np.nonzero(solute)[0].tolist())
     write_group(fh, "MEMB", np.nonzero(memb)[0].tolist())
     write_group(fh, "SOLV", np.nonzero(solv)[0].tolist())
@@ -99,7 +106,10 @@ def moleculetype_atom_count(text: str, name: str) -> int:
     m = re.search(r"\[ moleculetype \]\s*\n;[^\n]*\n\s*" + re.escape(name)
                   + r"\s+\d+\s*\n(.*?)(?=\[ moleculetype \]|\Z)", text, re.S)
     if not m:
-        sys.exit(f"FATAL: moleculetype {name} not found")
+        avail = re.findall(r"\[ moleculetype \]\s*\n;[^\n]*\n\s*(\S+)", text)
+        sys.exit(f"FATAL: moleculetype {name} not found. "
+                 f"Present in this topology: {sorted(set(avail))}. "
+                 f"Pass --ligand-resname if the ligand is named differently.")
     block = m.group(1)
     am = re.search(r"\[ atoms \]\s*\n;[^\n]*\n(.*?)(?=\n\s*\[|\Z)", block, re.S)
     if not am:
@@ -107,7 +117,7 @@ def moleculetype_atom_count(text: str, name: str) -> int:
     return sum(1 for l in am.group(1).splitlines()
                if l.strip() and not l.strip().startswith(";"))
 
-for mt, fc in (("system1", "POSRES_FC"), ("DAM", "POSRES_FC")):
+for mt, fc in (("system1", "POSRES_FC"), (_A.ligand_resname, "POSRES_FC")):
     cnt = moleculetype_atom_count(top, mt)
     # heavy atoms only: restrain positions of atoms with mass > 2
     heavy = []
@@ -141,7 +151,7 @@ for mt, fc in (("system1", "POSRES_FC"), ("DAM", "POSRES_FC")):
 
 # insert #include guards at the end of each moleculetype
 new = top
-for mt in ("system1", "DAM"):
+for mt in ("system1", _A.ligand_resname):
     inc = (f'\n#ifdef POSRES\n#include "posre_{mt}.itp"\n#endif\n')
     if f'posre_{mt}.itp' in new:
         continue
