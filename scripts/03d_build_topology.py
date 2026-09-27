@@ -119,25 +119,66 @@ def main() -> None:
         if l[17:20].strip() in ("WAT", "HOH") and l[12:16].strip() in ("O", "OW"):
             wat[(l[21], l[22:27])] = np.array(
                 [float(l[30:38]), float(l[38:46]), float(l[46:54])])
-    best, score = None, -1e9
-    for k, p in wat.items():
-        if abs(p[2]) < 30:
-            continue
-        d = float(np.min(np.linalg.norm(prot - p, axis=1)))
-        if d > score:
-            score, best = d, k
+    # The counterion count and SIGN come from the ligand's actual charge, not
+    # from an assumption.
+    #
+    # This used to place exactly one Cl-, which is right only for a +1 ligand.
+    # That is the same +1 assumption D33 removed from ligand_params and it
+    # survived here: met-enkephalin is a neutral zwitterion, so the Cl- CREATED
+    # a net -1 and the neutrality check then failed. Peptides carrying a
+    # glutamate are -1 and need Na+, not Cl- - two ions in the wrong direction.
+    q_lig = round(sum(
+        float(l.split()[8]) for l in
+        (D / "params" / "ligand.mol2").read_text().split("@<TRIPOS>ATOM")[1]
+        .split("@<TRIPOS>BOND")[0].strip().splitlines()))
+    ion = "Cl-" if q_lig > 0 else "Na+"
+    n_ion = abs(q_lig)
+    print(f"ligand net charge {q_lig:+d} -> {n_ion} x {ion}")
+
+    ranked = sorted(
+        ((float(np.min(np.linalg.norm(prot - p, axis=1))), k)
+         for k, p in wat.items() if abs(p[2]) >= 30),
+        reverse=True)
+    if len(ranked) < n_ion:
+        sys.exit(f"FATAL: need {n_ion} bulk waters to replace, found "
+                 f"{len(ranked)}")
+    chosen = {k: d for d, k in ranked[:n_ion]}
+
     final = []
     for l in out:
-        if l.startswith(("ATOM", "HETATM")) and (l[21], l[22:27]) == best \
+        if l.startswith(("ATOM", "HETATM")) and (l[21], l[22:27]) in chosen \
                 and l[17:20].strip() in ("WAT", "HOH"):
             if l[12:16].strip() in ("O", "OW"):
-                final.append(l[:12] + " Cl- Cl-" + l[20:])
+                final.append(l[:12] + f" {ion:<4}{ion:<4}"[:9] + l[20:])
             continue
         final.append(l)
-    print(f"neutralising Cl- placed {score:.1f} A from the nearest protein atom")
+    if n_ion:
+        print(f"{n_ion} x {ion} placed, nearest "
+              f"{min(chosen.values()):.1f} A from any protein atom")
+    else:
+        print("ligand is neutral - no counterion needed")
 
     (D / "system_nolig.pdb").write_text("\n".join(final) + "\nEND\n")
-    (D / "ligand_frame.pdb").write_text("\n".join(dam) + "\nTER\nEND\n")
+    # The ligand handed to tleap must carry the MOL2's atom names, not the
+    # predictor's. The LIG records in the packed system are the raw predicted
+    # peptide - protein-style names (CE, SD, OH, CZ...) repeated across
+    # residues, no OXT, no hydrogens - so tleap could not type a single one of
+    # them ("Atom .R<LIG>.A<CE 89> does not have a type", 14 fatal errors).
+    #
+    # lib_ligand moves the mol2-consistent file onto these coordinates by rigid
+    # superposition and verifies the fit. Shared with Stage 5, because this is
+    # the fourth site at which the ligand's identity was mishandled.
+    sys.path.insert(0, str(pathlib.Path(__file__).parent))
+    from lib_ligand import ligand_in_frame
+    try:
+        lig_lines, fit, extra = ligand_in_frame(
+            D / "params" / "ligand_unique.pdb", dam)
+    except ValueError as e:
+        sys.exit(f"FATAL: {e}")
+    print(f"ligand renamed from mol2 template: {len(dam)} -> "
+          f"{len(lig_lines)} atoms, superposition RMSD {fit:.4f} A "
+          f"({extra} extra heavy atom(s), e.g. OXT)")
+    (D / "ligand_frame.pdb").write_text("\n".join(lig_lines) + "\nTER\nEND\n")
 
     # ------------------------------------------------ tleap
     bonds = "\n".join(f"bond memb.{i}.SG memb.{j}.SG" for i, j in ss)
