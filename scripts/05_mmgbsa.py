@@ -277,11 +277,31 @@ def main() -> None:
                  f"produced no interaction energy.")
     total = float(m.group(1))
 
+    # Parse components ONLY from the "Differences" block.
+    #
+    # mmgbsa.dat lists Complex, Receptor, Ligand and then Differences, each
+    # with the same component names. A plain search finds the COMPLEX's
+    # absolute energies first - which is what the first version of this
+    # reported, giving a breakdown summing to about -24,000 kcal/mol beside a
+    # total of -40.7 and looking superficially like a component table.
+    #
+    # The sum check below is what makes that non-recurring: the components of
+    # a difference must add up to the difference.
+    diff = text.split("Differences (Complex - Receptor - Ligand)")
+    if len(diff) < 2:
+        sys.exit(f"FATAL: no Differences block in {dat}")
+    block = diff[1]
+
     terms = {}
     for key in ("VDWAALS", "EEL", "EGB", "ESURF"):
-        mm = re.search(rf"^\s*{key}\s+(-?\d+\.\d+)", text, re.M)
+        mm = re.search(rf"^{key}\s+(-?\d+\.\d+)", block, re.M)
         if mm:
             terms[key] = float(mm.group(1))
+
+    ssum = sum(terms.values())
+    if abs(ssum - total) > 0.5:
+        sys.exit(f"FATAL: components sum to {ssum:.2f} but DELTA TOTAL is "
+                 f"{total:.2f}. The wrong section was parsed.")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
     with a.out.open("w") as fh:
