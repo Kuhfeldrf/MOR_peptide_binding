@@ -1,0 +1,22 @@
+peptide_id,sequence,peptide_name,parent_protein,species,activity,ic50_um,reference,scramble_of,n_term,has_message,internal_tyr
+pos__beta_endorphin_1_10,YGGFMTSEKS,beta-endorphin(1-10),proopiomelanocortin,human,length_positive,,UniProt:P01189 residues 237-246,,Y,YES,NO
+pos__beta_endorphin_1_15,YGGFMTSEKSQTPLV,beta-endorphin(1-15),proopiomelanocortin,human,length_positive,,UniProt:P01189 residues 237-251,,Y,YES,NO
+pos__beta_endorphin_1_20,YGGFMTSEKSQTPLVTLFKN,beta-endorphin(1-20),proopiomelanocortin,human,length_positive,,UniProt:P01189 residues 237-256,,Y,YES,NO
+neg__alphas2_casein_bovine_130_10,NAVPITPTLN,alphas2-casein (bovine) 130-139,alphas2-casein,bovine,length_negative,,UniProt:P02663 residues 130-139,,N,NO,NO
+neg__alphas1_casein_bovine_116_10,LKKYKVPQLE,alphas1-casein (bovine) 116-125,alphas1-casein,bovine,length_negative,,UniProt:P02662 residues 116-125,,L,NO,YES
+neg__beta_lactoglobulin_bovine_150_10,EKFDKALKAL,beta-lactoglobulin (bovine) 150-159,beta-lactoglobulin,bovine,length_negative,,UniProt:P02754 residues 150-159,,E,NO,NO
+neg__alpha_lactalbumin_bovine_81_10,KDDQNPHSSN,alpha-lactalbumin (bovine) 81-90,alpha-lactalbumin,bovine,length_negative,,UniProt:P00711 residues 81-90,,K,NO,NO
+neg__kappa_casein_bovine_91_10,PAQILQWQVL,kappa-casein (bovine) 91-100,kappa-casein,bovine,length_negative,,UniProt:P02668 residues 91-100,,P,NO,NO
+neg__beta_casein_bovine_26_10,EIVESLSSSE,beta-casein (bovine) 26-35,beta-casein,bovine,length_negative,,UniProt:P02666 residues 26-35,,E,NO,NO
+neg__beta_casein_bovine_89_15,IPPLTQTPVVVPPFL,beta-casein (bovine) 89-103,beta-casein,bovine,length_negative,,UniProt:P02666 residues 89-103,,I,NO,NO
+neg__alphas1_casein_bovine_148_15,EPMIGVNQELAYFYP,alphas1-casein (bovine) 148-162,alphas1-casein,bovine,length_negative,,UniProt:P02662 residues 148-162,,E,NO,YES
+neg__kappa_casein_bovine_53_15,LSRYPSYGLNYYQQK,kappa-casein (bovine) 53-67,kappa-casein,bovine,length_negative,,UniProt:P02668 residues 53-67,,L,NO,YES
+neg__alphas2_casein_bovine_52_15,STFCKEVVRNANEEE,alphas2-casein (bovine) 52-66,alphas2-casein,bovine,length_negative,,UniProt:P02663 residues 52-66,,S,NO,NO
+neg__beta_casein_human_84_15,LAQPAVVLPVPQPEI,beta-casein (human) 84-98,beta-casein,human,length_negative,,UniProt:P05814 residues 84-98,,L,NO,NO
+neg__alpha_lactalbumin_bovine_98_15,KFLDDDLTDDIMCVK,alpha-lactalbumin (bovine) 98-112,alpha-lactalbumin,bovine,length_negative,,UniProt:P00711 residues 98-112,,K,NO,NO
+neg__alphas1_casein_bovine_34_20,NLLRFFVAPFPEVFGKEKVN,alphas1-casein (bovine) 34-53,alphas1-casein,bovine,length_negative,,UniProt:P02662 residues 34-53,,N,NO,NO
+neg__beta_casein_human_132_20,KLTDLENLHLPLPLLQPLMQ,beta-casein (human) 132-151,beta-casein,human,length_negative,,UniProt:P05814 residues 132-151,,K,NO,NO
+neg__alpha_lactalbumin_bovine_63_20,NNDSTEYGLFQINNKIWCKD,alpha-lactalbumin (bovine) 63-82,alpha-lactalbumin,bovine,length_negative,,UniProt:P00711 residues 63-82,,N,NO,YES
+neg__kappa_casein_bovine_145_20,TIASGEPTSTPTTEAVESTV,kappa-casein (bovine) 145-164,kappa-casein,bovine,length_negative,,UniProt:P02668 residues 145-164,,T,NO,NO
+neg__alphas2_casein_bovine_201_20,HQKAMKPWIQPKTKVIPYVR,alphas2-casein (bovine) 201-220,alphas2-casein,bovine,length_negative,,UniProt:P02663 residues 201-220,,H,NO,YES
+neg__beta_lactoglobulin_bovine_42_20,ASDISLLDAQSAPLRVYVEE,beta-lactoglobulin (bovine) 42-61,beta-lactoglobulin,bovine,length_negative,,UniProt:P02754 residues 42-61,,A,NO,YES
