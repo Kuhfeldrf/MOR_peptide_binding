@@ -12,6 +12,13 @@ channels:
 dependencies:
   - python=3.12
   - numpy<2             # forced by chai_lab -> torch 2.6.0+cu124
+  # Templates. chai_lab shells out to `kalign` to realign a template hit onto
+  # the query and aborts without it ("kalign is required for templates, but was
+  # not found in PATH"). It is NOT a chai_lab dependency, so nothing pulls it
+  # in. It was originally installed by hand into the built environment, which
+  # meant a fresh clone could not run template mode and a rebuild of the env
+  # would have silently dropped it.
+  - kalign3
   - pip
   - pip:
       - chai_lab        # requires Linux, CUDA GPU with bfloat16

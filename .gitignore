@@ -40,6 +40,11 @@ build_gromacs.sbatch
 # Chai-1 model weights (multi-GB, downloaded)
 .chai_weights/
 *.sbatch
+# ...except the ones the documentation instructs users to run, or that define
+# an experiment. A blanket *.sbatch ignore meant a fresh clone could not follow
+# the README's own setup instructions.
+!build_envs.sbatch
+!jobs/*.sbatch
 results/
 
 # Snakemake conda environments (multi-GB, rebuilt from the yml files)
