@@ -71,11 +71,23 @@ def run(cmd: list[str] | str, cwd: pathlib.Path, log: str) -> subprocess.Complet
     return p
 
 
-LEAP = """source leaprc.protein.ff19SB
+LEAP_GAFF2 = """source leaprc.protein.ff19SB
 source leaprc.gaff2
 set default PBRadii mbondi3
 loadamberparams {frcmod}
 LIG = loadmol2 {mol2}
+rec = loadpdb receptor.pdb
+{bonds}
+lig = loadpdb ligand_frame.pdb
+cpx = combine {{ rec lig }}
+saveamberparm cpx complex.parm7 complex.rst7
+quit
+"""
+
+# A canonical peptide needs no small-molecule parameters at all: ff19SB has
+# every residue. tleap rebuilds the hydrogens and caps the termini itself.
+LEAP_FF19SB = """source leaprc.protein.ff19SB
+set default PBRadii mbondi3
 rec = loadpdb receptor.pdb
 {bonds}
 lig = loadpdb ligand_frame.pdb
@@ -92,8 +104,11 @@ def main() -> None:
     ap.add_argument("--mol2", required=True, type=pathlib.Path)
     ap.add_argument("--frcmod", required=True, type=pathlib.Path)
     ap.add_argument("--ligand-pdb", required=True, type=pathlib.Path,
-                    help="params/ligand_unique.pdb - the ligand with the SAME "
-                         "atom names and count as the mol2.")
+                    help="GAFF2 mode: params/ligand_unique.pdb, matching the "
+                         "mol2. ff19SB mode: params/ligand_peptide.pdb.")
+    ap.add_argument("--params-mode", default=None,
+                    help="gaff2 | ff19SB. Read from params_mode.txt when not "
+                         "given, so the caller never has to guess.")
     ap.add_argument("--outdir", required=True, type=pathlib.Path)
     ap.add_argument("--out", required=True, type=pathlib.Path)
     ap.add_argument("--peptide", required=True)
@@ -106,8 +121,19 @@ def main() -> None:
                     help="TM3-ECL2 CYX pair, receptor numbering (D-notes).")
     a = ap.parse_args()
     a.outdir.mkdir(parents=True, exist_ok=True)
-    for f in (a.mol2, a.frcmod, a.complex):
-        shutil.copy(f, a.outdir / f.name)
+
+    mode = a.params_mode
+    if mode is None:
+        mf = a.mol2.parent / "params_mode.txt"
+        mode = mf.read_text().strip() if mf.exists() else "gaff2"
+    if mode not in ("gaff2", "ff19SB"):
+        sys.exit(f"FATAL: unknown params mode {mode!r}")
+    print(f"parameterisation mode: {mode}")
+
+    shutil.copy(a.complex, a.outdir / a.complex.name)
+    if mode == "gaff2":
+        for f in (a.mol2, a.frcmod):
+            shutil.copy(f, a.outdir / f.name)
 
     # -------------------------------------------- 1. put the ligand in frame
     #
@@ -148,11 +174,17 @@ def main() -> None:
         sys.exit(f"FATAL: {fit:.3f} A - these should be the SAME conformation "
                  f"in two frames. Atom order does not correspond.")
 
+    # GAFF2 collapses the ligand into a single residue named LIG, because the
+    # mol2 defines it as one. ff19SB must NOT do that: its residues are real
+    # amino acids that tleap types individually, and 03b numbered them from 901
+    # so the ligand mask can find them. Rewriting them to "LIG L 1" would make
+    # every residue unrecognisable to the protein force field.
     moved = []
     for l in lu:
         v = R @ np.array([float(l[30:38]), float(l[38:46]),
                           float(l[46:54])]) + tvec
-        moved.append(l[:17] + "LIG L   1" + l[26:30]
+        head = l[:17] + "LIG L   1" if mode == "gaff2" else l[:26]
+        moved.append(head + l[26:30]
                      + f"{v[0]:8.3f}{v[1]:8.3f}{v[2]:8.3f}" + l[54:])
     (a.outdir / "ligand_frame.pdb").write_text("\n".join(moved) + "\nTER\nEND\n")
 
@@ -197,8 +229,9 @@ def main() -> None:
     if a.disulfide:
         i, j = a.disulfide.split(",")
         bonds = f"bond rec.{i}.SG rec.{j}.SG"
-    (a.outdir / "leap.in").write_text(LEAP.format(
-        frcmod=a.frcmod.name, mol2=a.mol2.name, bonds=bonds))
+    (a.outdir / "leap.in").write_text(
+        LEAP_GAFF2.format(frcmod=a.frcmod.name, mol2=a.mol2.name, bonds=bonds)
+        if mode == "gaff2" else LEAP_FF19SB.format(bonds=bonds))
     run(["tleap", "-f", "leap.in"], a.outdir, "leap.log")
 
     # tleap writes a topology file even when it reports a Fatal Error, so
@@ -221,9 +254,46 @@ def main() -> None:
     # Single-trajectory MM/GBSA: receptor and ligand topologies are DERIVED
     # from the complex, so all three share identical parameters and the
     # interaction energy is a difference of like with like.
+    # The ligand mask differs by mode.
+    #
+    # GAFF2 collapses the peptide into one residue named LIG, so ":LIG" works.
+    # ff19SB keeps real amino-acid residues, and tleap RENUMBERS everything
+    # sequentially in saveamberparm - so 03b's 901+ numbering does not survive
+    # into the topology and a ":901-999" mask would select nothing. The range
+    # is computed from the residue counts of the two inputs, in the order
+    # `combine { rec lig }` places them, and then VERIFIED against the built
+    # topology: a mask that silently selects the wrong residues would give a
+    # confident interaction energy for the wrong molecule.
+    if mode == "gaff2":
+        lig_mask = ":LIG"
+    else:
+        def _nres(lines):
+            return len({(l[21], l[22:27]) for l in lines})
+        n_rec = _nres(kept)
+        n_lig = _nres(moved)
+        lig_mask = f":{n_rec + 1}-{n_rec + n_lig}"
+
+        import parmed as _pmd
+        _st = _pmd.load_file(str(a.outdir / "complex.parm7"))
+        sel = _st.residues[n_rec:n_rec + n_lig]
+        got = [r.name for r in sel]
+        seen, want = set(), []
+        for l in moved:
+            k = (l[21], l[22:27])
+            if k not in seen:
+                seen.add(k)
+                want.append(l[17:20].strip())
+        # tleap renames terminal residues (NTYR / CMET) and histidines, so
+        # compare only the three-letter core.
+        if len(got) != len(want) or any(
+                w[-3:] not in g for g, w in zip(got, want)):
+            sys.exit(f"FATAL: mask {lig_mask} selects {got}, expected {want}. "
+                     f"The ligand is not where the residue count says it is.")
+        print(f"ligand residues verified in topology: {'-'.join(got)}")
+    print(f"ligand mask: {lig_mask}")
     p = run(["ante-MMPBSA.py", "-p", "complex.parm7",
              "-c", "com.parm7", "-r", "rec.parm7", "-l", "lig.parm7",
-             "-s", ":WAT,Na+,Cl-", "-n", ":LIG", "--radii=mbondi3"],
+             "-s", ":WAT,Na+,Cl-", "-n", lig_mask, "--radii=mbondi3"],
             a.outdir, "ante.log")
     for f in ("com.parm7", "rec.parm7", "lig.parm7"):
         if not (a.outdir / f).exists():
