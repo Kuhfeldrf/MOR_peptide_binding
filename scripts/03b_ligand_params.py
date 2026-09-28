@@ -38,6 +38,9 @@ def main() -> None:
                          "used and reported.")
     ap.add_argument("--resname", default="LIG")
     ap.add_argument("--ph", type=float, default=7.4)
+    ap.add_argument("--force-gaff2", action="store_true",
+                    help="Parameterise as a GAFF2 small molecule even if every "
+                         "residue is canonical. Only for comparison.")
     a = ap.parse_args()
     a.outdir.mkdir(parents=True, exist_ok=True)
 
@@ -61,11 +64,91 @@ def main() -> None:
     fixer.addMissingAtoms()
     with open(fixed_path, "w") as fh:
         PDBFile.writeFile(fixer.topology, fixer.positions, fh, keepIds=True)
-    if added:
-        print(f"PDBFixer added missing heavy atoms: {added}")
+    # Count heavy atoms before and after rather than trusting missingAtoms.
+    # Terminal atoms are tracked in a SEPARATE attribute (missingTerminals), so
+    # missingAtoms is empty when the only thing added is the C-terminal OXT -
+    # and this printed "no missing heavy atoms" while silently adding it. That
+    # is precisely the atom D33 is about, and D33 claims this step reports what
+    # it added, so the report has to be derived from the structure itself.
+    def _heavy(path):
+        return sum(1 for l in path.read_text().splitlines()
+                   if l.startswith(("ATOM", "HETATM"))
+                   and (l[76:78].strip() or l[12:16].strip()[0]).upper() != "H")
+    n_before, n_after = _heavy(a.ligand), _heavy(fixed_path)
+    term = getattr(fixer, "missingTerminals", {}) or {}
+    term = {str(k): list(v) for k, v in term.items()}
+    if n_after != n_before or added or term:
+        print(f"PDBFixer: heavy atoms {n_before} -> {n_after}"
+              + (f"; missingAtoms {added}" if added else "")
+              + (f"; terminals {term}" if term else ""))
     else:
-        print("PDBFixer: no missing heavy atoms")
+        print(f"PDBFixer: no heavy atoms added ({n_before} unchanged)")
     source = fixed_path
+
+    # ------------------------------------- canonical peptide? use ff19SB
+    #
+    # D10 chose whole-molecule GAFF2 because "at 513 Da DAMGO is
+    # small-molecule sized". That reasoning does not extend: a 20-mer is around
+    # 2200 Da and is almost entirely backbone, and GAFF2's torsions are not
+    # trained on peptide backbones the way ff19SB's are. D10's own revisit
+    # trigger names exactly this.
+    #
+    # It does not scale either. AM1-BCC failed on a 6-mer and a 7-mer in this
+    # library while succeeding on a 10-mer, so sqm convergence is already
+    # unreliable and sequence-dependent at the short end.
+    #
+    # A peptide of standard L-amino acids needs none of it: ff19SB covers every
+    # residue, tleap builds it directly, and the result is both faster and more
+    # accurate. GAFF2 remains for ligands that genuinely are not standard
+    # peptides - DAMGO, with its D-Ala, N-methyl-Phe and C-terminal Gly-ol.
+    CANON = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS",
+             "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP",
+             "TYR", "VAL"}
+    src_lines = [l for l in fixed_path.read_text().splitlines()
+                 if l.startswith(("ATOM", "HETATM"))]
+    res_seq, seen = [], set()
+    for l in src_lines:
+        key = (l[21], l[22:27])
+        if key not in seen:
+            seen.add(key)
+            res_seq.append(l[17:20].strip())
+    noncanon = sorted(set(res_seq) - CANON)
+
+    if noncanon:
+        print(f"non-canonical residues present: {noncanon} -> GAFF2")
+    elif a.force_gaff2:
+        print(f"{len(res_seq)} canonical residues, but --force-gaff2 given")
+    else:
+        # ff19SB path. Hydrogens are stripped because tleap rebuilds them from
+        # its own templates - keeping externally placed ones is what made the
+        # receptor fail with "Atom .R<NMET 65>.A<H 20> does not have a type".
+        # Residues are renumbered from 901 so a residue-range mask can separate
+        # ligand from receptor later; LIG-as-one-residue does not exist here.
+        out, ridx, last = [], 900, None
+        for l in src_lines:
+            el = (l[76:78].strip() or l[12:16].strip()[0]).upper()
+            if el == "H":
+                continue
+            key = (l[21], l[22:27])
+            if key != last:
+                last, ridx = key, ridx + 1
+            out.append(l[:21] + "L" + f"{ridx:>4}" + " " + l[27:])
+        pep = a.outdir / "ligand_peptide.pdb"
+        pep.write_text("\n".join(out) + "\nTER\nEND\n")
+
+        # Charge from composition at pH 7.4, matching what tleap will build
+        # with default residue names: Asp/Glu -1, Lys/Arg +1, His neutral,
+        # plus a free N-terminal ammonium and C-terminal carboxylate.
+        q = (sum(1 for r in res_seq if r in ("LYS", "ARG"))
+             - sum(1 for r in res_seq if r in ("ASP", "GLU")) + 1 - 1)
+        (a.outdir / "ligand_charge.txt").write_text(f"{q}\n")
+        (a.outdir / "params_mode.txt").write_text("ff19SB\n")
+        print(f"{len(res_seq)} canonical residues -> ff19SB, no antechamber")
+        print(f"  sequence: {'-'.join(res_seq)}")
+        print(f"  residues renumbered 901-{ridx}, {len(out)} heavy atoms")
+        print(f"  net charge {q:+d} at pH {a.ph}")
+        print(f"Wrote {pep}")
+        return
 
     # ------------------------------------------------ protonate at pH
     # obabel IGNORES -p when -h is also given, which silently produces a
@@ -115,6 +198,9 @@ def main() -> None:
     if r.returncode != 0:
         print(r.stdout[-2000:], r.stderr[-2000:])
         sys.exit("FATAL: antechamber failed")
+
+    (a.outdir / "params_mode.txt").write_text("gaff2\n")
+    (a.outdir / "ligand_charge.txt").write_text(f"{a.net_charge}\n")
 
     subprocess.run(["parmchk2", "-i", "ligand.mol2", "-f", "mol2",
                     "-o", "ligand.frcmod", "-s", "gaff2"],
