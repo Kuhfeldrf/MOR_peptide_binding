@@ -25,11 +25,11 @@ Runtime and hardware are recorded only for stages that have actually run.
 | 2b | Training-overlap audit | `WORKING` | < 1 s | CPU |
 | 3 | Membrane system build | `WORKING` | ~1.5 h pack + 3 min build | CPU + 1 GPU |
 | 4 | Molecular dynamics (GROMACS) | `WORKING` | ~9 h / peptide | 1x A30 |
-| 5 | MM/GBSA triage | `STUBBED` | - | - |
+| 5 | MM/GBSA triage | `WORKING` | - | CPU |
 | 6 | ABFE (DAMGO first) | `STUBBED` | - | - |
 | 7 | Benchmark figure | `STUBBED` | - | - |
 
-**Stages 0-4 run through the workflow. Stages 5-7 are stubbed.** The rule graph, inputs, and
+**Stages 0-5 run through the workflow. Stages 6-7 are stubbed.** The rule graph, inputs, and
 outputs are real and wired together throughout; each remaining stub exits
 non-zero with a `STUBBED` marker rather than writing an empty or fabricated
 output, so a stubbed stage cannot be mistaken for one that ran.
@@ -87,10 +87,10 @@ The GPI benchmark subset is **n = 10** (7 agonists, 3 antagonists), spanning
 
 ## Validated versus demonstrated
 
-Nothing in this repository is validated. Nothing in it has yet been
-demonstrated either - no stage has run.
+Nothing in this repository is validated. Stages 0-5 have been demonstrated in
+the sense below; Stages 6 and 7 have not.
 
-When stages do run, the distinction that will apply is:
+The distinction that applies is:
 
 - **Demonstrated** - the stage executed end to end on the three-peptide test set
   and produced output of the expected shape. This says the plumbing works.
@@ -235,6 +235,16 @@ bash run_pipeline.sh
 
 Snakemake stays on the login node and submits one SLURM job per rule instance,
 so it runs detached and survives a dropped connection.
+
+### How it uses GPUs
+
+Every GPU rule asks for one GPU, and every instance of it is its own SLURM job:
+co-folding is one job per (peptide, seed), MD is one job per peptide and step,
+and ABFE will be one job per lambda window. These jobs share nothing, so they
+run side by side across however many nodes are free. `config/slurm/config.yaml`
+caps the workflow at 48 concurrent jobs; on ORCA a node has four GPUs, so GPU
+jobs pack four to a node. The widest stage is co-folding: 37 peptides x 5 seeds
+is 185 independent single-GPU jobs, run 48 at a time.
 
 ### Scaling is a configuration change
 
