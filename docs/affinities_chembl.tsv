@@ -1,0 +1,45 @@
+peptide_key	query_alias	pref_name	molecule_chembl_id	molecule_type	standard_type	standard_relation	standard_value	standard_units	pchembl_value	assay_chembl_id	assay_description	document_chembl_id	pubmed_id	src_id
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	Ki	=	19.0	nM	7.72	CHEMBL887068	Displacement of [3H]diprenorphine from human cloned mu opioid receptor	CHEMBL1139195	Bioorg Med Chem Lett	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	EC50	=	620.0	nM	6.21	CHEMBL887072	Agonist activity at human cloned mu opioid receptor assessed as stimulation of [35S]GTPgammaS binding	CHEMBL1139195	Bioorg Med Chem Lett	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	IC50	=	13.0	nM	7.89	CHEMBL3738454	Agonist activity at mu opioid receptor (unknown origin) expressed in HEK293 cells assessed as inhibition of forskolin-induced cAMP accumulation by bioluminescent assay	CHEMBL3734657	J Med Chem	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	Ki	=	1.5	nM	8.82	CHEMBL5353695	Displacement of [3H]-Diprenorphine from human MOR receptor expressed in CHO-K1 cells assessed as inhibition constant measured for 1 hr by liquid scintillation counter analysis	CHEMBL5352416	Eur J Med Chem	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	EC50	=	110.0	nM	6.96	CHEMBL5353704	Agonist activity at human mu opioid receptor expressed in CHO-K1 cells assessed as reduction in beta-arrestin 2 recruitment measured after 1.5 hrs by PathHunter assay	CHEMBL5352416	Eur J Med Chem	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	Ki	=	2.0	nM	8.70	CHEMBL5624236	Displacement of [3H]-Diprenorphine from human MOR expressed in CHO-K1 cell membrane assessed as inhibition constant	CHEMBL5620432	Eur J Med Chem	1
+met_enkephalin	Met-enkephalin		CHEMBL13786	Protein	EC50	=	0.16	nM	9.80	CHEMBL5624238	Agonist activity at human MOR expressed in CHO-K1 cells assessed as beta arrestin-2 recruitment	CHEMBL5620432	Eur J Med Chem	1
+leu_enkephalin	Leu-enkephalin|leucine enkephalin				NO_DATA_IN_CHEMBL									
+endomorphin_1	Endomorphin-1		CHEMBL4177061	Small molecule	IC50	=	1.0	nM	9.00	CHEMBL4150322	Agonist activity at human mu opioid receptor expressed in HEK293 assessed as inhibition forskolin-induced cAMP accumulation after 15 mins by EIA	CHEMBL4145618	J Med Chem	1
+endomorphin_1	Endomorphin-1		CHEMBL4177061	Small molecule	Ki	=	0.36	nM	9.44	CHEMBL4150328	Displacement of [3H]DAMGO from mu opioid receptor (unknown origin)	CHEMBL4145618	J Med Chem	1
+endomorphin_2	Endomorphin-2		CHEMBL4177061	Small molecule	IC50	=	1.0	nM	9.00	CHEMBL4150322	Agonist activity at human mu opioid receptor expressed in HEK293 assessed as inhibition forskolin-induced cAMP accumulation after 15 mins by EIA	CHEMBL4145618	J Med Chem	1
+endomorphin_2	Endomorphin-2		CHEMBL4177061	Small molecule	Ki	=	0.36	nM	9.44	CHEMBL4150328	Displacement of [3H]DAMGO from mu opioid receptor (unknown origin)	CHEMBL4145618	J Med Chem	1
+beta_casomorphin_5	beta-Casomorphin-5|casomorphin-5				NO_DATA_IN_CHEMBL									
+beta_casomorphin_7	beta-Casomorphin-7|casomorphin-7				NO_DATA_IN_CHEMBL									
+dynorphin_A	Dynorphin A|dynorphin A (1-13)				NO_DATA_IN_CHEMBL									
+dynorphin_A_1_17	Dynorphin A (1-17)				NO_DATA_IN_CHEMBL									
+beta_endorphin	beta-Endorphin|betaendorphin				NO_DATA_IN_CHEMBL									
+alpha_neoendorphin	neoendorphin		CHEMBL2409224	Protein	Ki	=	9.3	nM	8.03	CHEMBL2410569	Displacement of [125]IBNtxA from MOR-1 (unknown origin) transfected in CHO cells after 90 mins by competitive binding assay	CHEMBL2407029	Bioorg Med Chem Lett	1
+DAMGO	DAMGO		CHEMBL5739600		EC50	<	10.0	nM		CHEMBL5736047	G-Protein Assay: G-protein signaling was measured via second messenger cAMP modulation. Detection of cAMP modulation was accomplished in the PathHunter human OPRM1 (μ, MOR) Arresti	CHEMBL5728106		37
+nociceptin	Nociceptin	NOCICEPTIN	CHEMBL396460	Protein	Ki	=	270.0	nM	6.57	CHEMBL754711	Binding affinity for opioid receptor type, human Opioid receptor mu 1 expressed in membrane homogenates of COS-1 or CHO cells	CHEMBL1135663	J Med Chem	1
+nociceptin	Nociceptin	NOCICEPTIN	CHEMBL396460	Protein	Ki	=	3030.0	nM	5.52	CHEMBL930990	Displacement of [3H]diprenorphine from human mu opioid receptor expressed in CHO cells	CHEMBL1141567	J Med Chem	1
+nociceptin	Nociceptin	NOCICEPTIN	CHEMBL396460	Protein	Ki	>	1000.0	nM		CHEMBL993917	Displacement of [3H]DAMGO from human mu opioid receptor expressed in CHOK1 cells	CHEMBL1143349	J Med Chem	1
+nociceptin	Nociceptin	NOCICEPTIN	CHEMBL396460	Protein	Ki	>	1000.0	nM		CHEMBL1659154	Displacement of [3H]DAMGO from human MOP receptor expressed in CHO-K1 cells after 45 mins	CHEMBL1649335	Bioorg Med Chem	1
+nociceptin	Nociceptin	NOCICEPTIN	CHEMBL396460	Protein	Ki	=	437.0	nM	6.36	CHEMBL1838909	Displacement of [3H]DAMGO from human MOP receptor expressed in CHO cells after 60 mins by scintillation counting	CHEMBL1833948	J Med Chem	1
+morphine	Morphine		CHEMBL5665374		Ki	=	0.32	nM	9.49	CHEMBL5733251	Opioid Receptor Binding Assay: The Ki (binding affinity) for opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal of 	CHEMBL5726743		37
+morphine	Morphine		CHEMBL5665374		EC50	=	34.0	nM	7.47	CHEMBL5733251	Opioid Receptor Binding Assay: The Ki (binding affinity) for opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal of 	CHEMBL5726743		37
+morphine	Morphine		CHEMBL5665374		Ki	=	0.32	nM	9.49	CHEMBL5730141	Opioid Receptor Binding Assay: The Ki (binding affinity) for μ opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal o	CHEMBL5725224		37
+morphine	Morphine		CHEMBL5665374		Ki	=	0.32	nM	9.49	CHEMBL5735620	Opioid Receptor Binding Assay: The Ki (binding affinity) for μ opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal o	CHEMBL5727894		37
+morphine	Morphine		CHEMBL5665374		EC50	=	34.0	nM	7.47	CHEMBL5735620	Opioid Receptor Binding Assay: The Ki (binding affinity) for μ opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal o	CHEMBL5727894		37
+morphine	Morphine		CHEMBL5665374		EC50	=	60.0	nM	7.22	CHEMBL5736047	G-Protein Assay: G-protein signaling was measured via second messenger cAMP modulation. Detection of cAMP modulation was accomplished in the PathHunter human OPRM1 (μ, MOR) Arresti	CHEMBL5728106		37
+morphine	Morphine		CHEMBL5665374		Ki	=	0.32	nM	9.49	CHEMBL5738803	Opioid Receptor Binding Assay: The Ki (binding affinity) for μ opioid receptors was determined using a competitive displacement assay as previously described in Neumeyer (Journal o	CHEMBL5729496		37
+naloxone	Naloxone	NALOXONE METHIODIDE	CHEMBL1514361	Small molecule	IC50	=	630.96	nM	6.20	CHEMBL6187651	Antagonist activity against human MOR expressed in CHO-K1 cells assessed as inhibition of forskolin-induced cAMP accumulation pretreated for 15 mins followed by forskolin addition 	CHEMBL6182939	J Med Chem	1
+naloxone	Naloxone	NALOXONE METHIODIDE	CHEMBL1514361	Small molecule	IC50	=	660000.0	nM		CHEMBL6187651	Antagonist activity against human MOR expressed in CHO-K1 cells assessed as inhibition of forskolin-induced cAMP accumulation pretreated for 15 mins followed by forskolin addition 	CHEMBL6182939	J Med Chem	1
+CTOP	CTOP				NO_DATA_IN_CHEMBL									
+alpha_lactorphin	alpha-Lactorphin|lactorphin				NO_DATA_IN_CHEMBL									
+beta_lactorphin	beta-Lactorphin				NO_DATA_IN_CHEMBL									
+casoxin_A	Casoxin A				NO_DATA_IN_CHEMBL									
+casoxin_C	Casoxin C				NO_DATA_IN_CHEMBL									
+soymorphin_5	Soymorphin-5				NO_DATA_IN_CHEMBL									
+substance_P	Substance P				NO_DATA_IN_CHEMBL									
+angiotensin_II	Angiotensin II				NO_DATA_IN_CHEMBL									
+kisspeptin_10	Kisspeptin-10				NO_DATA_IN_CHEMBL									
+neuropeptide_Y	Neuropeptide Y		CHEMBL428276	Protein	IC50	=	10000.0	nM	5.00	CHEMBL756578	Inhibitory activity against non-selective opiate receptor	CHEMBL1136639	Bioorg Med Chem Lett	1
+neuropeptide_Y	Neuropeptide Y		CHEMBL428276	Protein	Ki	=	5100.0	nM	5.29	CHEMBL756580	Binding affinity towards non-selective opiate receptor	CHEMBL1136639	Bioorg Med Chem Lett	1

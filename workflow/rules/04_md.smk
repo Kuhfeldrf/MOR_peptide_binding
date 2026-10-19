@@ -14,7 +14,9 @@ rule md_setup:
         gro=f"{RESULTS}/03_membrane/{{pep}}/system.gro",
     output:
         ndx=f"{RESULTS}/04_md/{{pep}}/index.ndx",
-        posre=f"{RESULTS}/04_md/{{pep}}/posre_system1.itp",
+        # Beside system.top, because that is the file whose #include has to
+        # resolve it - see the note in 04a_setup_md.py.
+        posre=f"{RESULTS}/03_membrane/{{pep}}/posre_system1.itp",
     params:
         proximal=config["md"]["proximal_cutoff"],
     log:
@@ -105,12 +107,20 @@ rule md_production:
         cpt=f"{RESULTS}/04_md/{{pep}}/npt_final.cpt",
         top=f"{RESULTS}/03_membrane/{{pep}}/system.top",
         ndx=f"{RESULTS}/04_md/{{pep}}/index.ndx",
-        mdp="config/prod.mdp",
+        # The mdp is named in config so a campaign can change the production
+        # length without editing the file that the validated 50 ns DAMGO run
+        # was produced with. Defaults to that file.
+        mdp=config["md"].get("prod_mdp", "config/prod.mdp"),
     output:
         xtc=f"{RESULTS}/04_md/{{pep}}/prod.xtc",
         tpr=f"{RESULTS}/04_md/{{pep}}/prod.tpr",
     log:
         f"{LOGS}/04_prod_{{pep}}.log",
+    # Without this the SLURM executor exports OMP_NUM_THREADS=1 whatever
+    # cpus_per_task says, 04_gmx_run.sh's -ntomp ${OMP_NUM_THREADS:-8} resolves
+    # to 1, and mdrun runs single-threaded: 32.3 ns/day against 137.7. It cost
+    # the met-enkephalin campaign its 100 ns target.
+    threads: 8
     resources:
         runtime=lambda wc, attempt: 60 * config["md"]["production_ns"],
         slurm_partition="long",

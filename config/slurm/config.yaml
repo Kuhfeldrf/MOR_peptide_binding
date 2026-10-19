@@ -77,16 +77,25 @@ set-resources:
 
   # `long` contains ONLY A30 nodes. The 50 ns DAMGO benchmark - 8 h 43 m,
   # 137.7 ns/day - was an A30 for that reason, not a deliberate choice.
-  # `normal` holds the L40S nodes and still allows 24 h, nearly 3x that run,
-  # so production goes there and asks for an L40S specifically.
   #
-  # The L40S is expected to be the faster card for this workload, but that is
-  # an expectation and not a measurement: 137.7 ns/day is the A30 number, and
-  # the first L40S run is what will show the real difference.
+  # Production used to run in `normal` on an L40S, which caps at 24 h. At
+  # production_ns: 100 that cap is the whole problem: the 5-arm met-enkephalin
+  # campaign was cancelled at 27.6 of 100 ns when the 20 h here ran out
+  # (docs/metenk_pose_stability.md). The runtime set here overrides the rule's
+  # own request, so it is the number that has to be right.
+  #
+  # 100 ns at the measured A30 rate of 137.7 ns/day is 17.4 h, so production
+  # moves to `long` with 36 h - A30-only, but sized from a measurement rather
+  # than from the hope that an L40S is faster. That L40S-vs-A30 comparison is
+  # still unmeasured and is no longer on this campaign's critical path.
+  #
+  # `rule md_production` must also declare `threads: 8`. cpus_per_task alone
+  # does not stop the executor exporting OMP_NUM_THREADS=1, and mdrun's
+  # -ntomp then resolved to 1, costing a measured 4.3x (32.3 vs 137.7 ns/day).
   md_production:
-    slurm_partition: "normal"
-    gres: "gpu:l40s:1"
-    runtime: 1200
+    slurm_partition: "long"
+    gres: "gpu:a30:1"
+    runtime: 2160
     mem_mb: 32000
     cpus_per_task: 8
 

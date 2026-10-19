@@ -1,0 +1,546 @@
+TITLE     MDANALYSIS FRAMES FROM 0, STEP 1: Created by PDBWriter
+CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1
+REMARK     285 UNITARY VALUES FOR THE UNIT CELL AUTOMATICALLY SET
+REMARK     285 BY MDANALYSIS PDBWRITER BECAUSE UNIT CELL INFORMATION
+REMARK     285 WAS MISSING.
+REMARK     285 PROTEIN DATA BANK CONVENTIONS REQUIRE THAT
+REMARK     285 CRYST1 RECORD IS INCLUDED, BUT THE VALUES ON
+REMARK     285 THIS RECORD ARE MEANINGLESS.
+MODEL        1
+ATOM      1  N   GLY X 898      39.676  41.429  72.479  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      38.995  41.885  73.070  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      40.131  40.812  73.137  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      39.248  40.872  71.754  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      40.677  42.458  71.940  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      40.149  43.371  71.666  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      41.370  42.832  72.693  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      41.586  41.821  70.928  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      42.714  41.481  71.280  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      41.197  41.641  69.659  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      40.247  41.936  69.489  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      41.851  40.996  68.501  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      41.344  41.297  67.584  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      43.325  41.438  68.271  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      43.354  42.520  68.399  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      44.008  41.045  69.024  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      43.763  41.094  66.864  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      44.845  40.987  66.795  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      43.471  40.063  66.662  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      43.216  42.185  65.473  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      43.690  41.046  64.128  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      43.185  41.163  63.169  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      44.775  41.055  64.017  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      43.543  40.009  64.430  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      41.620  39.444  68.374  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      40.800  39.061  67.568  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      42.283  38.638  69.180  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      42.834  38.957  69.964  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      42.383  37.184  68.925  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      41.790  36.950  68.040  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      43.923  36.767  68.879  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      44.412  36.943  69.837  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      44.066  35.687  68.853  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      44.679  37.463  67.827  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      44.577  37.078  66.469  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      43.962  36.239  66.181  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      45.303  37.774  65.526  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      45.136  37.503  64.494  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      46.219  38.799  65.884  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      46.851  39.441  64.875  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      47.068  38.879  64.127  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      46.356  39.164  67.260  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      47.211  39.760  67.543  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.560  38.470  68.228  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      45.787  38.684  69.261  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      41.811  36.323  70.057  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      42.052  35.131  70.150  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      40.931  36.960  70.942  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      40.657  37.929  70.867  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      40.220  36.122  71.968  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      39.270  36.652  72.040  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      39.827  35.270  71.414  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      40.969  35.838  73.243  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      40.366  35.290  74.196  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      42.301  36.054  73.380  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      42.801  36.481  72.614  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      43.073  35.924  74.640  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      42.715  35.069  75.214  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      44.494  35.633  74.150  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      44.849  36.392  73.453  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      45.191  35.629  74.988  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      44.741  34.337  73.301  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      45.347  33.210  73.807  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      45.472  33.243  74.880  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      45.651  32.109  73.084  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      46.061  31.193  73.484  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      45.385  32.230  71.689  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      45.675  31.392  71.073  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      44.791  33.322  71.076  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      44.675  33.328  70.002  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      44.560  34.468  71.931  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      44.130  35.367  71.515  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      43.118  37.146  75.586  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      42.793  38.289  75.110  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      43.560  36.935  76.750  1.00  0.00      seg_ O  
+ENDMDL
+MODEL        2
+ATOM      1  N   GLY X 898      39.176  42.093  71.328  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      40.042  41.779  71.741  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      38.540  41.327  71.156  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      38.701  42.876  71.753  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      39.620  42.651  70.086  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      38.730  42.705  69.459  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      39.940  43.693  70.093  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      40.645  41.753  69.442  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      41.774  41.562  70.004  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      40.338  41.382  68.222  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      39.394  41.562  67.909  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      41.175  40.517  67.331  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      40.576  40.562  66.422  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      42.486  41.145  66.922  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      42.307  42.219  66.973  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      43.284  40.902  67.624  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      43.054  40.681  65.539  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      43.899  40.030  65.761  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      42.258  40.172  64.996  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      43.671  41.979  64.448  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      42.092  42.802  64.047  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      42.292  43.500  63.235  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      41.287  42.157  63.694  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      41.807  43.228  65.009  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      41.244  39.073  67.881  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      40.475  38.217  67.410  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      42.029  38.758  68.923  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      42.593  39.532  69.243  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      42.305  37.365  69.511  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      41.755  36.729  68.818  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      43.773  36.971  69.336  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      44.372  37.695  69.889  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      43.936  35.956  69.697  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      44.211  36.983  67.818  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      43.671  36.066  66.951  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      42.929  35.362  67.296  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      43.947  36.161  65.554  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      43.475  35.480  64.861  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      44.990  36.972  65.112  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      45.213  37.007  63.724  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      46.107  37.294  63.521  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      45.542  37.888  66.009  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      46.402  38.419  65.629  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.148  37.923  67.362  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      45.616  38.597  68.064  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      41.823  37.039  70.922  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      41.774  35.877  71.304  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      41.384  38.008  71.805  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      41.537  38.943  71.453  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      40.928  37.706  73.228  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      40.666  38.667  73.670  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      40.033  37.091  73.134  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      41.936  37.048  74.239  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      41.468  36.360  75.175  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      43.273  37.175  74.131  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      43.685  37.764  73.422  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      44.199  36.711  75.180  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      44.027  35.669  75.450  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      45.594  36.893  74.575  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      45.845  37.953  74.532  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      46.357  36.603  75.297  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      45.793  36.134  73.326  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      45.558  34.731  73.250  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      45.297  34.238  74.174  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      45.676  34.086  72.045  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      45.250  33.094  72.093  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      46.067  34.813  70.877  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      46.183  34.232  69.974  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      46.219  36.161  70.905  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      46.388  36.812  70.060  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      46.161  36.790  72.136  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      46.288  37.849  72.304  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      44.012  37.497  76.511  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      43.502  38.628  76.506  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      44.319  36.938  77.564  1.00  0.00      seg_ O  
+ENDMDL
+MODEL        3
+ATOM      1  N   GLY X 898      38.975  41.544  68.864  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      38.769  42.221  69.585  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      39.306  40.666  69.238  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      38.245  41.342  68.195  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      40.070  42.110  68.028  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      39.654  42.710  67.219  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      40.772  42.734  68.580  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      40.825  40.904  67.436  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      42.016  40.730  67.799  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      40.251  40.052  66.617  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      39.258  40.222  66.533  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      40.859  38.933  65.961  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      40.123  38.740  65.181  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      42.127  39.334  65.085  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      42.929  39.607  65.772  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      42.447  38.534  64.418  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      41.777  40.589  64.213  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      40.840  40.312  63.729  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      41.537  41.385  64.918  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      43.007  41.395  63.154  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      42.304  43.013  62.954  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      42.683  43.406  62.011  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      41.215  43.039  62.911  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      42.693  43.624  63.769  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      41.008  37.656  66.851  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      40.305  36.700  66.581  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      41.868  37.606  67.911  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      42.372  38.471  68.044  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      42.439  36.428  68.482  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      42.012  35.507  68.085  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      43.950  36.620  68.143  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      44.248  37.569  68.588  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      44.568  35.814  68.538  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      44.214  36.725  66.602  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      43.645  35.793  65.761  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      42.888  35.146  66.178  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      43.937  35.725  64.425  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      43.419  34.929  63.911  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      44.886  36.587  63.847  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      45.131  36.490  62.532  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      46.047  36.679  62.316  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      45.447  37.572  64.736  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      46.149  38.211  64.222  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.128  37.669  66.084  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      45.633  38.301  66.799  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      42.211  36.223  70.001  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      42.407  35.107  70.500  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      41.742  37.154  70.826  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      41.481  38.048  70.434  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      41.027  36.911  72.075  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      40.564  37.799  72.504  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      40.319  36.126  71.808  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      41.953  36.497  73.170  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      41.400  36.040  74.203  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      43.289  36.527  73.010  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      43.541  36.973  72.140  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      44.334  36.324  73.951  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      44.251  35.446  74.592  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      45.663  36.157  73.198  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      45.975  37.095  72.739  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      46.406  35.899  73.953  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      45.767  35.086  72.139  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      45.794  33.778  72.651  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      45.553  33.572  73.683  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      45.917  32.627  71.817  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      45.856  31.633  72.237  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      46.082  32.834  70.506  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      46.058  32.004  69.815  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      46.283  34.157  69.953  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      46.586  34.190  68.917  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      46.191  35.254  70.812  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      46.327  36.220  70.349  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      44.431  37.454  74.951  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      44.456  38.620  74.507  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      44.568  37.188  76.193  1.00  0.00      seg_ O  
+ENDMDL
+MODEL        4
+ATOM      1  N   GLY X 898      39.426  41.633  69.878  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      39.162  40.796  70.377  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      38.846  42.270  70.405  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      40.411  41.811  70.011  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      39.127  41.355  68.426  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      38.286  40.666  68.345  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      38.890  42.283  67.906  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      40.214  40.623  67.738  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      41.308  40.465  68.277  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      39.855  40.320  66.478  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      38.884  40.353  66.203  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      40.704  39.599  65.496  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      40.122  39.507  64.579  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      42.010  40.299  65.030  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      42.733  40.595  65.791  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      42.574  39.532  64.499  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      41.710  41.411  63.944  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      41.116  40.984  63.136  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      41.120  42.216  64.382  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      43.059  42.290  63.150  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      43.622  41.159  61.864  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      43.765  40.130  62.196  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      42.855  41.072  61.094  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      44.456  41.518  61.261  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      40.867  38.149  65.925  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      39.946  37.335  65.907  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      42.023  37.717  66.423  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      42.760  38.391  66.271  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      42.463  36.297  66.719  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      41.839  35.566  66.206  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      43.904  36.124  66.230  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      44.637  36.578  66.898  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      44.074  35.048  66.180  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      44.184  36.628  64.839  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      43.810  35.865  63.692  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      43.104  35.069  63.882  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      44.119  36.280  62.353  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      43.899  35.614  61.532  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      44.987  37.406  62.165  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      45.499  37.712  60.916  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      46.235  38.304  61.090  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      45.434  38.116  63.361  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      46.136  38.928  63.243  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.001  37.754  64.677  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      45.302  38.346  65.529  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      42.429  35.900  68.257  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      42.980  34.837  68.678  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      41.870  36.775  69.121  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      41.715  37.718  68.796  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      41.691  36.525  70.622  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      40.763  36.945  71.009  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      41.487  35.459  70.724  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      42.852  36.912  71.507  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      42.822  36.637  72.677  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      43.840  37.580  70.962  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      43.854  37.763  69.969  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      45.132  37.999  71.599  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      45.090  37.719  72.651  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      46.329  37.213  71.035  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      46.296  37.610  70.020  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      47.251  37.573  71.492  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      46.279  35.748  70.991  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      46.262  35.002  72.188  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      46.448  35.496  73.130  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      46.062  33.612  72.175  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      46.248  33.070  73.090  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      45.854  32.901  70.956  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      45.618  31.847  70.979  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      45.870  33.641  69.743  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      45.865  33.066  68.829  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      46.058  35.050  69.788  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      46.004  35.599  68.859  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      45.321  39.498  71.552  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      45.729  40.043  70.540  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      45.178  40.185  72.590  1.00  0.00      seg_ O  
+ENDMDL
+MODEL        5
+ATOM      1  N   GLY X 898      38.206  40.448  69.149  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      37.722  39.786  68.561  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      37.589  41.108  69.602  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      38.712  39.896  69.827  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      39.120  41.216  68.407  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      38.558  41.900  67.771  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      39.666  41.872  69.085  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      40.115  40.295  67.705  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      41.176  40.086  68.387  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      39.914  39.856  66.463  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      39.016  40.157  66.112  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      40.878  38.989  65.738  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      40.322  38.655  64.861  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      42.019  39.836  65.186  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      42.700  40.145  65.978  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      42.675  39.197  64.595  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      41.561  41.033  64.305  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      40.824  40.710  63.571  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      40.980  41.702  64.939  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      42.927  41.921  63.480  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      43.281  40.612  62.167  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      43.757  39.779  62.684  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      42.395  40.223  61.664  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      43.998  41.030  61.460  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      41.165  37.750  66.669  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      40.272  37.005  67.057  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      42.433  37.538  67.082  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      43.030  38.330  66.891  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      42.785  36.404  67.831  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      42.284  35.631  67.248  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      44.257  36.138  67.532  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      44.967  36.709  68.130  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      44.398  35.108  67.858  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      44.741  36.231  66.046  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      44.536  35.184  65.107  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      44.104  34.274  65.497  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      45.033  35.226  63.798  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      45.037  34.307  63.230  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      45.619  36.411  63.355  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      46.066  36.438  62.038  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      46.497  37.280  61.871  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      45.786  37.535  64.252  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      46.244  38.439  63.878  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.383  37.451  65.568  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      45.472  38.160  66.378  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      42.396  36.327  69.403  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      42.625  35.254  69.899  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      41.870  37.324  70.059  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      41.746  38.175  69.529  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      41.675  37.381  71.501  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      41.013  38.229  71.680  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      41.038  36.559  71.829  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      42.907  37.529  72.370  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      42.911  37.124  73.594  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      43.869  38.293  71.825  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      43.668  38.671  70.910  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      45.196  38.755  72.355  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      45.261  38.666  73.439  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      46.356  37.989  71.687  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      46.275  38.229  70.627  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      47.364  38.324  71.934  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      46.197  36.473  71.891  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      46.041  36.012  73.226  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      46.067  36.649  74.098  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      45.916  34.617  73.467  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      45.879  34.239  74.478  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      45.905  33.787  72.294  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      45.680  32.749  72.492  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      46.076  34.240  70.974  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      46.175  33.532  70.164  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      46.257  35.608  70.778  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      46.415  36.158  69.862  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      45.259  40.291  72.180  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      45.434  40.780  70.995  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      45.068  40.965  73.209  1.00  0.00      seg_ O  
+ENDMDL
+MODEL        6
+ATOM      1  N   GLY X 898      38.441  40.504  69.177  1.00  0.00      seg_ N  
+ATOM      2  H1  GLY X 898      38.612  40.070  70.072  1.00  0.00      seg_ H  
+ATOM      3  H2  GLY X 898      38.083  39.794  68.554  1.00  0.00      seg_ H  
+ATOM      4  H3  GLY X 898      37.684  41.141  69.382  1.00  0.00      seg_ H  
+ATOM      5  CA  GLY X 898      39.511  41.321  68.615  1.00  0.00      seg_ C  
+ATOM      6  HA2 GLY X 898      39.023  41.914  67.841  1.00  0.00      seg_ H  
+ATOM      7  HA3 GLY X 898      39.983  41.930  69.387  1.00  0.00      seg_ H  
+ATOM      8  C   GLY X 898      40.557  40.559  67.871  1.00  0.00      seg_ C  
+ATOM      9  O   GLY X 898      41.755  40.521  68.289  1.00  0.00      seg_ O  
+ATOM     10  N   MET X 899      40.118  39.915  66.718  1.00  0.00      seg_ N  
+ATOM     11  H   MET X 899      39.159  40.053  66.433  1.00  0.00      seg_ H  
+ATOM     12  CA  MET X 899      40.947  39.023  65.811  1.00  0.00      seg_ C  
+ATOM     13  HA  MET X 899      40.321  38.694  64.982  1.00  0.00      seg_ H  
+ATOM     14  CB  MET X 899      42.190  39.795  65.137  1.00  0.00      seg_ C  
+ATOM     15  HB2 MET X 899      42.911  40.224  65.833  1.00  0.00      seg_ H  
+ATOM     16  HB3 MET X 899      42.737  39.080  64.522  1.00  0.00      seg_ H  
+ATOM     17  CG  MET X 899      41.839  40.971  64.285  1.00  0.00      seg_ C  
+ATOM     18  HG2 MET X 899      41.614  40.550  63.305  1.00  0.00      seg_ H  
+ATOM     19  HG3 MET X 899      40.932  41.432  64.677  1.00  0.00      seg_ H  
+ATOM     20  SD  MET X 899      43.118  42.322  64.023  1.00  0.00      seg_ S  
+ATOM     21  CE  MET X 899      44.221  41.428  62.867  1.00  0.00      seg_ C  
+ATOM     22  HE1 MET X 899      44.811  40.795  63.532  1.00  0.00      seg_ H  
+ATOM     23  HE2 MET X 899      43.642  40.883  62.122  1.00  0.00      seg_ H  
+ATOM     24  HE3 MET X 899      44.766  42.152  62.261  1.00  0.00      seg_ H  
+ATOM     25  C   MET X 899      41.304  37.682  66.547  1.00  0.00      seg_ C  
+ATOM     26  O   MET X 899      40.418  36.889  66.645  1.00  0.00      seg_ O  
+ATOM     27  N   TYR X 900      42.608  37.521  66.954  1.00  0.00      seg_ N  
+ATOM     28  H   TYR X 900      43.228  38.282  66.717  1.00  0.00      seg_ H  
+ATOM     29  CA  TYR X 900      43.249  36.403  67.723  1.00  0.00      seg_ C  
+ATOM     30  HA  TYR X 900      42.902  35.539  67.156  1.00  0.00      seg_ H  
+ATOM     31  CB  TYR X 900      44.741  36.376  67.499  1.00  0.00      seg_ C  
+ATOM     32  HB2 TYR X 900      45.178  37.252  67.978  1.00  0.00      seg_ H  
+ATOM     33  HB3 TYR X 900      45.114  35.452  67.942  1.00  0.00      seg_ H  
+ATOM     34  CG  TYR X 900      45.130  36.471  66.052  1.00  0.00      seg_ C  
+ATOM     35  CD1 TYR X 900      44.653  35.499  65.188  1.00  0.00      seg_ C  
+ATOM     36  HD1 TYR X 900      43.946  34.720  65.429  1.00  0.00      seg_ H  
+ATOM     37  CE1 TYR X 900      44.897  35.642  63.797  1.00  0.00      seg_ C  
+ATOM     38  HE1 TYR X 900      44.502  35.001  63.024  1.00  0.00      seg_ H  
+ATOM     39  CZ  TYR X 900      45.796  36.631  63.381  1.00  0.00      seg_ C  
+ATOM     40  OH  TYR X 900      46.092  36.721  62.001  1.00  0.00      seg_ O  
+ATOM     41  HH  TYR X 900      46.729  37.421  61.837  1.00  0.00      seg_ H  
+ATOM     42  CE2 TYR X 900      46.216  37.635  64.320  1.00  0.00      seg_ C  
+ATOM     43  HE2 TYR X 900      46.804  38.473  63.977  1.00  0.00      seg_ H  
+ATOM     44  CD2 TYR X 900      45.936  37.505  65.671  1.00  0.00      seg_ C  
+ATOM     45  HD2 TYR X 900      46.218  38.242  66.408  1.00  0.00      seg_ H  
+ATOM     46  C   TYR X 900      42.856  36.264  69.170  1.00  0.00      seg_ C  
+ATOM     47  O   TYR X 900      42.728  35.226  69.720  1.00  0.00      seg_ O  
+ATOM     48  N   GLY X 901      42.574  37.408  69.792  1.00  0.00      seg_ N  
+ATOM     49  H   GLY X 901      42.664  38.265  69.265  1.00  0.00      seg_ H  
+ATOM     50  CA  GLY X 901      41.925  37.552  71.098  1.00  0.00      seg_ C  
+ATOM     51  HA2 GLY X 901      41.575  38.583  71.149  1.00  0.00      seg_ H  
+ATOM     52  HA3 GLY X 901      41.091  36.861  71.221  1.00  0.00      seg_ H  
+ATOM     53  C   GLY X 901      42.791  37.383  72.288  1.00  0.00      seg_ C  
+ATOM     54  O   GLY X 901      42.212  37.067  73.317  1.00  0.00      seg_ O  
+ATOM     55  N   PHE X 902      44.095  37.639  72.277  1.00  0.00      seg_ N  
+ATOM     56  H   PHE X 902      44.503  37.915  71.395  1.00  0.00      seg_ H  
+ATOM     57  CA  PHE X 902      45.091  37.527  73.423  1.00  0.00      seg_ C  
+ATOM     58  HA  PHE X 902      44.627  36.908  74.190  1.00  0.00      seg_ H  
+ATOM     59  CB  PHE X 902      46.470  37.145  72.795  1.00  0.00      seg_ C  
+ATOM     60  HB2 PHE X 902      46.760  37.886  72.049  1.00  0.00      seg_ H  
+ATOM     61  HB3 PHE X 902      47.218  37.478  73.514  1.00  0.00      seg_ H  
+ATOM     62  CG  PHE X 902      46.607  35.741  72.227  1.00  0.00      seg_ C  
+ATOM     63  CD1 PHE X 902      46.588  34.550  73.047  1.00  0.00      seg_ C  
+ATOM     64  HD1 PHE X 902      46.444  34.657  74.112  1.00  0.00      seg_ H  
+ATOM     65  CE1 PHE X 902      46.767  33.288  72.421  1.00  0.00      seg_ C  
+ATOM     66  HE1 PHE X 902      46.685  32.361  72.970  1.00  0.00      seg_ H  
+ATOM     67  CZ  PHE X 902      46.936  33.172  70.998  1.00  0.00      seg_ C  
+ATOM     68  HZ  PHE X 902      46.968  32.221  70.487  1.00  0.00      seg_ H  
+ATOM     69  CE2 PHE X 902      46.848  34.316  70.189  1.00  0.00      seg_ C  
+ATOM     70  HE2 PHE X 902      46.773  34.272  69.113  1.00  0.00      seg_ H  
+ATOM     71  CD2 PHE X 902      46.756  35.554  70.824  1.00  0.00      seg_ C  
+ATOM     72  HD2 PHE X 902      46.688  36.447  70.219  1.00  0.00      seg_ H  
+ATOM     73  C   PHE X 902      45.072  38.902  74.120  1.00  0.00      seg_ C  
+ATOM     74  O   PHE X 902      44.425  39.117  75.169  1.00  0.00      seg_ O  
+ATOM     75  OXT PHE X 902      45.710  39.818  73.498  1.00  0.00      seg_ O  
+ENDMDL
+CONECT    1    2    3    4    5
+CONECT    2    1
+CONECT    3    1
+CONECT    4    1
+CONECT    5    1    6    7    8
+CONECT    6    5
+CONECT    7    5
+CONECT    8    5    9   10
+CONECT    9    8
+CONECT   10    8   11   12
+CONECT   11   10
+CONECT   12   10   13   14   25
+CONECT   13   12
+CONECT   14   12   15   16   17
+CONECT   15   14
+CONECT   16   14
+CONECT   17   14   18   19   20
+CONECT   18   17
+CONECT   19   17
+CONECT   20   17   21
+CONECT   21   20   22   23   24
+CONECT   22   21
+CONECT   23   21
+CONECT   24   21
+CONECT   25   12   26   27
+CONECT   26   25
+CONECT   27   25   28   29
+CONECT   28   27
+CONECT   29   27   30   31   46
+CONECT   30   29
+CONECT   31   29   32   33   34
+CONECT   32   31
+CONECT   33   31
+CONECT   34   31   35   44
+CONECT   35   34   36   37
+CONECT   36   35
+CONECT   37   35   38   39
+CONECT   38   37
+CONECT   39   37   40   42
+CONECT   40   39   41
+CONECT   41   40
+CONECT   42   39   43   44
+CONECT   43   42
+CONECT   44   34   42   45
+CONECT   45   44
+CONECT   46   29   47   48
+CONECT   47   46
+CONECT   48   46   49   50
+CONECT   49   48
+CONECT   50   48   51   52   53
+CONECT   51   50
+CONECT   52   50
+CONECT   53   50   54   55
+CONECT   54   53
+CONECT   55   53   56   57
+CONECT   56   55
+CONECT   57   55   58   59   73
+CONECT   58   57
+CONECT   59   57   60   61   62
+CONECT   60   59
+CONECT   61   59
+CONECT   62   59   63   71
+CONECT   63   62   64   65
+CONECT   64   63
+CONECT   65   63   66   67
+CONECT   66   65
+CONECT   67   65   68   69
+CONECT   68   67
+CONECT   69   67   70   71
+CONECT   70   69
+CONECT   71   62   69   72
+CONECT   72   71
+CONECT   73   57   74   75
+CONECT   74   73
+CONECT   75   73
+END

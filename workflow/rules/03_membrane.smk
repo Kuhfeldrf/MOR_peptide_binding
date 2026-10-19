@@ -59,9 +59,21 @@ def pose_flags(wildcards, input):
     # The prediction numbers the construct from 1; the crystal starts at 65.
     # Superposing without that offset silently matches the wrong residues -
     # it gave a 24.6 A fit where the correct mapping gives 2.7 A.
+    #
+    # A pose that came from a DIFFERENT experimental receptor carries that
+    # structure's numbering instead, and needs its own offset. 8F7Q is human
+    # MOR with a FLAG tag and runs uniformly +2 against the 6DDF-based
+    # mOR_clean used here: D3.32 is Asp149 in 8F7Q and Asp147 in mOR_clean,
+    # so a pose in the 8F7Q frame needs -2, not +64.
+    #
+    # The residue COUNT does not reveal which offset is right - the wrong one
+    # still shares 280 of 281 CA. Only the fit RMSD separates them (1.06 A
+    # correct against 5.57 A wrong), and 03a's >5.0 A guard is what catches it.
+    offsets = config["receptor"].get("pose_offset_overrides", {})
+    offset = offsets.get(wildcards.pep, config["receptor"]["resid_offset"])
     return (f"--pose {input.pose} "
             f"--pose-chain {config['cofold']['receptor_chain']} "
-            f"--pose-offset {config['receptor']['resid_offset']}")
+            f"--pose-offset {offset}")
 
 
 rule membrane_complex:
@@ -88,17 +100,24 @@ rule membrane_complex:
 
 
 rule ligand_params:
-    """GAFF2 / AM1-BCC parameters for the peptide as a single molecule (D10)."""
+    """Ligand parameters, by whichever route the peptide's chemistry needs.
+
+    GAFF2 / AM1-BCC for a non-canonical ligand (D10: DAMGO carries D-Ala,
+    N-Me-Phe and an ethanolamide), ff19SB for a peptide of standard L-amino
+    acids (b48ce60).
+
+    THE OUTPUT SET DIFFERS BETWEEN THE TWO, which is why only params_mode.txt
+    is declared here. It is the one file both routes write, and it names the
+    route, so every consumer reads it first. Declaring ligand.mol2 and
+    ligand.frcmod instead - the GAFF2 products - marked every canonical
+    peptide as FAILED even though 03b had exited 0 with its parameters
+    correctly on disk: Snakemake was enforcing a contract that only one of the
+    two routes can satisfy.
+    """
     input:
         ligand=ligand_only,
     output:
-        mol2=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.mol2",
-        frcmod=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.frcmod",
-        # Declared because Stage 5 needs it: it is the only file carrying the
-        # ligand with the SAME atom names and count as the mol2. The script
-        # always wrote it; leaving it undeclared made it invisible to the DAG.
-        unique=f"{RESULTS}/03_membrane/{{pep}}/params/ligand_unique.pdb",
-
+        mode=f"{RESULTS}/03_membrane/{{pep}}/params/params_mode.txt",
     log:
         f"{LOGS}/03_params_{{pep}}.log",
     resources:
@@ -107,7 +126,7 @@ rule ligand_params:
         "../../environment.yml"
     shell:
         "python3 {SCRIPTS}/03b_ligand_params.py "
-        "--ligand {input.ligand} --outdir $(dirname {output.mol2}) "
+        "--ligand {input.ligand} --outdir $(dirname {output.mode}) "
         "> {log} 2>&1"
 
 
@@ -179,8 +198,9 @@ rule membrane_topology:
     input:
         packed=f"{RESULTS}/03_membrane/{{pep}}/membrane_system.pdb",
         qc=f"{RESULTS}/03_membrane/{{pep}}/qc.txt",
-        mol2=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.mol2",
-        frcmod=f"{RESULTS}/03_membrane/{{pep}}/params/ligand.frcmod",
+        # params_mode.txt rather than the mol2: it is written on both routes
+        # and tells 03d which files to expect. See rule ligand_params.
+        mode=f"{RESULTS}/03_membrane/{{pep}}/params/params_mode.txt",
     output:
         parm=f"{RESULTS}/03_membrane/{{pep}}/system.parm7",
         rst=f"{RESULTS}/03_membrane/{{pep}}/system.rst7",

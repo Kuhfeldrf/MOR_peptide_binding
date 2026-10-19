@@ -133,6 +133,36 @@ mostly off-interface, and 281 residues against 5 is close to the worst case.
 low absolute values show that ipTM is uninformative here, not that the poses
 are bad.
 
+## Pose generation: four methods compared
+
+Chai-1 is not the only pose generator here. The same evaluation (21 length
+controls, 5 seeds, unchanged analysis script) has been run on four arms. Full
+record, including the runs that were voided and why:
+[`docs/pose_generation_comparison.md`](docs/pose_generation_comparison.md).
+
+| arm | method | runs on |
+|---|---|---|
+| A | Chai-1 0.6.1, single-sequence + ESM | 1 GPU per (peptide, seed) |
+| B | Protenix 2.0.0 with MSA (`scripts/02_cofold_protenix.py`, `jobs/ptx_*.sbatch`) | 1 GPU per (peptide, seed) |
+| C | ADCP (AutoDock CrankPep), free search in the pocket box | CPU array |
+| D | Rosetta FlexPepDock in RosettaMP | CPU |
+
+HADDOCK3 (`scripts/09_haddock_prep.py`, `jobs/haddock_*.sbatch`) supplies a third,
+blind pose for met-enkephalin.
+
+**Met-enkephalin from three generators.** Chai-1, Protenix + MSA and HADDOCK3 each
+placed met-enkephalin in the orthosteric pocket with the N-terminal ammonium on
+D147 (D3.32), as in 8F7Q. Each pose, plus the experimental pose and a scramble,
+was run in membrane MD ([`docs/metenk_pose_stability.md`](docs/metenk_pose_stability.md),
+`run_metenk100.sh`, structures in `md_viz/metenk/`). All three predicted poses
+stay in the pocket; all three also rotate the Tyr phenol into an H-bond the
+experimental structure does not make, which accounts for most of their 3-5 A
+heavy-atom RMSD from it.
+
+**None of arms A-C discriminates binders from non-binders** (arm D is pending) better
+than the free rule "starts with Tyr" (AUROC 0.875). The comparison document gives the
+numbers and the revised diagnosis.
+
 ## Membrane model: what it represents, and what it does not
 
 The receptor is muOR in **enteroendocrine cells of the intestine**, so the
@@ -245,6 +275,9 @@ run side by side across however many nodes are free. `config/slurm/config.yaml`
 caps the workflow at 48 concurrent jobs; on ORCA a node has four GPUs, so GPU
 jobs pack four to a node. The widest stage is co-folding: 37 peptides x 5 seeds
 is 185 independent single-GPU jobs, run 48 at a time.
+
+The Protenix arm runs outside Snakemake as a SLURM array with the same shape:
+one A30 per (peptide, seed) task, up to 36 at once (`jobs/ptx_real40.sbatch`).
 
 ### Scaling is a configuration change
 

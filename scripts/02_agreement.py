@@ -33,9 +33,44 @@ import numpy as np
 
 
 def load_top_model(seeddir: pathlib.Path) -> pathlib.Path | None:
-    """Chai writes pred.model_idx_N.cif ranked by aggregate score; idx 0 is top."""
+    """Locate the top-ranked model, for either co-folding arm.
+
+    Only the FILE LOCATOR differs between arms A and B. Everything downstream -
+    the receptor-CA superposition, the peptide RMSD, and the 2/5 A reporting
+    bands - is byte-identical for both, which is what keeps the two arms'
+    agreement numbers comparable.
+
+    Arm A (Chai-1): pred.model_idx_N.cif, already ranked by aggregate score,
+    so idx 0 is the top model.
+
+    Arm B (Protenix): <tag>_sample_N.cif under seed_<N>/predictions/. These are
+    NOT pre-ranked - sample_0 is not necessarily the best - so the top model is
+    chosen by the highest ranking_score in the matching
+    <tag>_summary_confidence_sample_N.json. Taking sample_0 blindly would
+    compare arm A's best pose against an arbitrary arm B pose.
+    """
     c = sorted(seeddir.glob("pred.model_idx_*.cif"))
-    return c[0] if c else None
+    if c:
+        return c[0]
+
+    cifs = sorted(seeddir.glob("pred/*/seed_*/predictions/*_sample_*.cif"))
+    if not cifs:
+        return None
+    best, best_score = None, float("-inf")
+    for cif in cifs:
+        idx = cif.stem.rsplit("_", 1)[-1]
+        conf = cif.parent / f"{cif.stem.rsplit('_sample_', 1)[0]}_summary_confidence_sample_{idx}.json"
+        score = float("-inf")
+        if conf.is_file():
+            try:
+                score = float(json.loads(conf.read_text()).get("ranking_score", float("-inf")))
+            except (ValueError, OSError):
+                score = float("-inf")
+        if score > best_score:
+            best, best_score = cif, score
+    # If no confidence JSON was readable, fall back to the first sample rather
+    # than silently returning nothing - but that is a degraded comparison.
+    return best if best is not None else cifs[0]
 
 
 def chain_ca(st: gemmi.Structure, chain_index: int) -> np.ndarray:

@@ -43,7 +43,18 @@ rule cofold_seed:
 
 
 rule cofold_best_pose:
-    """Top-ranked model for this peptide, as the Stage 3 starting structure."""
+    """Top-ranked model for this peptide, as the Stage 3 starting structure.
+
+    PRESTAGED poses are excluded by the constraint below. A pose that did not
+    come from co-folding - one docked by HADDOCK, or taken straight out of an
+    experimental structure - has no seeds to rank, so this rule cannot produce
+    it. Without the constraint Snakemake still tries: the file exists, but its
+    declared inputs do not, so it schedules 5 co-folding seeds per peptide and
+    would overwrite the staged pose with the result. Constraining the wildcard
+    makes the file a source rather than an output, which is what it is.
+    """
+    wildcard_constraints:
+        pep=PRESTAGED_EXCLUDE,
     input:
         seeds=lambda w: expand(
             f"{RESULTS}/02_cofold/{w.pep}/seed{{seed}}/scores.tsv", seed=SEEDS),

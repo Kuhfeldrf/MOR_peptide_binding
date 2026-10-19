@@ -65,7 +65,7 @@ def kabsch(P: np.ndarray, Q: np.ndarray):
 
 def ligand_in_frame(param_pdb: pathlib.Path, target_lines: list[str],
                     resname: str = "LIG", chain: str = "L", resid: int = 1,
-                    tol: float = 0.1):
+                    tol: float = 0.1, keep_residues: bool = False):
     """Return the mol2-consistent ligand moved onto `target_lines`' frame.
 
     `param_pdb` is params/ligand_unique.pdb - the file whose atom names and
@@ -76,6 +76,14 @@ def ligand_in_frame(param_pdb: pathlib.Path, target_lines: list[str],
     so the transform between them is rigid and exact. It is VERIFIED rather
     than assumed: a silent mis-superposition would place a correctly named
     ligand in the wrong position, which nothing downstream would flag.
+
+    `keep_residues` preserves the template's own residue name, chain and
+    number instead of collapsing everything into one `resname` residue.
+    Collapsing is right for GAFF2, where the mol2 defines the ligand as a
+    single unit. It is FATAL for ff19SB: those residues are real amino acids
+    that tleap types one at a time against its templates, and rewriting a
+    five-residue peptide to "LIG L 1" leaves every atom untypable -
+    "Atom .R<LIG 18761>.A<OXT 15> does not have a type", once per atom.
 
     Returns (lines, rmsd, n_extra).
     """
@@ -102,6 +110,7 @@ def ligand_in_frame(param_pdb: pathlib.Path, target_lines: list[str],
     for l in param:
         v = R @ np.array([float(l[30:38]), float(l[38:46]),
                           float(l[46:54])]) + t
-        out.append(l[:17] + f"{resname:>3} {chain}{resid:>4}" + l[26:30]
-                   + f"{v[0]:8.3f}{v[1]:8.3f}{v[2]:8.3f}" + l[54:])
+        head = l[:30] if keep_residues else (
+            l[:17] + f"{resname:>3} {chain}{resid:>4}" + l[26:30])
+        out.append(head + f"{v[0]:8.3f}{v[1]:8.3f}{v[2]:8.3f}" + l[54:])
     return out, fit, len(heavy) - n

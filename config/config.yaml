@@ -33,6 +33,14 @@ receptor:
       - ETA
       net_charge: 1
   resid_offset: 64
+  # Poses that arrive in a different experimental receptor's numbering need
+  # their own offset. 8F7Q (human MOR + FLAG tag) runs uniformly +2 against
+  # the 6DDF-based mOR_clean: D3.32 is Asp149 there and Asp147 here.
+  # Verified by fit RMSD, not by shared-residue count - the wrong offset still
+  # matches 280 of 281 CA but fits at 5.57 A against 1.06 A for the right one.
+  pose_offset_overrides:
+    metenk_hdk: -2
+    metenk_exp: -2
 library:
   # Scrambled decoys are the negative control: one matched permutation per real
   # peptide. They co-fold (Stage 2) and stop there - carrying no affinity data,
@@ -100,14 +108,40 @@ membrane:
 md:
   engine: gromacs
   temperature_K: 310
-  peptides: benchmark
+  # Met-enkephalin pose-stability campaign: the same peptide from four
+  # independent starting poses, plus its scramble. The three predicted poses
+  # answer whether independent pose generators converge under unrestrained
+  # physics; metenk_exp sets the scale for what "stable" looks like for a pose
+  # that is known to be right; metenk_scr tests whether staying bound
+  # discriminates a binder at all. Without the last two the run cannot be read
+  # - every method already places every peptide in the pocket, and MM/GBSA on
+  # these same complexes scored decoys BETTER than real peptides (AUROC 0.483).
+  peptides:
+  - metenk_chai
+  - metenk_ptx
+  - metenk_hdk
+  - metenk_exp
+  - metenk_scr
+  # Poses staged by hand into results/02_cofold/<name>/, with no Stage 2 seeds
+  # behind them. metenk_chai and metenk_scr are copies of the Chai-1 best poses
+  # for met-enkephalin and its scramble, renamed so all five systems are built
+  # identically rather than one being inherited from an earlier packing run.
+  prestaged_poses:
+  - metenk_chai
+  - metenk_ptx
+  - metenk_hdk
+  - metenk_exp
+  - metenk_scr
   restraint_stages:
   - 1000
   - 500
   - 100
   - 10
   proximal_cutoff: 12.0
-  production_ns: 50
+  production_ns: 100
+  # config/prod.mdp is left at the 50 ns setting that produced the validated
+  # DAMGO trajectory; this campaign runs the 100 ns copy instead.
+  prod_mdp: config/prod100.mdp
   staged_restraint_release: true
   reduced_traj_ps: 100
   full_traj_ps: 5000

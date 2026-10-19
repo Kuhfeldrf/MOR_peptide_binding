@@ -117,7 +117,49 @@ def moleculetype_atom_count(text: str, name: str) -> int:
     return sum(1 for l in am.group(1).splitlines()
                if l.strip() and not l.strip().startswith(";"))
 
-for mt, fc in (("system1", "POSRES_FC"), (_A.ligand_resname, "POSRES_FC")):
+def ligand_moleculetype(text: str, preferred: str) -> str:
+    """Which moleculetype is the ligand.
+
+    GAFF2 names it after the residue (DAM, LIG) because the mol2 defines it as
+    one unit, so `preferred` is right whenever it exists. ff19SB does not: the
+    peptide is ordinary amino acids, and parmed emits it as an anonymous
+    `systemN` alongside the receptor's `system1` and the bilayer's `system2`.
+    Assuming LIG aborted every canonical peptide here with
+    "moleculetype LIG not found".
+
+    So fall back to the structure of the file rather than to another guess: the
+    ligand is the moleculetype that appears EXACTLY ONCE in [ molecules ] and
+    is not the receptor, the bilayer, water or an ion. The receptor is
+    system1 - the first single-copy entry - and the peptide is the other one.
+    """
+    names = re.findall(r"\[ moleculetype \]\s*\n;[^\n]*\n\s*(\S+)", text)
+    if preferred in names:
+        return preferred
+    mols = re.search(r"\[ molecules \]\s*\n(.*)", text, re.S)
+    if not mols:
+        sys.exit("FATAL: no [ molecules ] section")
+    counts = []
+    for l in mols.group(1).splitlines():
+        l = l.strip()
+        if not l or l.startswith(";"):
+            continue
+        p = l.split()
+        if len(p) >= 2:
+            counts.append((p[0], int(p[1])))
+    singles = [n for n, c in counts if c == 1 and n != "system1"
+               and n not in ("WAT", "HOH", "CHL") and not n.endswith(("+", "-"))]
+    if len(singles) != 1:
+        sys.exit(f"FATAL: cannot identify the ligand moleculetype. "
+                 f"Single-copy candidates: {singles}. Present: "
+                 f"{sorted(set(names))}. Pass --ligand-resname explicitly.")
+    print(f"  ligand moleculetype: {singles[0]} "
+          f"('{preferred}' absent - ff19SB peptide)")
+    return singles[0]
+
+
+LIGMT = ligand_moleculetype(top, _A.ligand_resname)
+
+for mt, fc in (("system1", "POSRES_FC"), (LIGMT, "POSRES_FC")):
     cnt = moleculetype_atom_count(top, mt)
     # heavy atoms only: restrain positions of atoms with mass > 2
     heavy = []
@@ -140,7 +182,16 @@ for mt, fc in (("system1", "POSRES_FC"), (_A.ligand_resname, "POSRES_FC")):
         i += 1
         if mass > 2.0:
             heavy.append(i)
-    out = OUT / f"posre_{mt}.itp"
+    # NEXT TO system.top, not in the run directory. The #include added below
+    # goes INSIDE system.top, and grompp resolves a relative include against
+    # the directory of the file that contains it - so a restraint file written
+    # to results/04_md/<pep>/ is invisible no matter where mdrun is run from:
+    # "Topology include file "posre_system1.itp" not found".
+    #
+    # Minimisation does not catch this because min.mdp defines no POSRES, so
+    # the include is never expanded. NVT is the first stage that expands it,
+    # which is exactly where every peptide in this project has stopped.
+    out = D / f"posre_{mt}.itp"
     with out.open("w") as fh:
         fh.write(f"; position restraints for {mt}, heavy atoms only\n")
         fh.write("[ position_restraints ]\n")
@@ -151,7 +202,7 @@ for mt, fc in (("system1", "POSRES_FC"), (_A.ligand_resname, "POSRES_FC")):
 
 # insert #include guards at the end of each moleculetype
 new = top
-for mt in ("system1", _A.ligand_resname):
+for mt in ("system1", LIGMT):
     inc = (f'\n#ifdef POSRES\n#include "posre_{mt}.itp"\n#endif\n')
     if f'posre_{mt}.itp' in new:
         continue

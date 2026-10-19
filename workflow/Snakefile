@@ -10,6 +10,7 @@
 
 import csv
 import os
+import re
 
 configfile: "config/config.yaml"
 
@@ -132,13 +133,35 @@ else:
 # cannot separate binders from decoys (AUROC 0.38-0.48 across two arms). The
 # cheap physics tier is what replaces them, and a tier that cannot be run over
 # the decoys cannot be validated at all.
-TRIAGE_PEPTIDES = sorted(set(COFOLD) | set(MD_PEPTIDES))
+TRIAGE_PEPTIDES = sorted(set(COFOLD) | set(MD_PEPTIDES))  # narrowed below, after PRESTAGED
 
 # Stage 6 is the most expensive stage of all; the pilot runs DAMGO first.
 ABFE_PEPTIDES = sorted(config["abfe"]["peptides"])
 
 # Peptides whose starting pose comes from experiment rather than co-folding.
 EXPERIMENTAL = set(config["receptor"].get("extract_ligands", {}).keys())
+
+# Poses staged by hand into results/02_cofold/<name>/ instead of being produced
+# by Stage 2 - a HADDOCK pose, or one lifted from an experimental structure.
+# They still go through the Stage 3 frame transfer (they are in some other
+# receptor's frame), so they are NOT EXPERIMENTAL; they simply have no seeds.
+# Excluded from the triage tier as well, which scores co-folding output they
+# do not have.
+PRESTAGED = set(config["md"].get("prestaged_poses", []))
+# The lookahead must terminate on "/" or end-of-string, NOT on "$" alone: the
+# constraint is spliced into the regex for a whole PATH, so "$" anchors to the
+# end of "results/02_cofold/<pep>/best_pose.pdb" and never matches the name.
+# With "$" alone the exclusion silently never fires and Snakemake schedules
+# co-folding for every prestaged pose - which is what it did.
+PRESTAGED_EXCLUDE = (
+    r"(?!(?:" + "|".join(sorted(re.escape(p) for p in PRESTAGED))
+    + r")(?:/|$))[A-Za-z0-9_\-]+"
+    if PRESTAGED else r"[A-Za-z0-9_\-]+"
+)
+
+# A prestaged pose has no Stage 2 output for the triage tier to score, so it is
+# dropped from the cheap tier rather than being requested and failing.
+TRIAGE_PEPTIDES = sorted(set(TRIAGE_PEPTIDES) - PRESTAGED)
 
 SEEDS = list(range(config["cofold"]["n_seeds"]))
 

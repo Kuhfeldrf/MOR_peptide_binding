@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Do the length controls separate message from length?"""
+import sys
+
 import numpy as np
 import pandas as pd
 from scipy import stats
 
-s = pd.read_csv("results/02_cofold_lenctrl/scores.tsv", sep="\t")
-ag = pd.read_csv("results/02_cofold_lenctrl/cross_seed_agreement.tsv", sep="\t")
+# Optional results directory, so the SAME analysis runs against any arm's output.
+# Default is arm A (Chai-1), so existing invocations are unchanged.
+RESULTS = sys.argv[1] if len(sys.argv) > 1 else "results/02_cofold_lenctrl"
+print(f"# analysing: {RESULTS}\n")
+
+s = pd.read_csv(f"{RESULTS}/scores.tsv", sep="\t")
+ag = pd.read_csv(f"{RESULTS}/cross_seed_agreement.tsv", sep="\t")
 
 per = s.groupby("peptide_id").agg(
     iptm=("iptm", "max"),

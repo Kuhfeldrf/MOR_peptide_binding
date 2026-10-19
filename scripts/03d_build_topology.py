@@ -49,6 +49,27 @@ def main() -> None:
     src = D / a.packed
     lines = src.read_text().splitlines()
 
+    # ------------------------------------------------ which force field
+    #
+    # 03b routes a peptide of standard L-amino acids to ff19SB and everything
+    # else - DAMGO, with its D-Ala, N-Me-Phe and ethanolamide - to GAFF2, and
+    # records the choice in params_mode.txt. Stage 5 has read that file since
+    # b48ce60; this stage did not, so it went on demanding params/ligand.mol2
+    # and params/ligand.frcmod, which the ff19SB path never writes. Every
+    # canonical peptide therefore failed here with its parameters sitting
+    # correctly on disk under different names.
+    #
+    # The packed system is unaffected by the choice: 03a always writes the
+    # peptide as a single LIG residue, and that copy is used only as a set of
+    # COORDINATES to move the properly named template onto (see lib_ligand).
+    # So the bilayer packs do not have to be rebuilt to change force field.
+    mf = D / "params" / "params_mode.txt"
+    mode = mf.read_text().strip() if mf.exists() else "gaff2"
+    if mode not in ("gaff2", "ff19SB"):
+        sys.exit(f"FATAL: params_mode.txt says {mode!r}, expected "
+                 f"'gaff2' or 'ff19SB'")
+    print(f"ligand parameters: {mode}")
+
     # ------------------------------------------------ box from packing regions
     box = None
     pinp = D / "packmol.inp"
@@ -127,10 +148,15 @@ def main() -> None:
     # survived here: met-enkephalin is a neutral zwitterion, so the Cl- CREATED
     # a net -1 and the neutrality check then failed. Peptides carrying a
     # glutamate are -1 and need Na+, not Cl- - two ions in the wrong direction.
-    q_lig = round(sum(
-        float(l.split()[8]) for l in
-        (D / "params" / "ligand.mol2").read_text().split("@<TRIPOS>ATOM")[1]
-        .split("@<TRIPOS>BOND")[0].strip().splitlines()))
+    # GAFF2 carries the charge in the mol2's per-atom column; ff19SB has no
+    # mol2 at all, and 03b wrote the composition charge to ligand_charge.txt.
+    if mode == "gaff2":
+        q_lig = round(sum(
+            float(l.split()[8]) for l in
+            (D / "params" / "ligand.mol2").read_text().split("@<TRIPOS>ATOM")[1]
+            .split("@<TRIPOS>BOND")[0].strip().splitlines()))
+    else:
+        q_lig = int((D / "params" / "ligand_charge.txt").read_text().strip())
     ion = "Cl-" if q_lig > 0 else "Na+"
     n_ion = abs(q_lig)
     print(f"ligand net charge {q_lig:+d} -> {n_ion} x {ion}")
@@ -170,25 +196,36 @@ def main() -> None:
     # the fourth site at which the ligand's identity was mishandled.
     sys.path.insert(0, str(pathlib.Path(__file__).parent))
     from lib_ligand import ligand_in_frame
+    # GAFF2's template is the mol2-consistent PDB; ff19SB's is the cleaned
+    # peptide 03b wrote, whose residues are real amino acids numbered from 901.
+    # lib_ligand does not rename anything - it only moves - so the ff19SB
+    # residue names survive into ligand_frame.pdb, which is what tleap needs.
+    template = D / "params" / ("ligand_unique.pdb" if mode == "gaff2"
+                               else "ligand_peptide.pdb")
     try:
         lig_lines, fit, extra = ligand_in_frame(
-            D / "params" / "ligand_unique.pdb", dam)
+            template, dam, keep_residues=(mode == "ff19SB"))
     except ValueError as e:
         sys.exit(f"FATAL: {e}")
-    print(f"ligand renamed from mol2 template: {len(dam)} -> "
+    print(f"ligand renamed from {template.name}: {len(dam)} -> "
           f"{len(lig_lines)} atoms, superposition RMSD {fit:.4f} A "
           f"({extra} extra heavy atom(s), e.g. OXT)")
     (D / "ligand_frame.pdb").write_text("\n".join(lig_lines) + "\nTER\nEND\n")
 
     # ------------------------------------------------ tleap
     bonds = "\n".join(f"bond memb.{i}.SG memb.{j}.SG" for i, j in ss)
+    # A canonical peptide needs no small-molecule parameters at all - ff19SB
+    # already has every residue, and tleap rebuilds its hydrogens and caps the
+    # termini itself. Loading leaprc.gaff2 and a mol2 that does not exist is
+    # what blocked this path.
+    ligand_params = ("source leaprc.gaff2\n"
+                     "loadamberparams params/ligand.frcmod\n"
+                     f"{a.ligand_resname} = loadmol2 params/ligand.mol2\n"
+                     if mode == "gaff2" else "")
     (D / "build.leap").write_text(f"""source leaprc.protein.ff19SB
 source leaprc.lipid21
 source leaprc.water.opc
-source leaprc.gaff2
-loadamberparams params/ligand.frcmod
-{a.ligand_resname} = loadmol2 params/ligand.mol2
-memb = loadpdb system_nolig.pdb
+{ligand_params}memb = loadpdb system_nolig.pdb
 {bonds}
 lig = loadpdb ligand_frame.pdb
 sys = combine {{ memb lig }}
@@ -211,12 +248,41 @@ quit
     # ------------------------------------------------ verify + convert
     import parmed
     amb = parmed.load_file(str(D / "system.parm7"), xyz=str(D / "system.rst7"))
-    nlig = sum(1 for res in amb.residues if res.name == a.ligand_resname)
     q = sum(x.charge for x in amb.atoms)
-    print(f"atoms {len(amb.atoms)}   {a.ligand_resname} residues {nlig}   "
-          f"charge {q:+.4f}")
-    if nlig != 1:
-        sys.exit(f"FATAL: expected exactly 1 ligand, found {nlig}")
+    if mode == "gaff2":
+        nlig = sum(1 for res in amb.residues if res.name == a.ligand_resname)
+        print(f"atoms {len(amb.atoms)}   {a.ligand_resname} residues {nlig}   "
+              f"charge {q:+.4f}")
+        if nlig != 1:
+            sys.exit(f"FATAL: expected exactly 1 ligand, found {nlig}")
+    else:
+        # ff19SB gives the peptide REAL residues, so it cannot be found by
+        # name - the receptor has its own tyrosines - and it is NOT simply the
+        # last n residues either: `combine { memb lig }` does not leave the
+        # ligand at the end of the parm, which an earlier version of this
+        # check assumed and duly reported the peptide as WAT-WAT-WAT-WAT-WAT
+        # on a topology that was in fact correct.
+        #
+        # So the peptide is located by SEQUENCE, and the test is that the run
+        # occurs exactly once. That catches a dropped, duplicated or mistyped
+        # residue, and it does not care where tleap put it. Charged termini
+        # are named NTYR/CMET, so the leading N/C is stripped before matching.
+        at = [l for l in lig_lines if l.startswith(("ATOM", "HETATM"))]
+        exp = [l[17:20].strip() for i, l in enumerate(at)
+               if i == 0 or l[21:27] != at[i - 1][21:27]]
+        norm = lambda n: n[1:] if len(n) == 4 and n[0] in "NC" else n
+        names = [norm(r.name) for r in amb.residues]
+        hits = [i for i in range(len(names) - len(exp) + 1)
+                if names[i:i + len(exp)] == exp]
+        print(f"atoms {len(amb.atoms)}   peptide {'-'.join(exp)} "
+              f"at residue index {hits}   charge {q:+.4f}")
+        if len(hits) != 1:
+            sys.exit(f"FATAL: expected exactly one {'-'.join(exp)} run in the "
+                     f"topology, found {len(hits)} - tleap did not build the "
+                     f"sequence it was given")
+        npep = sum(len(r.atoms) for r in amb.residues[hits[0]:hits[0] + len(exp)])
+        print(f"peptide atoms {npep} (heavy {len(at)} + hydrogens "
+              f"rebuilt by tleap)")
     if abs(q) > 0.01:
         sys.exit(f"FATAL: system is not neutral ({q:+.4f})")
 

@@ -1,0 +1,30 @@
+name	sequence	class	length	receptor	verification	notes	peptide_id	LIS	cLIS	iLIS	LIA	iptm	agg	paemin	y	R1 Tyr1	R2 Tyr1+arom3or4	R3 message YxxF/W	R4 YGGF or YPxF
+met_enkephalin	YGGFM	mor_binder	5	MOR/DOR	VERIFIED_PRIOR	endogenous; already in this pilot's reference set	met_enkephalin	0.30436	0.41036	0.3523	1480	0.31395	0.42196	3.656	1	1.0	1.0	1.0	1.0
+leu_enkephalin	YGGFL	mor_binder	5	MOR/DOR	ASSERTED	endogenous enkephalin	leu_enkephalin	0.31435	0.41119	0.3579	1498	0.32369	0.43166	3.573	1	1.0	1.0	1.0	1.0
+endomorphin_1_free	YPWF	mor_binder	4	MOR	ASSERTED	native form is C-terminally AMIDATED; run unamidated	endomorphin_1_free	0.39276	0.5406	0.45845	1450	0.43135	0.51711	2.68	1	1.0	1.0	1.0	1.0
+endomorphin_2_free	YPFF	mor_binder	4	MOR	ASSERTED	native form is C-terminally AMIDATED; run unamidated	endomorphin_2_free	0.33274	0.46017	0.3913	1255	0.31309	0.42294	3.772	1	1.0	1.0	1.0	1.0
+beta_casomorphin_5_bov	YPFPG	mor_binder	5	MOR	VERIFIED_PRIOR	in reference_peptides.tsv, benchmark_include=YES	beta_casomorphin_5_bov	0.32642	0.43555	0.37684	1499	0.30546	0.41531	4.041	1	1.0	1.0	0.0	0.0
+beta_casomorphin_7_bov	YPFPGPI	mor_binder	7	MOR	VERIFIED_PRIOR	in reference_peptides.tsv, benchmark_include=YES	beta_casomorphin_7_bov	0.26649	0.33241	0.29763	1978	0.29583	0.40746	4.057	1	1.0	1.0	0.0	0.0
+met_enkephalin_RGL	YGGFMRGL	mor_binder	8	MOR/DOR	ASSERTED	proenkephalin-derived extension	met_enkephalin_RGL	0.3038	0.43045	0.35749	2452	0.38357	0.47727	2.878	1	1.0	1.0	1.0	1.0
+beta_endorphin_1_10	YGGFMTSEKS	mor_binder	10	MOR	VERIFIED_PRIOR	POMC 237-246; used as this pilot's length positive	beta_endorphin_1_10	0.2403	0.33833	0.28285	2753	0.3476	0.44543	3.874	1	1.0	1.0	1.0	1.0
+alpha_neoendorphin	YGGFLRKYPK	mor_binder	10	MOR/KOR	ASSERTED	prodynorphin-derived	alpha_neoendorphin	0.20648	0.27205	0.23701	2497	0.29905	0.40693	4.414	1	1.0	1.0	1.0	1.0
+dynorphin_A_1_13	YGGFLRRIRPKLK	mor_binder	13	KOR>MOR	ASSERTED	KOR-preferring but binds MOR	dynorphin_A_1_13	0.22746	0.30919	0.26519	3769	0.37419	0.46902	4.728	1	1.0	1.0	1.0	1.0
+dynorphin_B_1_13	YGGFLRRQFKVVT	mor_binder	13	KOR>MOR	ASSERTED	rimorphin	dynorphin_B_1_13	0.21775	0.29221	0.25185	3482	0.33858	0.44047	4.579	1	1.0	1.0	1.0	1.0
+beta_endorphin_1_20	YGGFMTSEKSQTPLVTLFKN	mor_binder	20	MOR	VERIFIED_PRIOR	POMC 237-256; this pilot's 20-aa length positive	beta_endorphin_1_20	0.04207	0.00322	0.00322	17	0.22986	0.34829	11.461	1	1.0	1.0	1.0	1.0
+NPY_1_10	YPSKPDNPGE	other_gpcr	10	NPY Y1/Y2/Y5	VERIFIED_WEB	human NPY N-terminal 10; STARTS WITH YP like the casomorphins	NPY_1_10	0.20165	0.27436	0.23521	2351	0.26804	0.385	4.848	0	1.0	0.0	0.0	0.0
+NPY_1_20	YPSKPDNPGEDAPAEDMARY	other_gpcr	20	NPY Y1/Y2/Y5	VERIFIED_WEB	length-matched to beta_endorphin_1_20; starts YP	NPY_1_20	0.0	0.0	0.0	0	0.148	0.2806	14.337	0	1.0	0.0	0.0	0.0
+PYY_1_10	YPIKPEAPGE	other_gpcr	10	NPY Y2	ASSERTED	human PYY N-terminal 10; starts YP; 70% homologous to NPY	PYY_1_10	0.24505	0.37889	0.29897	2689	0.32985	0.43359	4.123	0	1.0	0.0	0.0	0.0
+kisspeptin_10	YNWNSFGLRF	other_gpcr	10	KISS1R	VERIFIED_WEB	starts with Y; non-opioid	kisspeptin_10	0.23923	0.31822	0.27491	2767	0.34853	0.44856	4.07	0	1.0	1.0	0.0	0.0
+neurotensin_8_13	RRPYIL	other_gpcr	6	NTSR1	ASSERTED	minimal active NT fragment	neurotensin_8_13	0.31485	0.43684	0.36502	1899	0.3433	0.44461	3.35	0	0.0	0.0	0.0	0.0
+angiotensin_1_7	DRVYIHP	other_gpcr	7	MAS1	ASSERTED	angiotensin-(1-7)	angiotensin_1_7	0.22615	0.26502	0.24411	1898	0.32988	0.43334	4.283	0	0.0	0.0	0.0	0.0
+angiotensin_II	DRVYIHPF	other_gpcr	8	AT1R	ASSERTED	classical octapeptide	angiotensin_II	0.24688	0.32117	0.27924	2239	0.30702	0.41564	3.763	0	0.0	0.0	0.0	0.0
+CCK_8_nonsulfated	DYMGWMDF	other_gpcr	8	CCKAR/CCKBR	ASSERTED	native form is Tyr-SULFATED; run unsulfated	CCK_8_nonsulfated	0.27163	0.33715	0.30262	2308	0.35569	0.45408	3.434	0	0.0	0.0	0.0	0.0
+bradykinin	RPPGFSPFR	other_gpcr	9	B2R	ASSERTED	classical nonapeptide	bradykinin	0.26359	0.35416	0.30522	2538	0.31871	0.42487	3.601	0	0.0	0.0	0.0	0.0
+substance_P	RPKPQQFFGLM	other_gpcr	11	NK1R	ASSERTED	native form is C-terminally amidated	substance_P	0.22538	0.31091	0.26016	2932	0.3226	0.42578	3.916	0	0.0	0.0	0.0	0.0
+apelin_12	RPRLSHKGPMPF	other_gpcr	12	APJ/APLNR	ASSERTED	apelin-12	apelin_12	0.24249	0.3368	0.28387	3269	0.34172	0.44298	4.344	0	0.0	0.0	0.0	0.0
+alpha_MSH	SYSMEHFRWGKPV	other_gpcr	13	MC1R/MC4R	ASSERTED	native is acetylated + amidated	alpha_MSH	0.194	0.2386	0.21514	2667	0.30806	0.41289	4.974	0	0.0	0.0	0.0	0.0
+nociceptin_1_13	FGGFTGARKSARK	other_gpcr	13	NOP/OPRL1	ASSERTED	OPIOID FAMILY but NOP-selective; F1 not Y1 - the sharpest single test of the message pharmacophore	nociceptin_1_13	0.24041	0.33612	0.28427	3236	0.29761	0.40705	4.031	0	0.0	0.0	0.0	0.0
+galanin_1_15	GWTLNSAGYLLGPHA	other_gpcr	15	GALR1/2/3	ASSERTED	human galanin N-terminal	galanin_1_15	0.18396	0.23796	0.20922	3540	0.26994	0.38096	4.852	0	0.0	0.0	0.0	0.0
+nociceptin_1_17	FGGFTGARKSARKLANQ	other_gpcr	17	NOP/OPRL1	ASSERTED	full nociceptin/orphanin FQ core; F1 not Y1	nociceptin_1_17	0.21172	0.27564	0.24049	4518	0.3089	0.41378	4.284	0	0.0	0.0	0.0	0.0
+beta_endorphin_1_15	YGGFMTSEKSQTPLV	mor_binder	15	MOR	VERIFIED_PRIOR	POMC 237-251; this pilot's 15-aa length positive. Added to balance the length distribution	beta_endorphin_1_15	0.19361	0.24511	0.21702	2736	0.30853	0.4143	4.365	1	1.0	1.0	1.0	1.0
+dynorphin_A_1_17	YGGFLRRIRPKLKWDNQ	mor_binder	17	KOR>MOR	ASSERTED	full dynorphin A. Added to balance the length distribution	dynorphin_A_1_17	0.09721	0.11689	0.10462	2507	0.32897	0.42981	7.265	1	1.0	1.0	1.0	1.0

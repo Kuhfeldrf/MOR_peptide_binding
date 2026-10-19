@@ -1,0 +1,30 @@
+name	sequence	class	length	receptor	verification	notes
+met_enkephalin	YGGFM	mor_binder	5	MOR/DOR	VERIFIED_PRIOR	endogenous; already in this pilot's reference set
+leu_enkephalin	YGGFL	mor_binder	5	MOR/DOR	ASSERTED	endogenous enkephalin
+endomorphin_1_free	YPWF	mor_binder	4	MOR	ASSERTED	native form is C-terminally AMIDATED; run unamidated
+endomorphin_2_free	YPFF	mor_binder	4	MOR	ASSERTED	native form is C-terminally AMIDATED; run unamidated
+beta_casomorphin_5_bov	YPFPG	mor_binder	5	MOR	VERIFIED_PRIOR	in reference_peptides.tsv, benchmark_include=YES
+beta_casomorphin_7_bov	YPFPGPI	mor_binder	7	MOR	VERIFIED_PRIOR	in reference_peptides.tsv, benchmark_include=YES
+met_enkephalin_RGL	YGGFMRGL	mor_binder	8	MOR/DOR	ASSERTED	proenkephalin-derived extension
+beta_endorphin_1_10	YGGFMTSEKS	mor_binder	10	MOR	VERIFIED_PRIOR	POMC 237-246; used as this pilot's length positive
+alpha_neoendorphin	YGGFLRKYPK	mor_binder	10	MOR/KOR	ASSERTED	prodynorphin-derived
+dynorphin_A_1_13	YGGFLRRIRPKLK	mor_binder	13	KOR>MOR	ASSERTED	KOR-preferring but binds MOR
+dynorphin_B_1_13	YGGFLRRQFKVVT	mor_binder	13	KOR>MOR	ASSERTED	rimorphin
+beta_endorphin_1_20	YGGFMTSEKSQTPLVTLFKN	mor_binder	20	MOR	VERIFIED_PRIOR	POMC 237-256; this pilot's 20-aa length positive
+NPY_1_10	YPSKPDNPGE	other_gpcr	10	NPY Y1/Y2/Y5	VERIFIED_WEB	human NPY N-terminal 10; STARTS WITH YP like the casomorphins
+NPY_1_20	YPSKPDNPGEDAPAEDMARY	other_gpcr	20	NPY Y1/Y2/Y5	VERIFIED_WEB	length-matched to beta_endorphin_1_20; starts YP
+PYY_1_10	YPIKPEAPGE	other_gpcr	10	NPY Y2	ASSERTED	human PYY N-terminal 10; starts YP; 70% homologous to NPY
+kisspeptin_10	YNWNSFGLRF	other_gpcr	10	KISS1R	VERIFIED_WEB	starts with Y; non-opioid
+neurotensin_8_13	RRPYIL	other_gpcr	6	NTSR1	ASSERTED	minimal active NT fragment
+angiotensin_1_7	DRVYIHP	other_gpcr	7	MAS1	ASSERTED	angiotensin-(1-7)
+angiotensin_II	DRVYIHPF	other_gpcr	8	AT1R	ASSERTED	classical octapeptide
+CCK_8_nonsulfated	DYMGWMDF	other_gpcr	8	CCKAR/CCKBR	ASSERTED	native form is Tyr-SULFATED; run unsulfated
+bradykinin	RPPGFSPFR	other_gpcr	9	B2R	ASSERTED	classical nonapeptide
+substance_P	RPKPQQFFGLM	other_gpcr	11	NK1R	ASSERTED	native form is C-terminally amidated
+apelin_12	RPRLSHKGPMPF	other_gpcr	12	APJ/APLNR	ASSERTED	apelin-12
+alpha_MSH	SYSMEHFRWGKPV	other_gpcr	13	MC1R/MC4R	ASSERTED	native is acetylated + amidated
+nociceptin_1_13	FGGFTGARKSARK	other_gpcr	13	NOP/OPRL1	ASSERTED	OPIOID FAMILY but NOP-selective; F1 not Y1 - the sharpest single test of the message pharmacophore
+galanin_1_15	GWTLNSAGYLLGPHA	other_gpcr	15	GALR1/2/3	ASSERTED	human galanin N-terminal
+nociceptin_1_17	FGGFTGARKSARKLANQ	other_gpcr	17	NOP/OPRL1	ASSERTED	full nociceptin/orphanin FQ core; F1 not Y1
+beta_endorphin_1_15	YGGFMTSEKSQTPLV	mor_binder	15	MOR	VERIFIED_PRIOR	POMC 237-251; this pilot's 15-aa length positive. Added to balance the length distribution
+dynorphin_A_1_17	YGGFLRRIRPKLKWDNQ	mor_binder	17	KOR>MOR	ASSERTED	full dynorphin A. Added to balance the length distribution
