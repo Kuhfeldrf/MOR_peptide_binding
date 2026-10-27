@@ -1,0 +1,46 @@
+# Anchor set -- transcribed from "Known_Opioid_Peptides_v11.xlsx" sheet
+# 'Anchor set (20)' (2026-10-26), then extended and corrected against the
+# primary papers (2026-10-27). Anchors 21-26 were added from Chiba 1989 Table 1,
+# which the v11 sheet drew on but did not exhaust.
+#
+# FREE ACIDS ONLY. Per 'Removed from order' Filter 1 and the user's instruction
+# 2026-10-27: plain sequence, no amides, esters, D-residues or non-natural
+# residues. That filter is what excludes DAMGO and deltorphin-II from Block A
+# and both casoxin methyl esters from Block C, and it is why `native` and
+# `cofold_seq` differ for #1 and #18.
+#
+# AFFINITIES ARE NOT POOLED ACROSS BLOCKS. One block = one document = one assay.
+#   A  Wang 2023 Cell 186:413-427 Table S2 -- pKi, radioligand, HEK293T, one lab
+#   B  Koch 1985 Naunyn-Schmiedeberg's 331:351-354 Table 2 -- KD uM, rat brain
+#   C  Chiba, Tani & Yoshikawa 1989 J Dairy Res 56:363-366 Table 1 -- binding
+#      IC50 uM (1 nM [3H]naloxone, rat brain) AND GPI A2 uM. These are two
+#      different measures and the v11 sheet labelled some A2 values as IC50;
+#      both are carried here, separately, and never averaged.
+#   D  Tani 1990 Agric Biol Chem 54:1803 Table 1 -- IC50 uM
+n	block	name	native	cofold_seq	length	class	mu_binding_IC50_uM	mu_A2_uM	mu_pKi	mu_KD_uM	modification	pose_pdb
+1	A	endomorphin_1	YPWF-NH2	YPWF	4	agonist				8.73		C-term amide dropped	8F7R
+2	A	leu_enkephalin	YGGFL	YGGFL	5	agonist			7.97			
+3	A	met_enkephalin	YGGFM	YGGFM	5	agonist			7.40			
+4	A	beta_endorphin_1_31	YGGFMTSEKSQTPLVTLFKNAIIKNAYKKGE	YGGFMTSEKSQTPLVTLFKNAIIKNAYKKGE	31	agonist			7.11			8F7Q
+5	A	dynorphin_A_1_13	YGGFLRRIRPKLK	YGGFLRRIRPKLK	13	agonist			6.02			8F7W
+6	A	nociceptin_FQ	FGGFTGARKSARKLANQ	FGGFTGARKSARKLANQ	17	inactive_at_mu			N.A.			8F7X
+7	B	bov_casomorphin_4	YPFP	YPFP	4	agonist				1.4		
+8	B	bov_casomorphin_5	YPFPG	YPFPG	5	agonist				0.4/1.6		
+9	B	bov_casomorphin_7	YPFPGPI	YPFPGPI	7	agonist				2		
+10	B	bov_casomorphin_8	YPFPGPIP	YPFPGPIP	8	agonist				0.8/10		
+11	B	hum_casomorphin_4	YPFV	YPFV	4	agonist				4		
+12	B	hum_casomorphin_7	YPFVEPI	YPFVEPI	7	agonist				6/100		
+13	B	hum_casomorphin_5	YPFVE	YPFVE	5	agonist				20		
+14	B	hum_casomorphin_8	YPFVEPIP	YPFVEPIP	8	agonist				3/65		
+15	C	casoxin_C	YIPIQYVLSR	YIPIQYVLSR	10	antagonist	50	5				
+16	C	casoxin_A	YPSYGLN	YPSYGLN	7	antagonist	400	200				
+17	C	casoxin_6_acid	SRYPSY	SRYPSY	6	antagonist	250	>500				
+18	C	casoxin_6_methyl_ester	SRYPSY-OCH3	SRYPSY	6	antagonist	15	3.4		C-term methyl ester dropped -- EXCLUDED FROM RUN, duplicate of #17	
+19	C	kappa_casein_f61_63	YPY	YPY	3	near_inactive	>1000	>500				
+20	D	lactoferroxin_A_acid	YLGSGY	YLGSGY	6	inactive	>500					
+21	C	casoxin_B	YPYY	YPYY	4	antagonist	400	200				
+22	C	casoxin_4_acid	YPSY	YPSY	4	antagonist	140	400				
+23	C	kappa_casein_b35_39	YPSYG	YPSYG	5	antagonist	42	500				
+24	C	kappa_casein_h30_34	SYPYY	SYPYY	5	antagonist	700	16				
+25	C	kappa_casein_b60_64	PYPYY	PYPYY	5	antagonist	450	50				
+26	C	kappa_casein_b59_64	LPYPYY	LPYPYY	6	antagonist	820	500				

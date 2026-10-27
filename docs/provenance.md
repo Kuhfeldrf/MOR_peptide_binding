@@ -120,3 +120,49 @@ Reported configuration:
 `gmx mdrun -version` on a GPU node reports CUDA support, cuFFT, and NBNxM GPU
 setup active. The driver (13.30) is newer than the runtime (12.90), which is
 the supported direction for CUDA compatibility.
+
+## Stage 0 receptor digests (job 242494, 2026-10-27)
+
+**Why this section exists.** `/scratch/kuhfeldr-Kuhfeld_temp` was cleared on
+2026-10-26, taking `results/` with it (gitignored, so never in the repo).
+`jobs/anchor_stage0.sbatch` asserts that a rebuild must reproduce the pilot's
+receptor byte-for-byte and prints SHA-256 "so that claim is checkable rather
+than asserted" — but **no receptor digest had ever been recorded here**, so
+there was nothing to compare against. The digests below are the reference for
+future rebuilds. They do **not** confirm a match with the pre-wipe pilot
+receptor, which cannot now be recovered.
+
+Rebuilt from `data/raw/6ddf.cif` by `scripts/00_receptor.py`:
+
+| File | SHA-256 |
+|------|---------|
+| `mOR_clean.fasta` | `8c66940bb3d44dba649d61acd455fbb2659deb33d6d57dc2cfa4911ba702ad21` |
+| `mOR_clean.pdb` | `acb7724d4b24949c6caed661f1f48f9455491dd30521756ec112e200448c4dbd` |
+| `mOR_clean.pqr` | `cc23432f4107a3a6697a54c497195407d0090d7b4297633c1a415b04f6dc2102` |
+| `mOR_chainR_raw.pdb` | `bfd0fbaf49c2ab648921ed9fc95d86143a1f88b989d85802be7a4c7b6612fb98` |
+| `DAMGO_ref.pdb` | `f15d5d895c94260b926a4657e2758b3f8c28b0187ee27525c998f7ac6bf6c16c` |
+
+Receptor: chain R, 281 aa, span 65–345, no chain breaks (ECL2 fully resolved in
+6DDF, so no loop modelling — see D15). Protonation at pH 7.4 via PROPKA:
+**D147 deprotonated (−1, no HD2)**, **H297 neutral HID (delta-protonated)**.
+
+### Protonation tool versions — pinned, not solved
+
+| Tool | Version | Source | Date |
+|------|---------|--------|------|
+| pdb2pqr | 3.6.1 | conda-forge, env `mor-pqr` | 2026-10-27 |
+| propka | 3.5.1 | conda-forge, env `mor-pqr` | 2026-10-27 |
+
+These are the versions the pilot resolved (`docs/env_solved_main.txt:382` and
+`:237`) and they are pinned in `jobs/anchor_pqr_env.sbatch` rather than left to
+the solver: PROPKA assigns the titration states above, and a different PROPKA
+can legitimately flip a borderline residue. H297 is such a residue.
+
+`mor-pqr` is a **separate environment** from `mor-protenix`, which was rebuilt
+by `pip install protenix==2.0.0` and does not carry `pdb2pqr`. Its absence is
+what failed job 242438 (`FileNotFoundError: 'pdb2pqr30'`, 7 s) and stranded the
+MSA, gate and 95-task array in `DependencyNeverSatisfied`. Stage 0 reaches the
+binary through a one-entry symlink shim on `PATH`
+(`$REPO/.local/bin/pdb2pqr30`), so `python` remains `mor-protenix`'s — adding
+`pdb2pqr` to that env would let the conda solver move numpy or torch underneath
+Protenix, and Stage 0 needs the executable, not an importable module.
