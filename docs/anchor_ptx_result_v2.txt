@@ -1,0 +1,133 @@
+==============================================================================
+ANCHOR SET, ARM B (Protenix 2.0.0, receptor MSA N_msa=8862)
+==============================================================================
+score column: aggregate_score, collapsed per peptide as MAX over seeds x samples
+peptides scored: 25   (5 seeds x 5 samples each)
+
+NO CROSS-BLOCK STATISTIC IS COMPUTED. Blocks are four documents and
+four assay types; pooling them is not valid. Within-block n is 5 and 8,
+so every rho below describes a handful of points, not a method.
+
+==============================================================================
+PER-PEPTIDE SCORES
+==============================================================================
+peptide                 blk   len    best  median seedspread  affinity          class
+leu_enkephalin          A       5   0.953   0.946      0.028  N.A.              agonist
+met_enkephalin          A       5   0.948   0.944      0.028  N.A.              agonist
+bov_casomorphin_4       B       4   0.931   0.927      0.022  KD 1.4 uM         agonist
+hum_casomorphin_4       B       4   0.927   0.921      0.013  KD 4 uM           agonist
+bov_casomorphin_5       B       5   0.927   0.923      0.014  KD 0.4/1.6 uM     agonist
+kappa_casein_b35_39     C       5   0.924   0.918      0.012  IC50 42 uM        antagonist
+kappa_casein_b60_64     C       5   0.923   0.904      0.024  IC50 450 uM       antagonist
+endomorphin_1           A       4   0.922   0.915      0.020  N.A.              agonist
+casoxin_B               C       4   0.921   0.911      0.016  IC50 400 uM       antagonist
+kappa_casein_f61_63     C       3   0.921   0.916      0.008  >1000 uM          near_inactive
+casoxin_4_acid          C       4   0.921   0.914      0.016  IC50 140 uM       antagonist
+hum_casomorphin_5       B       5   0.918   0.914      0.013  KD 20 uM          agonist
+kappa_casein_b59_64     C       6   0.914   0.904      0.018  IC50 820 uM       antagonist
+kappa_casein_h30_34     C       5   0.909   0.899      0.014  IC50 700 uM       antagonist
+casoxin_A               C       7   0.900   0.887      0.018  IC50 400 uM       antagonist
+bov_casomorphin_7       B       7   0.892   0.878      0.024  KD 2 uM           agonist
+casoxin_6_acid          C       6   0.890   0.875      0.021  IC50 250 uM       antagonist
+lactoferroxin_A_acid    D       6   0.888   0.878      0.009  >500 uM           inactive
+bov_casomorphin_8       B       8   0.880   0.866      0.026  KD 0.8/10 uM      agonist
+hum_casomorphin_7       B       7   0.878   0.873      0.010  KD 6/100 uM       agonist
+casoxin_C               C      10   0.873   0.864      0.021  IC50 50 uM        antagonist
+hum_casomorphin_8       B       8   0.859   0.853      0.016  KD 3/65 uM        agonist
+beta_endorphin_1_31     A      31   0.853   0.822      0.109  N.A.              agonist
+dynorphin_A_1_13        A      13   0.821   0.812      0.012  N.A.              agonist
+nociceptin_FQ           A      17   0.815   0.793      0.030  N.A.              inactive_at_mu
+
+==============================================================================
+THE LENGTH CONTROL
+==============================================================================
+  score vs LENGTH, all 25 scored peptides: rho=-0.831 p=0.000 n=25
+  (this pools blocks, which is legitimate here: LENGTH is a property of
+   the peptide, not an assay measurement, so no cross-assay comparison
+   is being made. The affinity correlations below cannot do this.)
+
+==============================================================================
+WITHIN-BLOCK AFFINITY CORRELATION
+==============================================================================
+
+--- block A (6 peptides scored) ---
+    leu_enkephalin           score 0.953   pKi pAff  7.97  from mu_pKi column
+    met_enkephalin           score 0.948   pKi pAff  7.40  from mu_pKi column
+    endomorphin_1            score 0.922   pKi pAff  8.73  from mu_pKi column
+    beta_endorphin_1_31      score 0.853   pKi pAff  7.11  from mu_pKi column
+    dynorphin_A_1_13         score 0.821   pKi pAff  6.02  from mu_pKi column
+    nociceptin_FQ            score 0.815   affinity N.A.           -> EXCLUDED from rho (no measured value)
+  score vs AFFINITY: rho=+0.700 p=0.188 n=5
+  score vs LENGTH:   rho=-0.564 p=0.322 n=5
+  LENGTH vs AFFINITY (is the block itself confounded?): rho=-0.872 p=0.054 n=5
+
+--- block B (8 peptides scored) ---
+    bov_casomorphin_4        score 0.931   KD pAff  5.85
+    hum_casomorphin_4        score 0.927   KD pAff  5.40
+    bov_casomorphin_5        score 0.927   KD pAff  6.10  2 values (0.4/1.6), geometric mean
+    hum_casomorphin_5        score 0.918   KD pAff  4.70
+    bov_casomorphin_7        score 0.892   KD pAff  5.70
+    bov_casomorphin_8        score 0.880   KD pAff  5.55  2 values (0.8/10.0), geometric mean
+    hum_casomorphin_7        score 0.878   KD pAff  4.61  2 values (6.0/100.0), geometric mean
+    hum_casomorphin_8        score 0.859   KD pAff  4.85  2 values (3.0/65.0), geometric mean
+  score vs AFFINITY: rho=+0.571 p=0.139 n=8
+  score vs LENGTH:   rho=-0.927 p=0.001 n=8
+  LENGTH vs AFFINITY (is the block itself confounded?): rho=-0.293 p=0.482 n=8
+  READING: length explains this block's scores at least as well as
+           affinity does. No affinity signal is demonstrated here.
+
+--- block C (10 peptides scored) ---
+    kappa_casein_b35_39      score 0.924   IC50 pAff  4.38
+    kappa_casein_b60_64      score 0.923   IC50 pAff  3.35
+    casoxin_B                score 0.921   IC50 pAff  3.40
+    kappa_casein_f61_63      score 0.921   UNKNOWN pAff  3.00 CENSORED(bound)
+    casoxin_4_acid           score 0.921   IC50 pAff  3.85
+    kappa_casein_b59_64      score 0.914   IC50 pAff  3.09
+    kappa_casein_h30_34      score 0.909   IC50 pAff  3.15
+    casoxin_A                score 0.900   IC50 pAff  3.40
+    casoxin_6_acid           score 0.890   IC50 pAff  3.60
+    casoxin_C                score 0.873   IC50 pAff  4.30
+  score vs AFFINITY: rho=-0.073 p=0.841 n=10
+  score vs LENGTH:   rho=-0.691 p=0.027 n=10
+  LENGTH vs AFFINITY (is the block itself confounded?): rho=+0.300 p=0.399 n=10
+  READING: length explains this block's scores at least as well as
+           affinity does. No affinity signal is demonstrated here.
+
+--- block D (1 peptides scored) ---
+    lactoferroxin_A_acid     score 0.888   UNKNOWN pAff  3.30 CENSORED(bound)
+  fewer than 3 measured values; no rho computed (n=1)
+
+==============================================================================
+PRE-SPECIFIED WITHIN-BLOCK COMPARISONS
+==============================================================================
+
+1. Aim 2's pair: bovine casomorphin-7 (2 uM) vs human casomorphin-7 (6 uM)
+   Same length (7), same block, same assay, 3x apart in KD.
+     bov_casomorphin_7: 0.892   (KD 2 uM, the TIGHTER binder)
+     hum_casomorphin_7: 0.878   (KD 6 uM)
+     difference +0.014; per-seed spread is 0.024 and 0.010
+     VERDICT: the gap is SMALLER than the run-to-run spread of either
+              peptide. This pair is not resolved. Length is matched here,
+              so this is the cleanest affinity test in the set, and the
+              score does not pass it.
+
+2. Koch length ladders (block B, within species, one assay)
+   bovine: 4mer 0.931  5mer 0.927  7mer 0.892  8mer 0.880
+     score vs length: rho=-1.000 p=0.000 n=4  (monotone decline = the length artefact)
+   human: 4mer 0.927  5mer 0.918  7mer 0.878  8mer 0.859
+     score vs length: rho=-1.000 p=0.000 n=4  (monotone decline = the length artefact)
+
+3. Block A's measured true negative: nociceptin FQ (N.A. at mu)
+     nociceptin_FQ scores 0.815, rank 6 of 6 in block A (1 = highest score)
+     It IS ranked last - but it is also the second-longest peptide in
+     the block (17), so this is exactly what the length artefact
+     predicts. Ranking it last is therefore not evidence of selectivity.
+
+4. The near-inactive short peptide: the length artefact's own test
+     kappa_casein_f61_63 (YPY, 3mer, >1000 uM): 0.921
+     endomorphin_1       (YPWF, 4mer, Ki 1.86 nM): 0.922
+     The two differ by >5 ORDERS OF MAGNITUDE in affinity; their scores
+     differ by +0.001.
+     These sit in different blocks so no rho is computed, but the
+     comparison needs no statistics: a score that cannot separate 1.86 nM
+     from >1 mM cannot prioritise a synthesis list.

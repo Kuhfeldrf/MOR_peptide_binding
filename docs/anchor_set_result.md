@@ -1,5 +1,9 @@
 # The anchor set confirms it: the Protenix score is a length detector
 
+> **Block C below is superseded by the v2 section at the end of this file.** It
+> was extended from 4 to 10 peptides on 2026-10-27; `rho = -1.000` is an n = 4
+> artefact and does not survive. Everything else here stands.
+
 19 anchor peptides, 5 seeds, 5 samples each — 475 predicted complexes on a
 correctly folded receptor with a real MSA — and the score still reads peptide
 length rather than affinity. This is the same conclusion the scrambled-decoy
@@ -160,3 +164,49 @@ Jobs: env 242493, Stage 0 242494, MSA 242495, gate 242507 (242496 failed on the
 metric bug), array 242508 (95/95 COMPLETED). Raw per-model scores:
 `docs/anchor_ptx_scores.tsv` (475 rows). Full analysis output:
 `docs/anchor_ptx_result.txt`.
+
+---
+
+# v2: block C extended from 4 to 10 peptides
+
+Array 242665, 125/125 COMPLETED (the 95 tasks from 242508 skipped on the
+restart rule; 30 new). 25 unique inputs, 5 seeds x 5 samples. Same receptor,
+MSA, checkpoint and gate. Full output: `docs/anchor_ptx_result_v2.txt`; raw
+per-model scores: `docs/anchor_ptx_scores_v2.tsv` (625 rows).
+
+Chiba 1989 Table 1 holds twelve peptides; the v11 anchor sheet used four. The
+six remaining free acids were added (`YPYY`, `YPSY`, `YPSYG`, `SYPYY`, `PYPYY`,
+`LPYPYY`), giving block C all ten free acids from that one table.
+
+| block C | v1 (n=4) | v2 (n=10) |
+|---|---|---|
+| score vs affinity | -1.000 | **-0.073 (p=0.84)** |
+| score vs length | -0.800 | **-0.691 (p=0.027)** |
+| length vs affinity (confound?) | not computed | **+0.300 (p=0.40)** |
+
+The v1 doc was right to refuse to read `rho = -1.000`; it was an n=4 artefact
+and it did not survive. What replaces it is a stronger negative. Block C is now
+the only block where length and affinity are **not** confounded (block A is
+-0.872, block B -0.293), so the two hypotheses are separable here - and they
+separate: length significant at p=0.027, affinity nil at p=0.84, across a
+20-fold IC50 range in one document and one assay.
+
+Two orderings carry it without statistics. `casoxin_C` is the table's
+second-best binder (50 uM) and scores last of all ten, because at 10 residues
+it is the longest. `YPSYG` is the table's best binder (42 uM) and scores
+highest - but `YPY` (>1000 uM, 3 residues) scores 0.921 against `YPSYG`'s
+0.924, so the ordering is length, not affinity.
+
+`YPY` was queried on 2026-10-27 as too short to be an anchor. It is retained:
+Chiba measures it (h31-33 / b61-63, binding IC50 >1000 uM, A2 >500 uM), it is
+block C's only measured near-inactive, and it is 0.001 from endomorphin-1
+(Ki 1.86 nM). Its three residues make its *score* an extrapolation; its
+*affinity* is a published measurement.
+
+Chiba's two measures disagree in rank and are kept in separate columns:
+`YPSYG` is the strongest binder (42 uM) but a weak functional antagonist
+(A2 500 uM), while `SYPYY` is a weak binder (700 uM) and the strongest
+antagonist (A2 16 uM). Only the binding IC50 is correlated against.
+
+Reproduce with `jobs/anchor_ptx_array_v2.sbatch`, then `02e_aggregate.py` and
+`08b_anchor_analysis.py` against `data/templates/anchor_library.tsv`.
